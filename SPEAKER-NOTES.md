@@ -1,102 +1,241 @@
-# SkyCare Airlines: Speaker Notes (15 minutes)
+# SkyCare Navigator: Speaker Notes (15 min)
 
-Use these as talking points, not a script to read word for word. Times are targets; the total is about 15 minutes including a short Q&A buffer.
+Talking points, not a script. Say it your way.
+Times add up to about 14 minutes, leaving a minute for questions.
 
----
-
-## Before you start (0:00 to 1:00): GitHub or link intro
-
-"Instead of a traditional PowerPoint, I designed SkyCare as a working airline concept. I built it as a website so I can show the customer experience instead of just describing it."
-
-(If showing GitHub: point to the files and the README, then click the live link.)
-
-Click **Presentation Mode** and full screen.
+**One sentence to remember:** Great customer service is not only solving problems after they happen. It is reducing confusion before the passenger needs to ask for help.
 
 ---
 
-## 1 / 13 Welcome (0:30)
+## Before class (setup checklist)
 
-- "Welcome to SkyCare Airlines. Our belief is simple: travel should feel better."
-- Point to the boarding pass: "Notice what's on it. Bag tracked, gate updates on, and a real person one tap away. That's the whole idea in one card."
+- [ ] Open the live site once on the presentation computer **with Wi-Fi** (this saves the offline copy)
+- [ ] Load the page with `?present` at the end, or click **Present**
+- [ ] Press **F** for full screen
+- [ ] Backup: the project folder on a USB drive (double-click `index.html`)
+- [ ] Volume up if you want to play **Speak Phrase**
+- [ ] If the room has no Wi-Fi: the live site still opens from the saved offline copy
 
-## 2 / 13 The Problem (1:30)
-
-- **Ask the room** the question on screen. Pause and count hands. "That's the problem we're solving."
-- Point to the red flow: "Most frustration doesn't come from the delay itself. It comes from silence, lines, and repeating your story."
-- Point to the teal flow: "SkyCare flips it. The airline detects the problem and brings the passenger options."
-- Read the callout.
-
-## 3 / 13 Our Promise (1:00)
-
-- Walk through the four pillars in one sentence each.
-- Land on: "Customer service is not a department. It's part of the operating model."
-
-## 4 / 13 Passenger Journey (1:30)
-
-- Click **Book**, then use the right arrow to move through each stage. Pick one or two details per stage; don't read every bullet.
-- At **Arrive**: "The trip isn't over when the plane lands. It's over when the passenger is taken care of."
-- Mention the research line at the bottom (Park et al., 2004): every stage affects whether someone flies with you again.
-
-## 5 / 13 Airport Experience (0:45)
-
-- "We designed this section like airport signs, because that's where passengers are looking for help."
-- Emphasize **Real Human Help**: self-service is an option, not a wall.
-
-## 6 / 13 Cabin Experience (0:45)
-
-- "Comfort isn't only the seat. It's a calm cabin, a crew that pays attention, and knowing your connection status before you land."
-
-## 7 / 13 Service Recovery (2:00) **Main demo**
-
-- Click **See How SkyCare Responds** on the 3-hour delay. Let the steps appear, then narrate 3 or 4 of them.
-- Click **Missed Connection** and play it: "The new flight is booked before the passenger even lands."
-- Read the callout: "The passenger should not have to discover the solution."
-- Research: a field study during real delays found fair treatment and emotions shaped satisfaction, trust, and whether people flew again (Wen & Chi, 2013).
-
-## 8 / 13 Technology + People (1:15)
-
-- Tap **Track Bag** and **Chat With SkyCare** on the phone.
-- "Technology handles routine tasks. People handle judgment and empathy."
-- Research: not every passenger wants self-service; frequent flyers and business travelers chose differently (Castillo-Manzano & López-Valpuesta, 2013). "So we let passengers choose."
-
-## 9 / 13 Our People (1:00)
-
-- Walk through Listen, Own, Solve, Follow Up.
-- Key line: "The first employee you reach should move the problem toward a solution, not redirect you."
-
-## 10 / 13 Accountability (1:15) **Critical thinking**
-
-- "We can't control weather or air traffic control. No airline can. What we can control is how fast we tell you, how clearly we explain, and whether we follow up."
-- Point to the commitments and say clearly they're **targets for this concept**.
-- "Federal refund rules are the floor. SkyCare acts before the passenger has to ask."
-- Business case: satisfaction and perceived value drive repeat travel, so good service is an investment, not a cost.
-
-## 11 / 13 Why SkyCare (1:00)
-
-- Let the board flip, then read three rows.
-- Read the competitive advantage statement slowly. This is your thesis.
-
-## 12 / 13 Research (0:45)
-
-- "Everything I showed is backed by five peer-reviewed studies."
-- Give one sentence on the recovery finding (Migacz et al., 2018): fair outcomes, fair process, and respectful treatment all matter.
-
-## 13 / 13 Thank You (0:30 + questions)
-
-- "SkyCare Airlines. Travel should feel better. Thank you, and I'm happy to take questions."
+**Controls:** → next · ← back · F full screen · Esc exit
+Scenes with dots next to the title have more than one part. Keep pressing →.
 
 ---
 
-## Likely questions and short answers
+## Intro (0:20) · GitHub, under 30 seconds
 
-**"Isn't this too expensive for an airline?"**
-Research links satisfaction and perceived value to repeat travel (Chen, 2008; Park et al., 2004), so service quality protects future revenue. Automation also handles routine tasks, so staff time goes where it matters most.
+> "Instead of slides, I built SkyCare as a working prototype on GitHub Pages. Everything you'll see is clickable, and I'll be honest about what's real and what's simulated."
 
-**"What makes this different from what airlines already do?"**
-Many airlines have pieces of this. SkyCare's difference is doing it proactively and consistently, with one person owning the case and a follow-up every time.
+Don't open GitHub unless asked. Go straight to scene 1.
 
-**"Why aren't there real statistics on the commitments?"**
-Because SkyCare is a concept. I labeled them as targets on purpose rather than inventing data.
+---
 
-**"What if the app fails?"**
-Every digital step has a human backup, which is the point of the Technology + People slide.
+## 1 / 12 · The Problem (1:15)
+
+**Say**
+- "Quick question: who here has been lost in an airport, or almost missed a connection?" *(pause, count hands)*
+- "Look at everything a passenger has to check: airline app, boarding pass, boards, signs, baggage screens, translation app…"
+- "Every one of these works. The passenger still has to connect them under time pressure."
+
+**Click:** **Connect them with SkyCare**. The chips pull into one hub.
+
+**Land it:** "The information exists. The problem is the passenger has to find it, understand it, and decide what to do next. That's the customer-service problem."
+
+---
+
+## 2 / 12 · Meet SkyCare Navigator (0:30)
+
+**Say**
+- "SkyCare Navigator is not an airline. It's an independent assistant for the airport."
+- "Upload your trip once. SkyCare stays with you from the terminal entrance to the final gate."
+- "One trip. One assistant. Less confusion."
+
+---
+
+## 3 / 12 · Load the Journey (1:00)
+
+**Click:** **Load Demo Trip**. Let the scan steps play.
+
+**Say**
+- "Our sample trip for the whole demo: Fort Lauderdale to Istanbul to Dubai."
+- "SkyCare now knows both flights, the gates, the 2-hour connection, and that my bag is checked through to Dubai."
+- "It's simulated here; a real version would connect to airline systems. The note on screen says that."
+
+**Press →** to the Dashboard.
+
+**Click** the demo clock: **5:52 PM** then **7:04 PM**.
+- "Same trip, different moment. At 5:52 it's relaxed and suggests food. At 7:04 it switches to Rush. The app thinks about the clock so the passenger doesn't have to."
+
+---
+
+## 4 / 12 · AR Navigation ★ Main feature (2:00)
+
+**Say**
+- "This is the flagship. Stop reading the airport; let the airport guide you."
+- "Hold up your phone, follow the green line on the floor. Only what matters floats nearby: restroom, coffee, medical."
+
+**Click:** **Simulate Gate Change**. Stay quiet for 3 seconds and let it play:
+- amber warning B18 → F7
+- old route disappears
+- new route draws
+- time check
+
+**Say**
+- "The passenger didn't have to see a board or hear an announcement. SkyCare updated the route and told them if they still have time."
+
+**Optional click:** **Accessible Route** → the line reroutes to the elevator.
+
+**Be honest:** "Indoor positioning isn't live in this demo. A real system would use airport indoor maps, beacons or Wi-Fi positioning, and live gate data."
+
+---
+
+## 5 / 12 · Connection Rush Mode ★ (1:30)
+
+**Say**
+- "My strongest customer-service example. I land late in Istanbul."
+
+**Click:** **Simulate Late Arrival (7:04 PM)**.
+- "Look what disappeared: restaurants, lounges, shopping. Gone."
+- "Only what matters: Gate F7, 11 minutes, boarding closes in 18. Keep moving."
+
+**Click:** **Very Late (7:14 PM)**.
+- "Now it's honest: connection at risk, contact the airline, and here's the alternative. No false hope."
+
+**Land it:** "The app changes based on what the passenger needs right now."
+
+---
+
+## 6 / 12 · Ask Sky (1:30)
+
+**Click** suggestion buttons (2 or 3 max):
+1. **Where is my gate?** → uses the real gate and walk time
+2. **I want seafood.** → *if relaxed:* "2 minutes off your route, adds 5 minutes"
+
+**Key moment:** go back to Rush (or type the question after setting 7:04):
+- "I'm hungry, I want seafood" → "Your connection is too tight for this stop."
+- "Sky doesn't blindly answer. It checks my situation first. That's the difference between a chatbot and a travel companion."
+
+**Press →** to Smart Detours. Optional: tap **Seafood** and **Add Stop** to show the route change.
+
+**Be honest:** "Sky is a simulated AI with prewritten, context-aware responses. There's no API key in a public website. A real version would use a secure backend."
+
+---
+
+## 7 / 12 · I Have a Problem (1:30)
+
+**Click:** **My bag is missing**.
+- "SkyCare already knows my bag tag and flight. It tells me Baggage Services is 4 minutes away, what to bring, and…"
+
+**Click:** **What should I say?**
+- "…exactly what to ask for, even in Turkish."
+
+**Press →** to Medical.
+**Click:** **Airport Medical Assistance** and let it finish.
+- "In an emergency, nobody should search a directory."
+- "This is clearly labeled a simulation. The website never contacts anyone. Production would need direct integration with airport emergency systems."
+
+---
+
+## 8 / 12 · Family + Accessibility (1:30)
+
+**Family Guardian** (the class scenario)
+- "Remember the parent whose kids were seated apart? Tickets bought together; seats 14A, 22F, and 31B."
+- "SkyCare catches it before boarding and points to the airline. It can't change seats itself."
+
+**Click:** **Demo: Airline Resolves** → 14A, 14B, 14C.
+
+**Press →** Accessibility. **Click:** **Turn On Accessible Route**.
+- "Elevator instead of stairs, and the request follows me: departure, check-in, gate already confirmed."
+- "The passenger shouldn't have to explain the same need at every stage."
+
+**Press →** Travel Group (optional, 15 seconds): "Opt-in only, temporary, and it picks a safe meeting point."
+
+---
+
+## 9 / 12 · Offline + Language (1:00)
+
+**Say**
+- "International travelers often land with no SIM and no Wi-Fi."
+
+**Click:** **Download pack** on IST, then flip **Simulate offline**.
+- "Maps, services, and phrases still work. Live gate changes pause, and SkyCare says so."
+
+**Press →** Language. Choose **Arabic** or **Turkish**, tap **My bag did not arrive**, click **Speak Phrase**.
+- "Show the screen to staff, or let the phone say it."
+
+---
+
+## 10 / 12 · Human + AI (0:45)
+
+**Click:** **Baggage Services** card.
+
+**Say**
+- "SkyCare doesn't replace people. Its job is to get you to the right person, already prepared, so you don't repeat your story."
+- "**AI handles information. People handle judgment, care, and emergencies.**"
+
+---
+
+## 11 / 12 · How It Could Work (1:00)
+
+**Say**
+- "I don't want to pretend everything here works today."
+- Point to the architecture: "A real version needs airline data, airport indoor maps, positioning, a secure AI backend, and emergency partnerships."
+- Point to the two lists: "Green is working in this prototype. Amber needs real integrations."
+
+**Press →** Privacy (15 seconds): "Your location belongs to you. Sharing is opt-in and ends after the trip."
+
+---
+
+## 12 / 12 · Why SkyCare (1:00)
+
+**Say**
+- Read 2 or 3 rows of the comparison table.
+- "Research links service quality and satisfaction to whether passengers come back (Chen, 2008; Park et al., 2004)."
+
+**Press →** Research (20 seconds, don't read it):
+- "Every feature responds to a finding. For example, a study with wheelchair users found a wayfinding app didn't make them faster, but it cut sign-reading and lowered anxiety (Qing et al., 2021). So I don't claim SkyCare is faster; I claim it's less stressful."
+
+**Press →** Closing:
+- "SkyCare Navigator. Know where to go. Know what to do. One trip, one assistant, less confusion. Thank you."
+
+---
+
+## Likely professor questions
+
+**"Is any of this real, or is it all fake?"**
+The passenger experience is real and clickable. The data connections are simulated, and I labeled each one. The Technology slide shows exactly what's working and what needs partners.
+
+**"How would you actually know where someone is inside a terminal? GPS doesn't work indoors."**
+Right, GPS isn't reliable indoors. Production would use airport indoor maps plus Bluetooth beacons, Wi-Fi positioning, ultra-wideband where available, and phone sensors. That's why airport partnerships come first.
+
+**"Why would airports or airlines share data with you?"**
+Because confused passengers cost them: missed connections, crowded help desks, complaints. Research shows confusing signage is a major source of airport dissatisfaction (Bogicevic et al., 2013). SkyCare reduces that load.
+
+**"What about people who don't use apps, like older travelers?"**
+Not everyone wants self-service (Castillo-Manzano & López-Valpuesta, 2013), so "Talk to a person" is always one tap away. Research on older adults says phone tools are promising but need real testing (Bosch & Gharaveis, 2017); I'd test with older travelers before launch.
+
+**"Isn't the AI going to give wrong answers?"**
+That's why Sky is limited to the trip context and hands anything about judgment, safety, or emergencies to people. Medical messages always say to tell staff first.
+
+**"How does SkyCare make money?"**
+Options: airport or airline licensing, since they benefit from fewer lost passengers; premium features like lounge or meal integrations. I focused on the experience first; the business model would need testing.
+
+**"What about privacy? This sounds like tracking."**
+Location sharing is opt-in, temporary, ends after the trip, and never public. Each family member chooses. No secret tracking.
+
+**"Why not just build this into an airline app?"**
+Airline apps only know their own flights. SkyCare works across airlines and airports, like my FLL to IST to DXB trip, and connects the airport side too.
+
+**"Where did the walking times and numbers come from?"**
+They're demo values for the fictional map. I didn't invent any statistics; the research findings come from the cited studies.
+
+**"What happens with no internet?"**
+Downloaded airport packs keep maps, services, and phrases working. Live gate changes can't arrive offline, and SkyCare tells the passenger that.
+
+---
+
+## If something breaks
+
+- **Page won't load:** open `index.html` from the USB backup
+- **A demo gets stuck:** press **Reset** (AR) or **Normal** (Rush), or refresh the page
+- **Voice is silent:** "The phone would read this aloud; this computer doesn't have that voice." Show the text
+- **Lost your place:** press **Home** to go to scene 1, or Esc and use the normal page

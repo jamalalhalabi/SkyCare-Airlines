@@ -2,41 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SkyCare Airlines | Travel Should Feel Better</title>
-  <meta name="description" content="SkyCare Airlines is a fictional airline concept that shows what a perfect airline customer service experience could look like.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SkyCare Navigator | Your AI travel companion inside the airport</title>
+  <meta name="description" content="SkyCare Navigator is an academic aviation customer-experience concept: an AI airport companion that guides passengers from terminal entrance to final gate.">
+  <meta name="theme-color" content="#07111f">
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-  <!-- Fonts: Barlow (airport-signage style). If you are offline, the site falls back to system fonts automatically. -->
+  <link rel="apple-touch-icon" href="images/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Fonts load online. Offline or when opened from a folder, system fonts are used automatically. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
   <link rel="stylesheet" href="styles.css">
-  <!-- Tells the stylesheet that JavaScript is running (used for animations). -->
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 
 <!-- =====================================================
-     ICON LIBRARY
-     Each icon is drawn once here, then reused anywhere with:
-     <svg class="icon"><use href="#i-bell"></use></svg>
+     ICON LIBRARY  (use: <svg class="icon"><use href="#i-name"></use></svg>)
      ===================================================== -->
 <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
-  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
-  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
-  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></symbol>
-  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+  <symbol id="i-life" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M5.6 5.6l3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.4.6 4 2.4 4 5.2"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
-  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M12 19.5v.5"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7h18v3.5a1.5 1.5 0 0 0 0 3V17H3v-3.5a1.5 1.5 0 0 0 0-3z"/><path d="M14 7v10" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M6 10l6 6 6-6"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-import" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
   <symbol id="i-bag" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M4 12h16M9 20v1.5M15 20v1.5"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
-  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol>
-  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
-  <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.2 7-1.2M12 9.7v4.8l-3.2 6.5M12 14.5l3.2 6.5"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17v.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
@@ -44,796 +45,1215 @@
   <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
   <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
-  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
   <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 17v-5a8 8 0 0 1 16 0v5"/><rect x="3" y="13" width="4" height="7" rx="1.5"/><rect x="17" y="13" width="4" height="7" rx="1.5"/></symbol>
-  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7h18v3.5a1.5 1.5 0 0 0 0 3V17H3v-3.5a1.5 1.5 0 0 0 0-3z"/><path d="M14 7v10" stroke-dasharray="2 2"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
-  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
-  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17v.5"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
-  <symbol id="i-call" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
-  <symbol id="i-at" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.9 7.9"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
-  <symbol id="i-door" viewBox="0 0 24 24"><path d="M5 21V4a1 1 0 0 1 1-1h9l3 2v16"/><path d="M2 21h20M14 12v.5"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+  <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.2 7-1.2M12 9.7v4.8l-3.2 6.5M12 14.5l3.2 6.5"/></symbol>
+  <symbol id="i-wheel" viewBox="0 0 24 24"><circle cx="10" cy="4" r="1.8"/><path d="M10 7v6h6l3 5"/><path d="M10 10h5"/><path d="M7.5 11.5a5 5 0 1 0 7 6"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/><path d="M3 12h4l2-3 3 6 2-3h7"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M5 3v8a2 2 0 0 0 2 2v8M9 3v8a2 2 0 0 1-2 2M7 3v6"/><path d="M17 21V3c-2 0-4 2-4 6v5h4"/></symbol>
+  <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/></symbol>
+  <symbol id="i-restroom" viewBox="0 0 24 24"><circle cx="7" cy="4.5" r="1.8"/><circle cx="17" cy="4.5" r="1.8"/><path d="M5 8h4l1 7H8v6H6v-6H4zM15 8h4l1.5 8h-2v5h-3v-5h-2zM12 3v18"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+  <symbol id="i-lang" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.8 3.5 3 6.5 6 8M11 5c-.8 3.5-3.4 6.8-7 8.5"/><path d="M13 21l4-9 4 9M14.5 18h5"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M12 19.5v.5"/></symbol>
+  <symbol id="i-cloud-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M8.5 6.5A6 6 0 0 1 18 10a4 4 0 0 1 2.6 7M17 18H7a5 5 0 0 1-1.4-9.8"/></symbol>
+  <symbol id="i-sim" viewBox="0 0 24 24"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><rect x="8" y="11" width="8" height="6" rx="1"/><path d="M12 11v6M8 14h8"/></symbol>
+  <symbol id="i-meal" viewBox="0 0 24 24"><path d="M3 14a9 9 0 0 1 18 0z"/><path d="M2 17h20M12 5v0M12 3v2"/></symbol>
+  <symbol id="i-seat" viewBox="0 0 24 24"><path d="M7 3v9a2 2 0 0 0 2 2h7l2 7M7 12H5M9 18h7"/></symbol>
+  <symbol id="i-family" viewBox="0 0 24 24"><circle cx="7" cy="5" r="2.2"/><circle cx="17" cy="5" r="2.2"/><circle cx="12" cy="11" r="1.6"/><path d="M4 21v-6l-1-4a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3M20 21v-6l1-4a3 3 0 0 0-3-3h-2a3 3 0 0 0-3 3M10 21v-4l-.5-2.5M14 21v-4l.5-2.5"/></symbol>
+  <symbol id="i-elevator" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M7 10l1.5-2L10 10M14 14l1.5 2 1.5-2"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><rect x="9.5" y="9.5" width="5" height="5"/></symbol>
+  <symbol id="i-beacon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M8 8a5.7 5.7 0 0 0 0 8M16 8a5.7 5.7 0 0 1 0 8M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></symbol>
-  <symbol id="i-cabin" viewBox="0 0 24 24"><path d="M6 20V9a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3v6h5a2 2 0 0 1 2 2v3"/><path d="M4 20h18"/></symbol>
-  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-present" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8M10 8.5l4 1.5-4 1.5z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.5 1.4-4.5-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
 </svg>
 
 <a class="skip-link" href="#main">Skip to main content</a>
-
-<!-- Thin bar at the very top that fills as you scroll -->
 <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
 
 <!-- =====================================================
-     NAVIGATION BAR
+     HEADER / NAVIGATION
+     App navigation (Home, My Trip, Navigate, Ask Sky, Help,
+     Profile) plus presentation-site links under "Concept".
      ===================================================== -->
 <header class="site-header" id="siteHeader">
-  <nav class="nav container" aria-label="Main navigation">
-    <a class="brand" href="#home" aria-label="SkyCare Airlines home">
+  <nav class="nav" aria-label="Main navigation">
+    <a class="brand" href="#home" aria-label="SkyCare Navigator home">
       <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
-        <rect width="48" height="48" rx="12" fill="#0B1F3A"/>
-        <path d="M9 30c8-1 15-5 21-12l6-6c1.5-1.5 3.6.2 2.5 2L33 21c-3 5-3 10 0 14" fill="none" stroke="#19C3C0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M13 36c5 0 10-1.2 14-3.5" fill="none" stroke="#E8B04B" stroke-width="3" stroke-linecap="round"/>
+        <rect width="48" height="48" rx="13" fill="#0c1b30"/>
+        <path d="M10 34 C18 32 22 26 26 20 S34 12 39 12" fill="none" stroke="#3ef08a" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="10" cy="34" r="3.4" fill="#2dd4e0"/>
+        <path d="M34 8l6 4-6 4z" fill="#e9f3ff"/>
       </svg>
-      <span class="brand-text">SkyCare<span> Airlines</span></span>
+      <span class="brand-text"><strong>SkyCare</strong> Navigator</span>
     </a>
 
-    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
-      <svg class="icon"><use href="#i-menu"></use></svg>
-      <span class="visually-hidden">Open menu</span>
-    </button>
-
     <ul class="nav-links" id="navMenu">
-      <li><a href="#problem">The Problem</a></li>
-      <li><a href="#promise">Our Promise</a></li>
-      <li><a href="#journey">Journey</a></li>
-      <li><a href="#recovery">Recovery</a></li>
-      <li><a href="#technology">Tech + People</a></li>
-      <li><a href="#why">Why SkyCare</a></li>
-      <li><a href="#research">Research</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li class="nav-cta-item">
-        <button class="btn btn-primary btn-small" id="presentBtn" type="button">
-          <svg class="icon"><use href="#i-play"></use></svg> Presentation Mode
-        </button>
+      <li><a href="#home" data-nav="home"><svg class="icon"><use href="#i-home"></use></svg>Home</a></li>
+      <li><a href="#dashboard" data-nav="dashboard"><svg class="icon"><use href="#i-ticket"></use></svg>My Trip</a></li>
+      <li><a href="#navigate" data-nav="navigate"><svg class="icon"><use href="#i-nav"></use></svg>Navigate</a></li>
+      <li><a href="#ask" data-nav="ask"><svg class="icon"><use href="#i-chat"></use></svg>Ask Sky</a></li>
+      <li><a href="#help" data-nav="help"><svg class="icon"><use href="#i-life"></use></svg>Help</a></li>
+      <li><a href="#profile" data-nav="profile"><svg class="icon"><use href="#i-user"></use></svg>Profile</a></li>
+      <li class="nav-more">
+        <button class="nav-more-btn" id="moreBtn" aria-expanded="false" aria-controls="moreMenu">Concept <span aria-hidden="true">▾</span></button>
+        <ul class="more-menu" id="moreMenu">
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#problem">Customer Problems</a></li>
+          <li><a href="#tech">Technology</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#closing">About the Concept</a></li>
+        </ul>
       </li>
     </ul>
+
+    <div class="nav-actions">
+      <span class="net-pill" id="netPill" role="status" aria-live="polite">
+        <span class="net-dot"></span><span id="netText">ONLINE</span>
+      </span>
+      <button class="btn btn-present" id="presentBtn" type="button" title="Presentation Mode (P)">
+        <svg class="icon"><use href="#i-present"></use></svg><span>Present</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+        <svg class="icon"><use href="#i-menu"></use></svg>
+      </button>
+    </div>
   </nav>
 </header>
-
-<!-- Section dots on the right side (progress indicator) -->
-<nav class="dot-nav" id="dotNav" aria-label="Section progress"></nav>
 
 <main id="main">
 
 <!-- =====================================================
-     SECTION 1: HOME / HERO
+     HERO: MEET SKYCARE NAVIGATOR
      ===================================================== -->
-<section class="section hero" id="home" data-title="Welcome">
-  <!-- Decorative sky background. To use your own photo, see README "Replacing images". -->
-  <div class="hero-sky" aria-hidden="true">
-    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
-    <svg class="flight-path" viewBox="0 0 1200 500" preserveAspectRatio="none">
-      <path id="heroPath" d="M-50 440 C 300 420, 520 120, 1250 60" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="6 10"/>
+<section class="hero" id="home" data-title="Meet SkyCare Navigator">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-grid"></div>
+    <svg class="hero-routes" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="routeGrad" x1="0" x2="1">
+          <stop offset="0" stop-color="#2dd4e0" stop-opacity="0"/>
+          <stop offset=".35" stop-color="#2dd4e0" stop-opacity=".9"/>
+          <stop offset="1" stop-color="#3ef08a" stop-opacity=".9"/>
+        </linearGradient>
+        <radialGradient id="glow"><stop offset="0" stop-color="#2dd4e0" stop-opacity=".55"/><stop offset="1" stop-color="#2dd4e0" stop-opacity="0"/></radialGradient>
+      </defs>
+      <!-- radar rings -->
+      <g class="radar" transform="translate(1180 470)">
+        <circle r="120"/><circle r="230"/><circle r="340"/><circle r="450"/>
+        <path class="radar-sweep" d="M0 0 L450 0 A450 450 0 0 0 389.7 -225 Z"/>
+      </g>
+      <!-- flight route FLL → IST → DXB (stylized, not to scale) -->
+      <path id="heroRoute" class="hero-route" d="M140 640 C 420 330, 820 250, 1010 330 S 1330 470, 1460 520"/>
+      <path class="hero-route-flow" d="M140 640 C 420 330, 820 250, 1010 330 S 1330 470, 1460 520"/>
+      <g class="hero-node" transform="translate(140 640)"><circle r="40" fill="url(#glow)"/><circle r="6"/><text x="16" y="28">FLL</text></g>
+      <g class="hero-node" transform="translate(1010 330)"><circle r="40" fill="url(#glow)"/><circle r="6"/><text x="16" y="-16">IST</text></g>
+      <g class="hero-node" transform="translate(1460 520)"><circle r="40" fill="url(#glow)"/><circle r="6"/><text x="-50" y="34">DXB</text></g>
+      <g class="hero-plane"><path d="M0 -3 L14 0 L0 3 L3 0 Z M4 -9 L8 0 L4 9 L6 0 Z" fill="#e9f3ff"/></g>
     </svg>
+    <div class="hero-vignette"></div>
   </div>
 
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <p class="eyebrow eyebrow-light">Aviation Customer Relations Trade Show</p>
-      <h1 class="hero-title">SkyCare Airlines</h1>
-      <p class="hero-slogan">Travel Should Feel Better.</p>
-      <p class="hero-sub">Book smarter. Travel easier. Arrive cared for.</p>
+  <div class="hero-inner container">
+    <div class="hero-copy reveal">
+      <p class="eyebrow"><span class="live-dot"></span> Aviation customer-experience concept</p>
+      <h1 class="hero-title">SKYCARE<br><span>NAVIGATOR</span></h1>
+      <p class="hero-tagline">Your AI travel companion inside the airport.</p>
+      <p class="hero-sub">Upload your trip. SkyCare learns your journey and stays with you from terminal entrance to final gate.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-large" href="#problem">Explore SkyCare <svg class="icon"><use href="#i-arrow-right"></use></svg></a>
-        <a class="btn btn-ghost btn-large" href="#promise">Our Promise</a>
+        <button class="btn btn-primary btn-lg" type="button" data-action="load-demo">
+          <svg class="icon"><use href="#i-play"></use></svg>Load Demo Trip
+        </button>
+        <a class="btn btn-ghost btn-lg" href="#how">How SkyCare Works</a>
       </div>
-      <p class="hero-note"><svg class="icon"><use href="#i-heart"></use></svg> Designed around the passenger, not just the flight.</p>
+      <p class="hero-statement">One trip. One assistant. Less confusion.</p>
     </div>
 
-    <!-- Boarding pass style card (decorative, built with HTML and CSS) -->
-    <div class="hero-card" aria-label="Sample SkyCare boarding pass">
-      <div class="pass-top">
-        <span class="pass-brand">SKYCARE</span>
-        <span class="pass-status"><span class="live-dot"></span> Proactive Care On</span>
+    <!-- Live journey card (updates when the demo trip loads) -->
+    <aside class="hero-card glass reveal" aria-live="polite">
+      <div class="hc-head">
+        <span class="tag tag-demo">Prototype</span>
+        <span class="hc-status" id="heroStatus">Waiting for trip</span>
       </div>
-      <div class="pass-route">
-        <div><span class="pass-code">FLL</span><span class="pass-city">Fort Lauderdale</span></div>
-        <svg class="icon pass-plane" aria-hidden="true"><use href="#i-plane"></use></svg>
-        <div class="text-right"><span class="pass-code">JFK</span><span class="pass-city">New York</span></div>
+      <div class="hc-route">
+        <div><strong>FLL</strong><small>Fort Lauderdale</small></div>
+        <div class="hc-line"><span></span></div>
+        <div><strong>IST</strong><small>Istanbul</small></div>
+        <div class="hc-line"><span></span></div>
+        <div><strong>DXB</strong><small>Dubai</small></div>
       </div>
-      <dl class="pass-details">
-        <div><dt>Flight</dt><dd>SC218</dd></div>
-        <div><dt>Gate</dt><dd>C7</dd></div>
-        <div><dt>Boarding</dt><dd>10:35 AM</dd></div>
-        <div><dt>Seat</dt><dd>14A</dd></div>
-      </dl>
-      <ul class="pass-alerts">
-        <li><svg class="icon"><use href="#i-check"></use></svg> Bag tracked and loaded</li>
-        <li><svg class="icon"><use href="#i-check"></use></svg> Gate updates turned on</li>
-        <li><svg class="icon"><use href="#i-check"></use></svg> A real person is one tap away</li>
+      <ul class="hc-feed" id="heroFeed">
+        <li><svg class="icon"><use href="#i-ticket"></use></svg>Import a boarding pass or reservation</li>
+        <li><svg class="icon"><use href="#i-map"></use></svg>Airport maps prepared for each stop</li>
+        <li><svg class="icon"><use href="#i-sparkle"></use></svg>Sky watches the clock so you do not have to</li>
+      </ul>
+    </aside>
+  </div>
+  <a class="scroll-cue" href="#problem" aria-label="Scroll to the customer problem"><span></span></a>
+</section>
+
+<!-- =====================================================
+     1. THE CUSTOMER PROBLEM
+     ===================================================== -->
+<section class="section" id="problem" data-title="The Problem">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">01 · The customer problem</p>
+      <h2>Airports Have Information. Passengers Still Get Lost.</h2>
+      <p class="lede">A single connection can mean checking a dozen separate systems. Each one works. Together, they leave the passenger to connect the dots under time pressure.</p>
+    </header>
+
+    <div class="frag reveal" id="fragStage" data-state="scattered">
+      <svg class="frag-lines" id="fragLines" aria-hidden="true"></svg>
+      <div class="frag-hub" id="fragHub">
+        <div class="frag-hub-q" aria-hidden="true">?</div>
+        <div class="frag-hub-sc">
+          <svg class="icon"><use href="#i-nav"></use></svg>
+          <strong>SkyCare</strong><span>Navigator</span>
+        </div>
+      </div>
+      <ul class="frag-chips" id="fragChips">
+        <li>Airline app</li><li>Boarding pass</li><li>Airport map</li><li>Departure boards</li>
+        <li>Baggage screens</li><li>Airport signs</li><li>Restaurant directory</li><li>Translation app</li>
+        <li>Accessibility service</li><li>Information desk</li><li>Emergency numbers</li><li>Airline customer service</li>
       </ul>
     </div>
-  </div>
 
-  <a class="scroll-cue" href="#problem" aria-label="Scroll to the next section"><span></span></a>
-</section>
-
-<!-- =====================================================
-     SECTION 2: THE PROBLEM
-     ===================================================== -->
-<section class="section section-light" id="problem" data-title="The Problem">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow">01 &middot; The Problem</p>
-      <h2>Flying Shouldn&rsquo;t Be the Most Stressful Part of Traveling.</h2>
-      <p class="lead">Most airline frustration is not caused by the flight itself. It comes from how passengers are treated when something changes.</p>
-      <p class="ask"><svg class="icon"><use href="#i-users"></use></svg><span><strong>Ask the room:</strong> Raise your hand if you have ever stood in a rebooking line after a delay or cancellation.</span></p>
-    </header>
-
-    <ul class="chip-grid reveal" aria-label="Common causes of dissatisfaction">
-      <li class="chip chip-warn">Poor communication</li>
-      <li class="chip chip-warn">Long customer service lines</li>
-      <li class="chip chip-warn">Confusing disruption procedures</li>
-      <li class="chip chip-warn">Lack of transparency</li>
-      <li class="chip chip-warn">Hard to reach a real person</li>
-      <li class="chip chip-warn">Baggage uncertainty</li>
-      <li class="chip chip-warn">Repeating the story to every agent</li>
-      <li class="chip chip-warn">Inconsistent service recovery</li>
-    </ul>
-
-    <div class="flow-compare">
-      <div class="flow-card flow-bad reveal">
-        <h3><svg class="icon"><use href="#i-x"></use></svg> The Typical Travel Experience</h3>
-        <ol class="flow">
-          <li>Delay</li>
-          <li>Little information</li>
-          <li>Passenger confusion</li>
-          <li>Long line</li>
-          <li>Repeated explanations</li>
-          <li class="flow-end">Frustration</li>
-        </ol>
-      </div>
-      <div class="flow-card flow-good reveal">
-        <h3><svg class="icon"><use href="#i-check"></use></svg> The SkyCare Model</h3>
-        <ol class="flow">
-          <li>Issue detected</li>
-          <li>Passenger notified</li>
-          <li>Cause explained</li>
-          <li>Options provided</li>
-          <li>Rebooking assisted</li>
-          <li class="flow-end">Follow-up completed</li>
-        </ol>
-      </div>
+    <div class="frag-controls reveal">
+      <button class="btn btn-primary" type="button" id="fragBtn"><svg class="icon"><use href="#i-sparkle"></use></svg>Connect them with SkyCare</button>
+      <p class="frag-caption" id="fragCaption">Today: twelve disconnected sources, one stressed passenger.</p>
     </div>
 
-    <blockquote class="callout reveal">
-      <p>Customers do not expect airlines to control everything. They expect airlines to communicate clearly, respect their time, and take responsibility when problems occur.</p>
+    <blockquote class="statement reveal">
+      <p>The information exists. The problem is that the passenger has to <em>find it</em>, <em>understand it</em>, and <em>decide what to do next</em>.</p>
+      <footer>That is the customer-service problem SkyCare solves.</footer>
     </blockquote>
   </div>
 </section>
 
 <!-- =====================================================
-     SECTION 3: PHILOSOPHY / THE SKYCARE PROMISE
+     HOW IT WORKS
      ===================================================== -->
-<section class="section" id="promise" data-title="Our Promise">
+<section class="section section-alt" id="how" data-title="How It Works">
   <div class="container">
     <header class="section-head reveal">
-      <p class="eyebrow">02 &middot; Our Customer Service Philosophy</p>
-      <h2>The SkyCare Promise</h2>
-      <p class="lead">Four commitments guide every decision, from the booking page to the baggage claim.</p>
+      <p class="kicker">How SkyCare works</p>
+      <h2>The passenger should not have to figure out where to go, who to ask, or what to do next.</h2>
     </header>
-
-    <div class="pillar-grid">
-      <article class="pillar reveal">
-        <span class="pillar-num">1</span>
-        <div class="icon-badge"><svg class="icon"><use href="#i-bell"></use></svg></div>
-        <h3>Communicate</h3>
-        <p>Tell passengers what is happening before they have to ask.</p>
-      </article>
-      <article class="pillar reveal">
-        <span class="pillar-num">2</span>
-        <div class="icon-badge"><svg class="icon"><use href="#i-sliders"></use></svg></div>
-        <h3>Empower</h3>
-        <p>Give customers control over simple travel decisions.</p>
-      </article>
-      <article class="pillar reveal">
-        <span class="pillar-num">3</span>
-        <div class="icon-badge"><svg class="icon"><use href="#i-heart"></use></svg></div>
-        <h3>Care</h3>
-        <p>Treat passengers like people, not reservation numbers.</p>
-      </article>
-      <article class="pillar reveal">
-        <span class="pillar-num">4</span>
-        <div class="icon-badge"><svg class="icon"><use href="#i-refresh"></use></svg></div>
-        <h3>Recover</h3>
-        <p>When something goes wrong, respond quickly and responsibly.</p>
-      </article>
-    </div>
-
-    <p class="statement reveal">At SkyCare, customer service is not a department. <strong>It is part of the operating model.</strong></p>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 4: PASSENGER JOURNEY (interactive tabs)
-     ===================================================== -->
-<section class="section section-navy" id="journey" data-title="Passenger Journey">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow eyebrow-light">03 &middot; The SkyCare Passenger Journey</p>
-      <h2>Care at Every Stage of the Trip</h2>
-      <p class="lead">Select a stage to see what SkyCare does for the passenger at that moment.</p>
-    </header>
-
-    <div class="journey reveal">
-      <div class="journey-track" role="tablist" aria-label="Passenger journey stages" data-tabs="journey">
-        <div class="journey-line" aria-hidden="true"><span id="journeyFill"></span></div>
-        <button class="journey-stop" role="tab" id="tab-book" aria-controls="journeyPanel" aria-selected="true" data-stage="0">
-          <span class="stop-dot"><svg class="icon"><use href="#i-ticket"></use></svg></span><span class="stop-label">Book</span>
-        </button>
-        <button class="journey-stop" role="tab" id="tab-checkin" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="1">
-          <span class="stop-dot"><svg class="icon"><use href="#i-phone"></use></svg></span><span class="stop-label">Check-In</span>
-        </button>
-        <button class="journey-stop" role="tab" id="tab-airport" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="2">
-          <span class="stop-dot"><svg class="icon"><use href="#i-door"></use></svg></span><span class="stop-label">Airport</span>
-        </button>
-        <button class="journey-stop" role="tab" id="tab-board" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="3">
-          <span class="stop-dot"><svg class="icon"><use href="#i-users"></use></svg></span><span class="stop-label">Board</span>
-        </button>
-        <button class="journey-stop" role="tab" id="tab-fly" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="4">
-          <span class="stop-dot"><svg class="icon"><use href="#i-plane"></use></svg></span><span class="stop-label">Fly</span>
-        </button>
-        <button class="journey-stop" role="tab" id="tab-arrive" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="5">
-          <span class="stop-dot"><svg class="icon"><use href="#i-pin"></use></svg></span><span class="stop-label">Arrive</span>
-        </button>
-      </div>
-
-      <!-- The text in this panel is filled in by script.js (see "journeyStages"). -->
-      <div class="journey-panel" id="journeyPanel" role="tabpanel" aria-labelledby="tab-book" tabindex="0">
-        <div class="journey-panel-head">
-          <span class="journey-step" id="journeyStep">Stage 1 of 6</span>
-          <h3 id="journeyTitle">Book</h3>
-          <p id="journeyIntro">Clear choices from the very first click.</p>
-        </div>
-        <ul class="check-list check-list-light" id="journeyList">
-          <li>Clear pricing</li>
-          <li>No confusing charges</li>
-          <li>Saved passenger preferences</li>
-          <li>Accessibility requests</li>
-          <li>Multilingual assistance</li>
-          <li>Simple itinerary management</li>
-        </ul>
-      </div>
-      <p class="hint">Tip: click a stage, or use the left and right arrow keys once a stage is selected.</p>
-      <p class="evidence evidence-light"><svg class="icon"><use href="#i-book"></use></svg>Why every stage matters: satisfaction, value, and airline image each shape whether passengers fly again (Park et al., 2004).</p>
-    </div>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 5: AIRPORT EXPERIENCE
-     ===================================================== -->
-<section class="section section-light" id="airport" data-title="Airport Experience">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow">04 &middot; The SkyCare Airport Experience</p>
-      <h2>Your Airport Experience Should Start With Confidence.</h2>
-    </header>
-
-    <div class="feature-grid wayfinding">
-      <article class="feature-card reveal">
-        <div class="sign"><svg class="icon"><use href="#i-phone"></use></svg><h3>Smart Check-In</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
-        <ul class="check-list">
-          <li>Digital check-in</li>
-          <li>Mobile boarding pass</li>
-          <li>Saved preferences</li>
-          <li>Baggage tracking</li>
-        </ul>
-      </article>
-      <article class="feature-card reveal">
-        <div class="sign"><svg class="icon"><use href="#i-headset"></use></svg><h3>Real Human Help</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
-        <ul class="check-list">
-          <li>Trained customer service employees</li>
-          <li>Quick assistance</li>
-          <li>Multilingual support</li>
-          <li>Accessibility support</li>
-        </ul>
-      </article>
-      <article class="feature-card reveal">
-        <div class="sign"><svg class="icon"><use href="#i-bell"></use></svg><h3>Real-Time Info</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
-        <ul class="check-list">
-          <li>Gate updates</li>
-          <li>Boarding alerts</li>
-          <li>Delay notifications</li>
-          <li>Connection monitoring</li>
-        </ul>
-      </article>
-      <article class="feature-card reveal">
-        <div class="sign"><svg class="icon"><use href="#i-sliders"></use></svg><h3>Customer Control</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
-        <ul class="check-list">
-          <li>Change seats</li>
-          <li>Modify your trip</li>
-          <li>Rebook when possible</li>
-          <li>Request support</li>
-        </ul>
-      </article>
-    </div>
-
-    <blockquote class="callout reveal">
-      <p>Technology should reduce stress, not create another obstacle.</p>
-    </blockquote>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 6: CABIN EXPERIENCE
-     ===================================================== -->
-<section class="section" id="cabin" data-title="Cabin Experience">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow">05 &middot; The SkyCare Cabin Experience</p>
-      <h2>Comfort Isn&rsquo;t Only About the Seat.</h2>
-    </header>
-
-    <div class="cabin-grid">
-      <article class="cabin-card reveal">
-        <div class="cabin-top cabin-comfort">
-          <svg class="icon"><use href="#i-cabin"></use></svg>
-          <h3>Comfort</h3>
-        </div>
-        <ul class="check-list">
-          <li>Clean aircraft</li>
-          <li>Organized boarding</li>
-          <li>Personal space awareness</li>
-          <li>Calm cabin environment</li>
-        </ul>
-      </article>
-      <article class="cabin-card reveal">
-        <div class="cabin-top cabin-connect">
-          <svg class="icon"><use href="#i-wifi"></use></svg>
-          <h3>Connectivity</h3>
-        </div>
-        <ul class="check-list">
-          <li>Live flight information</li>
-          <li>Entertainment</li>
-          <li>Messaging where available</li>
-          <li>Connection updates before landing</li>
-        </ul>
-      </article>
-      <article class="cabin-card reveal">
-        <div class="cabin-top cabin-hosp">
-          <svg class="icon"><use href="#i-heart"></use></svg>
-          <h3>Hospitality</h3>
-        </div>
-        <ul class="check-list">
-          <li>Professional cabin crew</li>
-          <li>Respectful service</li>
-          <li>Proactive assistance</li>
-          <li>Cultural awareness</li>
-          <li>Special-needs support</li>
-        </ul>
-      </article>
-    </div>
-
-    <p class="statement reveal">Great inflight service combines <strong>efficiency</strong> with <strong>human attention</strong>.</p>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 7: SERVICE RECOVERY (interactive scenarios)
-     ===================================================== -->
-<section class="section section-navy" id="recovery" data-title="Service Recovery">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow eyebrow-light">06 &middot; Service Recovery</p>
-      <h2>When Travel Doesn&rsquo;t Go as Planned</h2>
-      <p class="lead">Choose a situation, then watch how SkyCare responds.</p>
-    </header>
-
-    <div class="recovery reveal">
-      <div class="scenario-tabs" role="tablist" aria-label="Disruption scenarios" data-tabs="scenario">
-        <button class="scenario-tab" role="tab" aria-selected="true" aria-controls="scenarioPanel" data-scenario="delay">3-Hour Delay</button>
-        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="cancel">Cancellation</button>
-        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="missed">Missed Connection</button>
-        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="delayedBag">Delayed Baggage</button>
-        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="damagedBag">Damaged Baggage</button>
-      </div>
-
-      <div class="scenario-panel" id="scenarioPanel" role="tabpanel">
-        <div class="alert-card">
-          <div class="alert-icon"><svg class="icon"><use href="#i-alert"></use></svg></div>
-          <div>
-            <p class="alert-label">SkyCare Alert &middot; Flight SC218</p>
-            <p class="alert-text" id="scenarioText">Your flight has been delayed by 3 hours.</p>
-          </div>
-        </div>
-
-        <button class="btn btn-gold btn-large" id="respondBtn" type="button">
-          <svg class="icon"><use href="#i-play"></use></svg> <span id="respondLabel">See How SkyCare Responds</span>
-        </button>
-
-        <!-- Steps are added here by script.js (see "scenarios"). -->
-        <ol class="response-steps" id="responseSteps" aria-live="polite"></ol>
-      </div>
-    </div>
-
-    <blockquote class="callout callout-dark reveal">
-      <p>The passenger should not have to discover the solution. <strong>SkyCare brings the solution to the passenger.</strong></p>
-    </blockquote>
-    <p class="evidence evidence-light reveal"><svg class="icon"><use href="#i-book"></use></svg>A field study of passengers during real flight delays found that fair treatment and passengers&rsquo; emotions shaped recovery satisfaction, trust, and repurchase intentions (Wen &amp; Chi, 2013).</p>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 8: TECHNOLOGY + PEOPLE
-     ===================================================== -->
-<section class="section section-light" id="technology" data-title="Technology + People">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow">07 &middot; Technology + People</p>
-      <h2>Technology When It&rsquo;s Convenient. People When It Matters.</h2>
-    </header>
-
-    <div class="tech-layout">
-      <article class="split-card split-digital reveal">
-        <h3><svg class="icon"><use href="#i-sparkle"></use></svg> SkyCare Digital</h3>
-        <ul class="check-list">
-          <li>Automated rebooking</li>
-          <li>Mobile boarding</li>
-          <li>Baggage tracking</li>
-          <li>Flight notifications</li>
-          <li>Self-service changes</li>
-          <li>AI-powered FAQ support</li>
-        </ul>
-      </article>
-
-      <!-- Phone mockup of the SkyCare app (built with HTML and CSS, no image needed) -->
-      <div class="phone-wrap reveal">
-        <div class="phone" aria-label="SkyCare mobile app demo">
-          <div class="phone-notch" aria-hidden="true"></div>
-          <div class="phone-screen">
-            <div class="app-bar">
-              <span class="app-logo">SKYCARE</span>
-              <span class="app-time" aria-hidden="true">9:41</span>
-            </div>
-            <div class="app-route">
-              <span>FLL</span>
-              <svg class="icon" aria-hidden="true"><use href="#i-plane"></use></svg>
-              <span>JFK</span>
-            </div>
-            <p class="app-flight">Flight SC218</p>
-            <div class="app-status"><span class="live-dot"></span> ON TIME</div>
-            <dl class="app-grid">
-              <div><dt>Gate</dt><dd>C7</dd></div>
-              <div><dt>Boarding</dt><dd>10:35 AM</dd></div>
-              <div class="app-bag"><dt>Bag</dt><dd>TRACKED <span aria-hidden="true">&#10003;</span></dd></div>
-            </dl>
-            <div class="app-buttons">
-              <button type="button" data-toast="Boarding pass ready. Show this at Gate C7."><svg class="icon"><use href="#i-ticket"></use></svg>Boarding Pass</button>
-              <button type="button" data-toast="Your bag was scanned onto SC218 at 9:12 AM."><svg class="icon"><use href="#i-bag"></use></svg>Track Bag</button>
-              <button type="button" data-toast="3 other flights today. Tap one to switch."><svg class="icon"><use href="#i-refresh"></use></svg>Change Flight</button>
-              <button type="button" data-toast="Hi, this is Maya from SkyCare. How can I help?"><svg class="icon"><use href="#i-chat"></use></svg>Chat With SkyCare</button>
-            </div>
-            <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
-          </div>
-        </div>
-        <p class="hint hint-dark">Try the app buttons.</p>
-      </div>
-
-      <article class="split-card split-people reveal">
-        <h3><svg class="icon"><use href="#i-users"></use></svg> SkyCare People</h3>
-        <ul class="check-list">
-          <li>Complex travel disruptions</li>
-          <li>Accessibility assistance</li>
-          <li>Family travel</li>
-          <li>Customer complaints</li>
-          <li>International travel questions</li>
-          <li>Emotional or difficult situations</li>
-        </ul>
-      </article>
-    </div>
-
-    <blockquote class="callout reveal">
-      <p>Technology should handle routine tasks so employees have more time for situations that require judgment, empathy, and problem-solving.</p>
-    </blockquote>
-    <p class="evidence reveal"><svg class="icon"><use href="#i-book"></use></svg>Passengers do not all want the same channel: frequent flyers tended to choose self check-in, while business passengers tended to choose the desk (Castillo-Manzano &amp; L&oacute;pez-Valpuesta, 2013).</p>
-  </div>
-</section>
-
-<!-- =====================================================
-     SECTION 9: OUR PEOPLE / SERVICE STANDARD
-     ===================================================== -->
-<section class="section" id="people" data-title="Our People">
-  <div class="container">
-    <header class="section-head reveal">
-      <p class="eyebrow">08 &middot; Our People</p>
-      <h2>Great Customer Service Starts Before the Passenger Arrives.</h2>
-      <p class="lead">Every SkyCare employee follows one simple model: <strong>The SkyCare Service Standard.</strong></p>
-    </header>
-
-    <ol class="standard">
-      <li class="standard-step reveal">
-        <div class="standard-icon"><svg class="icon"><use href="#i-headset"></use></svg></div>
-        <h3>Listen</h3>
-        <p>Understand the passenger.</p>
-      </li>
-      <li class="standard-step reveal">
-        <div class="standard-icon"><svg class="icon"><use href="#i-shield"></use></svg></div>
-        <h3>Own</h3>
-        <p>Take responsibility for helping solve the problem.</p>
-      </li>
-      <li class="standard-step reveal">
-        <div class="standard-icon"><svg class="icon"><use href="#i-wrench"></use></svg></div>
-        <h3>Solve</h3>
-        <p>Provide the best available solution.</p>
-      </li>
-      <li class="standard-step reveal">
-        <div class="standard-icon"><svg class="icon"><use href="#i-send"></use></svg></div>
-        <h3>Follow Up</h3>
-        <p>Make sure the passenger understands what happens next.</p>
-      </li>
+    <ol class="how-steps">
+      <li class="glass reveal"><span class="how-n">1</span><svg class="icon"><use href="#i-ticket"></use></svg><h3>Import the trip</h3><p>Boarding pass or reservation. SkyCare learns flights, gates, bags, and needs once.</p></li>
+      <li class="glass reveal"><span class="how-n">2</span><svg class="icon"><use href="#i-cpu"></use></svg><h3>Understand context</h3><p>Time left, distance, gate changes, accessibility, family, connectivity.</p></li>
+      <li class="glass reveal"><span class="how-n">3</span><svg class="icon"><use href="#i-nav"></use></svg><h3>Guide in the moment</h3><p>One next step at a time, with an AR-style route drawn on the floor.</p></li>
+      <li class="glass reveal"><span class="how-n">4</span><svg class="icon"><use href="#i-headset"></use></svg><h3>Hand off to people</h3><p>When judgment, care, or an emergency is involved, SkyCare gets you to the right human.</p></li>
     </ol>
-
-    <div class="training reveal">
-      <h3>Every employee is trained in:</h3>
-      <ul class="chip-grid chip-grid-tight">
-        <li class="chip">Communication</li>
-        <li class="chip">Conflict resolution</li>
-        <li class="chip">Cultural awareness</li>
-        <li class="chip">Accessibility</li>
-        <li class="chip">Service recovery</li>
-        <li class="chip">Professionalism</li>
-        <li class="chip">Passenger empathy</li>
-        <li class="chip">Airport operations awareness</li>
-      </ul>
-    </div>
-
-    <blockquote class="callout reveal">
-      <p>Employees should not simply redirect the passenger. <strong>The first employee contacted should help move the problem toward a solution.</strong></p>
-    </blockquote>
+    <p class="core-quote reveal">Great customer service is not only solving problems after they happen. It is reducing confusion <strong>before</strong> the passenger needs to ask for help.</p>
   </div>
 </section>
 
 <!-- =====================================================
-     SECTION 10: ACCOUNTABILITY (critical thinking: limits, commitments, measures)
+     2. START WITH YOUR JOURNEY (trip import)
      ===================================================== -->
-<section class="section section-light" id="accountability" data-title="Accountability">
+<section class="section" id="trip" data-title="Load the Journey">
   <div class="container">
     <header class="section-head reveal">
-      <p class="eyebrow">09 &middot; Accountability</p>
-      <h2>We Can&rsquo;t Control the Weather. We Can Control How We Respond.</h2>
+      <p class="kicker">02 · Start with your journey</p>
+      <h2>Start With Your Journey</h2>
+      <p class="lede">One import, and SkyCare understands every airport, gate, time, and bag on the trip.</p>
     </header>
 
-    <div class="control-split reveal">
-      <div class="control-col control-out">
-        <h3>Outside any airline&rsquo;s control</h3>
-        <ul>
-          <li>Severe weather</li>
-          <li>Air traffic control restrictions</li>
-          <li>Security screening wait times</li>
-          <li>Airport construction and gate limits</li>
-        </ul>
-      </div>
-      <div class="control-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow-right"></use></svg></div>
-      <div class="control-col control-in">
-        <h3>Always in SkyCare&rsquo;s control</h3>
-        <ul>
-          <li>How fast we tell you</li>
-          <li>How clearly we explain why</li>
-          <li>Which options we offer</li>
-          <li>How we treat you</li>
-          <li>Whether we follow up</li>
-        </ul>
-      </div>
-    </div>
+    <div class="import-grid">
+      <div class="import-panel glass reveal">
+        <div class="import-actions">
+          <label class="import-btn" for="passFile">
+            <svg class="icon"><use href="#i-upload"></use></svg>
+            <span><strong>Upload Boarding Pass</strong><small>Image or PDF · simulated scan</small></span>
+          </label>
+          <input type="file" id="passFile" accept="image/*,.pdf" class="visually-hidden">
+          <button class="import-btn" type="button" id="importResBtn">
+            <svg class="icon"><use href="#i-import"></use></svg>
+            <span><strong>Import Reservation</strong><small>Booking code · simulated lookup</small></span>
+          </button>
+          <button class="import-btn import-btn-primary" type="button" data-action="load-demo">
+            <svg class="icon"><use href="#i-play"></use></svg>
+            <span><strong>Load Demo Trip</strong><small>FLL → IST → DXB</small></span>
+          </button>
+        </div>
 
-    <div class="commit-block reveal">
-      <p class="commit-label">SkyCare Service Commitments <span>(concept targets for this proposal)</span></p>
-      <ul class="commit-grid">
-        <li><span class="commit-num">15<small>min</small></span><span>Disruption alert after a schedule change is confirmed</span></li>
-        <li><span class="commit-num">1<small>agent</small></span><span>One person owns your case until it is solved</span></li>
-        <li><span class="commit-num">0<small>lines</small></span><span>Rebooking options reach your phone before you reach a counter</span></li>
-        <li><span class="commit-num">24<small>hrs</small></span><span>Personal follow-up after every disruption</span></li>
-      </ul>
-    </div>
+        <form class="res-form" id="resForm" hidden>
+          <label>Booking reference<input type="text" id="resCode" value="SKY7Q2" maxlength="8" autocomplete="off"></label>
+          <label>Last name<input type="text" id="resName" value="Traveler" autocomplete="off"></label>
+          <button class="btn btn-primary" type="submit">Find trip</button>
+        </form>
 
-    <div class="accountability-foot reveal">
-      <div class="floor">
-        <h3><svg class="icon"><use href="#i-shield"></use></svg> Regulations are the floor, not the goal</h3>
-        <p>U.S. DOT rules require refunds when a flight is canceled or significantly changed (for example, a domestic schedule change of more than 3 hours) and a refund of bag fees when checked bags are significantly delayed (U.S. Department of Transportation, 2024). SkyCare treats these as the minimum and acts before the passenger has to ask.</p>
+        <div class="scan" id="scanBox" aria-live="polite">
+          <div class="scan-visual" aria-hidden="true">
+            <div class="scan-pass">
+              <span class="sp-a">FLL</span><span class="sp-plane">✈</span><span class="sp-b">DXB</span>
+              <span class="sp-bar"></span>
+            </div>
+            <div class="scan-beam"></div>
+          </div>
+          <ol class="scan-steps" id="scanSteps">
+            <li>Scanning boarding pass…</li>
+            <li>Reading itinerary…</li>
+            <li>Finding airport maps…</li>
+            <li>Checking connection…</li>
+            <li>Loading traveler preferences…</li>
+          </ol>
+        </div>
+
+        <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>Prototype demonstration. Uploaded files are not read or sent anywhere; every import method loads the same demo trip. Production deployment would connect to supported airline and airport systems.</p>
       </div>
-      <div class="measures">
-        <h3><svg class="icon"><use href="#i-clock"></use></svg> How we measure success</h3>
-        <ul class="chip-grid chip-grid-tight">
-          <li class="chip">Time to first alert</li>
-          <li class="chip">First-contact resolution</li>
-          <li class="chip">Rebooking acceptance</li>
-          <li class="chip">Recovery satisfaction</li>
-          <li class="chip">Repeat bookings</li>
-        </ul>
-        <p class="measures-note">Service pays for itself: satisfaction and perceived value drive repeat travel (Chen, 2008; Park et al., 2004).</p>
+
+      <div class="itinerary glass reveal" id="itinerary" data-loaded="false">
+        <div class="itin-empty">
+          <svg class="icon"><use href="#i-plane"></use></svg>
+          <p>No trip loaded yet.</p>
+          <button class="btn btn-ghost" type="button" data-action="load-demo">Load Demo Trip</button>
+        </div>
+        <div class="itin-full">
+          <div class="itin-head">
+            <div>
+              <span class="tag tag-demo">Demo trip</span>
+              <h3 id="itinPassenger">Demo Traveler</h3>
+              <p class="muted"><span id="itinCarrier">Demo Air</span> · fictional carrier · Ref <span class="mono" id="itinRef">SKY7Q2</span></p>
+            </div>
+            <div class="ready-badge"><svg class="icon"><use href="#i-check"></use></svg>SkyCare is ready.</div>
+          </div>
+          <div class="itin-body" id="itinBody"><!-- filled by script.js --></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- =====================================================
-     SECTION 11: WHY CHOOSE SKYCARE (departure board)
+     TRIP DASHBOARD (My Trip) + SMART CONTEXT ENGINE
+     ===================================================== -->
+<section class="section section-alt" id="dashboard" data-title="My Trip Dashboard">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">My Trip · Smart context engine</p>
+      <h2>One Screen. The Next Right Action.</h2>
+      <p class="lede">Pick a moment in the journey. SkyCare's advice changes with the clock, the gate, and the passenger.</p>
+    </header>
+
+    <div class="clock-bar reveal" role="group" aria-label="Demo moment in the journey">
+      <span class="clock-label"><svg class="icon"><use href="#i-clock"></use></svg>Demo clock · IST local</span>
+      <div class="clock-chips" id="clockChips"><!-- filled by script.js --></div>
+    </div>
+
+    <div class="dash glass reveal" id="dash">
+      <div class="dash-top">
+        <div class="dash-brand"><strong>SKYCARE NAVIGATOR</strong><span class="mono">FLL → IST → DXB</span></div>
+        <div class="dash-mode" id="dashMode">Relaxed</div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-next">
+          <p class="dash-label">Next action</p>
+          <p class="dash-action" id="dashAction">Proceed to Gate B18</p>
+          <div class="dash-metrics">
+            <div><strong id="dashWalk">6</strong><span>min walk</span></div>
+            <div><strong id="dashCloses">90</strong><span>min until boarding closes</span></div>
+            <div><strong id="dashSlack">84</strong><span>min to spare</span></div>
+          </div>
+        </div>
+        <ul class="dash-status">
+          <li><span>Status</span><strong id="dashStatus" class="ok">Connection safe</strong></li>
+          <li><span>Baggage</span><strong id="dashBag">Transferred</strong></li>
+          <li><span>Assistance</span><strong id="dashAssist">None requested</strong></li>
+          <li><span>Connectivity</span><strong id="dashConn">Offline airport pack downloaded</strong></li>
+        </ul>
+      </div>
+      <div class="dash-why" id="dashWhy"><!-- explanation from the context engine --></div>
+      <div class="dash-actions">
+        <a class="btn btn-primary" href="#navigate"><svg class="icon"><use href="#i-nav"></use></svg>Navigate</a>
+        <a class="btn btn-ghost" href="#ask"><svg class="icon"><use href="#i-chat"></use></svg>Ask Sky</a>
+        <a class="btn btn-ghost" href="#trip"><svg class="icon"><use href="#i-ticket"></use></svg>My Trip</a>
+        <a class="btn btn-ghost" href="#help"><svg class="icon"><use href="#i-life"></use></svg>Help</a>
+        <a class="btn btn-ghost" href="#map"><svg class="icon"><use href="#i-map"></use></svg>Map</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     PROFILE (saved preferences feed the context engine)
+     ===================================================== -->
+<section class="section" id="profile" data-title="Traveler Profile">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Profile · Saved once, used everywhere</p>
+      <h2>Tell SkyCare Once.</h2>
+      <p class="lede">Preferences follow the passenger through every airport. Change one below and watch Sky, the route, and the phrase book adapt.</p>
+    </header>
+    <div class="profile-grid reveal">
+      <div class="glass profile-card">
+        <div class="pc-avatar"><svg class="icon"><use href="#i-user"></use></svg></div>
+        <div><strong>Demo Traveler</strong><p class="muted">Languages: English, Arabic</p></div>
+      </div>
+      <fieldset class="glass pref">
+        <legend>Accessibility</legend>
+        <label class="switch"><input type="checkbox" id="prefAccess"><span></span>Step-free routes + wheelchair assistance</label>
+      </fieldset>
+      <fieldset class="glass pref">
+        <legend>Meal preference</legend>
+        <select id="prefMeal" aria-label="Meal preference">
+          <option value="halal" selected>Halal</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="none">No preference</option>
+        </select>
+      </fieldset>
+      <fieldset class="glass pref">
+        <legend>Traveling with</legend>
+        <select id="prefGroup" aria-label="Traveling with">
+          <option value="solo" selected>Solo</option>
+          <option value="family">Family group</option>
+        </select>
+      </fieldset>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     4 + 5. AR NAVIGATION + LIVE GATE CHANGE (flagship)
+     ===================================================== -->
+<section class="section section-ar" id="navigate" data-title="AR Navigation">
+  <div class="container ar-layout">
+    <div class="ar-copy">
+      <header class="section-head reveal">
+        <p class="kicker">04 · Flagship feature · AR-style navigation</p>
+        <h2>Stop Reading the Airport. Let the Airport Guide You.</h2>
+        <p class="lede">Hold up the phone. A green line on the floor leads to the gate, with only what matters floating nearby.</p>
+      </header>
+
+      <div class="ar-controls reveal">
+        <button class="btn btn-warn" type="button" id="gateChangeBtn"><svg class="icon"><use href="#i-alert"></use></svg>Simulate Gate Change</button>
+        <button class="btn btn-ghost" type="button" id="arAccessBtn" aria-pressed="false"><svg class="icon"><use href="#i-wheel"></use></svg>Accessible Route</button>
+        <button class="btn btn-ghost" type="button" id="cameraBtn"><svg class="icon"><use href="#i-camera"></use></svg>Use Camera Demo</button>
+        <button class="btn btn-ghost" type="button" id="arResetBtn">Reset</button>
+      </div>
+
+      <ol class="ar-log reveal" id="arLog" aria-live="polite">
+        <li>Route to <strong>Gate B18</strong> loaded. 6 min walk.</li>
+      </ol>
+
+      <div class="problem-solution reveal">
+        <div><span class="ps-label">Passenger problem</span><p>Signs are in another language, the terminal is huge, and the gate just changed.</p></div>
+        <div><span class="ps-label ps-sol">SkyCare solution</span><p>A single line to follow. Turns shown before they happen. Changes handled automatically.</p></div>
+      </div>
+
+      <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>Simulated view. Indoor positioning is not live in this prototype. A production SkyCare system would use participating airport indoor maps, positioning infrastructure, airline gate data, and device sensors.</p>
+    </div>
+
+    <div class="phone phone-ar reveal" id="arPhone">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="ar-screen" id="arScreen" data-route="B18">
+          <video id="arVideo" playsinline muted aria-hidden="true"></video>
+
+          <!-- Simulated terminal (CSS 3D corridor) -->
+          <div class="ar-world" aria-hidden="true">
+            <div class="ar-corridor">
+              <div class="ar-ceiling"></div>
+              <div class="ar-wall ar-wall-l">
+                <div class="ar-store" style="--d:18%">DUTY FREE</div>
+                <div class="ar-store ar-store-lift" style="--d:52%">⇅ ELEVATOR E2</div>
+                <div class="ar-store" style="--d:78%">CAFÉ</div>
+              </div>
+              <div class="ar-wall ar-wall-r">
+                <div class="ar-store" style="--d:22%">RESTROOM</div>
+                <div class="ar-door" style="--d:48%"><span>B18 →</span></div>
+                <div class="ar-store" style="--d:80%">GATES F1–F12</div>
+              </div>
+              <div class="ar-floor">
+                <svg class="ar-route" viewBox="0 0 260 1400" preserveAspectRatio="none">
+                  <path class="rt rt-old" id="rtOld" d="M130 1400 V 700 H 262"/>
+                  <path class="rt rt-b18" d="M130 1400 V 700 H 262"/>
+                  <path class="rt rt-f7" d="M130 1400 V -10"/>
+                  <path class="rt rt-acc" d="M130 1400 V 1120 Q 130 1000 60 980 H -4"/>
+                  <path class="rt-flow rt-b18" d="M130 1400 V 700 H 262"/>
+                  <path class="rt-flow rt-f7" d="M130 1400 V -10"/>
+                  <path class="rt-flow rt-acc" d="M130 1400 V 1120 Q 130 1000 60 980 H -4"/>
+                </svg>
+              </div>
+              <div class="ar-endwall"><span>GATES F1–F12 ↑</span></div>
+            </div>
+          </div>
+
+          <!-- HUD -->
+          <div class="ar-hud">
+            <div class="ar-top">
+              <div class="ar-instr" id="arInstr"><span class="ar-arrow" id="arArrow">↑</span><div><strong id="arInstrText">CONTINUE STRAIGHT</strong><small id="arInstrSub">then turn right in 120 ft</small></div></div>
+            </div>
+            <div class="ar-poi ar-poi-l" id="poiRest"><svg class="icon"><use href="#i-restroom"></use></svg><div><strong>RESTROOM</strong><small>30 SEC LEFT</small></div></div>
+            <div class="ar-poi ar-poi-r" id="poiCoffee"><svg class="icon"><use href="#i-coffee"></use></svg><div><strong>COFFEE</strong><small>2 MIN RIGHT</small></div></div>
+            <div class="ar-poi ar-poi-l2" id="poiMed"><svg class="icon"><use href="#i-cross"></use></svg><div><strong>MEDICAL</strong><small>4 MIN</small></div></div>
+            <div class="ar-poi ar-poi-r2" id="poiLounge"><svg class="icon"><use href="#i-moon"></use></svg><div><strong>LOUNGE</strong><small>5 MIN</small></div></div>
+            <div class="ar-poi ar-poi-lift" id="poiLift"><svg class="icon"><use href="#i-elevator"></use></svg><div><strong>ELEVATOR</strong><small>40 FT LEFT</small></div></div>
+
+            <div class="ar-alert" id="arAlert" role="alert">
+              <svg class="icon"><use href="#i-alert"></use></svg>
+              <div><strong>WARNING · GATE CHANGED</strong><span class="mono">B18 → F7</span></div>
+            </div>
+            <div class="ar-recalc" id="arRecalc"><span class="spinner"></span>Recalculating route…</div>
+
+            <div class="ar-dest" id="arDest">
+              <div class="ar-dest-gate"><small>GATE</small><strong id="arGate">B18</strong></div>
+              <div class="ar-dest-time"><strong id="arMin">6</strong><small>MIN</small></div>
+              <div class="ar-dest-note" id="arNote">Boarding closes 7:22 PM</div>
+            </div>
+          </div>
+          <span class="ar-badge">SIMULATED · DEMO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     6. CONNECTION RUSH MODE
+     ===================================================== -->
+<section class="section" id="rush" data-title="Connection Rush Mode">
+  <div class="container rush-layout">
+    <div class="rush-copy">
+      <header class="section-head reveal">
+        <p class="kicker">05 · Connection Rush Mode</p>
+        <h2>Late Landing. Tight Connection. Zero Distractions.</h2>
+        <p class="lede">The passenger lands late in Istanbul. SkyCare notices before they ask and strips the app down to one job: getting them to the gate.</p>
+      </header>
+      <div class="rush-scenario glass reveal">
+        <div><span>Current time</span><strong class="mono" id="rsNow">7:04 PM</strong></div>
+        <div><span>Boarding closes</span><strong class="mono">7:22 PM</strong></div>
+        <div><span>Gate</span><strong class="mono" id="rsGate">F7</strong></div>
+        <div><span>Normal walk</span><strong class="mono">13 min</strong></div>
+      </div>
+      <div class="rush-buttons reveal">
+        <button class="btn btn-warn" type="button" id="rushBtn"><svg class="icon"><use href="#i-bolt"></use></svg>Simulate Late Arrival (7:04 PM)</button>
+        <button class="btn btn-ghost" type="button" id="rushRiskBtn">Very Late (7:14 PM)</button>
+        <button class="btn btn-ghost" type="button" id="rushResetBtn">Normal</button>
+      </div>
+      <p class="core-quote small reveal">The app changes based on what the passenger needs right now.</p>
+    </div>
+
+    <div class="phone phone-rush reveal">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="rush-screen" id="rushScreen" data-mode="normal">
+          <div class="rs-status"><span class="mono" id="rsClock">5:52 PM</span><span>IST · Transfer</span></div>
+
+          <div class="rs-normal">
+            <p class="rs-hello">Welcome to Istanbul</p>
+            <div class="rs-card rs-gatecard"><small>Next flight · DA 762 to DXB</small><strong>Gate <span id="rsNormGate">B18</span></strong><span class="rs-closes">Boarding closes 7:22 PM · 90 min</span></div>
+            <p class="rs-sub">You have time for</p>
+            <div class="rs-extras">
+              <div class="rs-card"><svg class="icon"><use href="#i-food"></use></svg>Restaurants</div>
+              <div class="rs-card"><svg class="icon"><use href="#i-moon"></use></svg>Lounges</div>
+              <div class="rs-card"><svg class="icon"><use href="#i-bag"></use></svg>Duty-free shopping</div>
+              <div class="rs-card"><svg class="icon"><use href="#i-sparkle"></use></svg>Suggestions</div>
+            </div>
+          </div>
+
+          <div class="rs-rush">
+            <p class="rs-mode-tag"><svg class="icon"><use href="#i-bolt"></use></svg>CONNECTION RUSH MODE</p>
+            <p class="rs-fast">FASTEST ROUTE</p>
+            <p class="rs-gate">GATE F7</p>
+            <p class="rs-walk"><strong>11</strong> MINUTES</p>
+            <div class="rs-countdown"><span>BOARDING CLOSES IN</span><strong class="mono" id="rsCountdown">18:00</strong></div>
+            <p class="rs-msg" id="rsMsg">Keep moving. You can still reach the gate.</p>
+            <div class="rs-actions">
+              <a class="btn btn-primary" href="#navigate" id="rsNavigate">Navigate Now</a>
+              <a class="btn btn-ghost" href="#human" data-human="airline">Contact Airline</a>
+              <button class="btn btn-ghost" type="button" id="rsAltBtn">View Alternative</button>
+            </div>
+            <p class="rs-alt" id="rsAlt" hidden>If this connection is missed, the airline rebooks you. SkyCare shows where the Demo Air Transfer Desk is (2 min away) and what to ask for. Rebooking decisions stay with the airline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     3. ASK SKY (AI travel assistant, local simulation)
+     ===================================================== -->
+<section class="section section-alt" id="ask" data-title="Ask Sky">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">06 · AI travel assistant</p>
+      <h2>Ask Sky. It Already Knows Your Trip.</h2>
+      <p class="lede">Sky answers with your gate, your clock, and your needs in mind. It does not blindly answer questions; it checks whether the answer is safe for your connection.</p>
+    </header>
+
+    <div class="sky-layout">
+      <div class="sky-chat glass reveal">
+        <div class="sky-head">
+          <div class="sky-avatar"><svg class="icon"><use href="#i-sparkle"></use></svg></div>
+          <div><strong>Sky</strong><small>SkyCare AI · local demo assistant</small></div>
+          <span class="tag tag-demo">Simulated AI</span>
+        </div>
+        <div class="sky-log" id="skyLog" aria-live="polite"></div>
+        <div class="sky-suggest" id="skySuggest">
+          <button type="button">Where is my gate?</button>
+          <button type="button">I'm hungry.</button>
+          <button type="button">I want seafood.</button>
+          <button type="button">Where is the bathroom?</button>
+          <button type="button">How long until boarding?</button>
+          <button type="button">Can I make my connection?</button>
+          <button type="button">My bag is missing.</button>
+          <button type="button">I need wheelchair assistance.</button>
+          <button type="button">I don't feel well.</button>
+          <button type="button">Where can I buy a SIM card?</button>
+          <button type="button">I want to meet my friend.</button>
+          <button type="button">What food is available on my flight?</button>
+        </div>
+        <form class="sky-input" id="skyForm">
+          <label for="skyText" class="visually-hidden">Message Sky</label>
+          <input type="text" id="skyText" placeholder="Ask Sky anything about your trip…" autocomplete="off">
+          <button class="btn btn-primary" type="submit" aria-label="Send"><svg class="icon"><use href="#i-send"></use></svg></button>
+        </form>
+      </div>
+
+      <aside class="sky-context glass reveal">
+        <p class="kicker">What Sky knows right now</p>
+        <ul class="ctx-list" id="ctxList"><!-- filled by script.js --></ul>
+        <p class="demo-note"><svg class="icon"><use href="#i-lock"></use></svg>No AI key is stored in this public site. Sky runs locally with prewritten responses and keyword detection. A production version would connect securely to an AI service through a protected backend.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     7. SMART DETOURS
+     ===================================================== -->
+<section class="section" id="detours" data-title="Smart Detours">
+  <div class="container detour-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">Smart detours · Conversational navigation</p>
+        <h2>"I'm Hungry. I Want Seafood."</h2>
+        <p class="lede">SkyCare checks what is open, near the current route, and realistic in the time left before answering.</p>
+      </header>
+      <div class="detour-chips reveal" id="detourChips">
+        <button type="button" data-detour="seafood"><svg class="icon"><use href="#i-food"></use></svg>Seafood</button>
+        <button type="button" data-detour="restroom"><svg class="icon"><use href="#i-restroom"></use></svg>Restroom</button>
+        <button type="button" data-detour="coffee"><svg class="icon"><use href="#i-coffee"></use></svg>Coffee</button>
+        <button type="button" data-detour="pharmacy"><svg class="icon"><use href="#i-cross"></use></svg>Pharmacy</button>
+        <button type="button" data-detour="charge"><svg class="icon"><use href="#i-bolt"></use></svg>Charge phone</button>
+        <button type="button" data-detour="halal"><svg class="icon"><use href="#i-food"></use></svg>Halal food</button>
+        <button type="button" data-detour="vegetarian"><svg class="icon"><use href="#i-food"></use></svg>Vegetarian</button>
+        <button type="button" data-detour="quiet"><svg class="icon"><use href="#i-moon"></use></svg>Quiet area</button>
+      </div>
+      <div class="detour-answer glass reveal" id="detourAnswer" aria-live="polite">
+        <p class="muted">Choose a request. Then try it again after switching the demo clock to <strong>7:04 PM</strong> on the dashboard.</p>
+      </div>
+    </div>
+    <div class="map-card glass reveal">
+      <div class="map-card-head"><strong>Route to <span id="detourGate">Gate F7</span></strong><span class="mono" id="detourEta">13 min</span></div>
+      <svg class="terminal-map" id="detourMap" viewBox="0 0 1000 560" role="img" aria-label="Demo terminal map showing the route and detour"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     8. I HAVE A PROBLEM
+     ===================================================== -->
+<section class="section section-alt" id="help" data-title="I Have a Problem">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">07 · Help routing</p>
+      <h2>What Happened?</h2>
+      <p class="lede">One tap. SkyCare understands the problem, knows where to go, takes you there, and tells you what to bring and what to say.</p>
+    </header>
+    <div class="help-grid reveal" id="helpGrid" role="group" aria-label="Choose a problem">
+      <button type="button" data-problem="bag"><svg class="icon"><use href="#i-bag"></use></svg>My bag is missing</button>
+      <button type="button" data-problem="missed"><svg class="icon"><use href="#i-plane"></use></svg>I missed my connection</button>
+      <button type="button" data-problem="airline"><svg class="icon"><use href="#i-headset"></use></svg>I need airline help</button>
+      <button type="button" data-problem="access"><svg class="icon"><use href="#i-wheel"></use></svg>I need accessibility help</button>
+      <button type="button" data-problem="unwell" class="help-urgent"><svg class="icon"><use href="#i-heart"></use></svg>I don't feel well</button>
+      <button type="button" data-problem="lostitem"><svg class="icon"><use href="#i-search"></use></svg>I lost something</button>
+      <button type="button" data-problem="lost"><svg class="icon"><use href="#i-pin"></use></svg>I'm lost</button>
+      <button type="button" data-problem="family" class="help-urgent"><svg class="icon"><use href="#i-family"></use></svg>My family member is missing</button>
+    </div>
+
+    <div class="help-detail glass" id="helpDetail" hidden aria-live="polite">
+      <div class="hd-main">
+        <div class="hd-head">
+          <span class="tag tag-demo">Demo</span>
+          <h3 id="hdTitle">My bag is missing</h3>
+        </div>
+        <div class="hd-knows" id="hdKnows"></div>
+        <ol class="hd-steps" id="hdSteps"></ol>
+        <div class="hd-actions">
+          <button class="btn btn-primary" type="button" id="hdNavigate"><svg class="icon"><use href="#i-nav"></use></svg>Navigate There</button>
+          <button class="btn btn-ghost" type="button" id="hdSay"><svg class="icon"><use href="#i-chat"></use></svg>What Should I Say?</button>
+        </div>
+        <div class="hd-say" id="hdSayBox" hidden></div>
+      </div>
+      <div class="hd-map">
+        <svg class="terminal-map" id="helpMap" viewBox="0 0 1000 560" role="img" aria-label="Demo terminal map showing where to go"></svg>
+        <p class="map-foot" id="hdWhere"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     9. MEDICAL / EMERGENCY ASSISTANCE
+     ===================================================== -->
+<section class="section section-medical" id="medical" data-title="Medical Assistance">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker kicker-red">Medical &amp; emergency assistance</p>
+      <h2>In an Emergency, No One Should Search a Directory.</h2>
+      <p class="lede">When a passenger says "I don't feel well," SkyCare puts medical help first and hides everything else.</p>
+    </header>
+    <div class="med-grid">
+      <div class="med-options reveal">
+        <button type="button" class="med-btn med-urgent" id="medUrgentBtn"><svg class="icon"><use href="#i-heart"></use></svg><span><strong>Airport Medical Assistance</strong><small>Request help to my location</small></span></button>
+        <button type="button" class="med-btn" data-med="emergency"><svg class="icon"><use href="#i-alert"></use></svg><span><strong>Emergency Services</strong><small>Local numbers, stored offline</small></span></button>
+        <button type="button" class="med-btn" data-med="medical"><svg class="icon"><use href="#i-cross"></use></svg><span><strong>Nearest Medical Location</strong><small>Medical Center · 5 min</small></span></button>
+        <button type="button" class="med-btn" data-med="aed"><svg class="icon"><use href="#i-bolt"></use></svg><span><strong>Nearest AED</strong><small>Defibrillator · 1 min</small></span></button>
+      </div>
+      <div class="med-panel glass reveal" id="medPanel" aria-live="assertive">
+        <span class="tag tag-sim">Prototype simulation · no one is contacted</span>
+        <div id="medContent">
+          <p class="muted">Select an option. In a real emergency, tell the nearest airport or airline employee immediately and call the local emergency number (112 in Türkiye).</p>
+        </div>
+      </div>
+    </div>
+    <p class="demo-note reveal"><svg class="icon"><use href="#i-info"></use></svg>This website never contacts emergency responders. In production, emergency and medical requests would require direct integration with participating airport authorities and emergency systems.</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     10. ACCESSIBILITY NAVIGATION
+     ===================================================== -->
+<section class="section" id="access" data-title="Accessibility">
+  <div class="container access-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">08 · Accessibility navigation</p>
+        <h2>Say It Once. Every Stage Already Knows.</h2>
+        <p class="lede">Accessible Route avoids stairs and prioritizes elevators, accessible restrooms, assistance desks, and wheelchair pickup points.</p>
+      </header>
+      <button class="btn btn-primary reveal" type="button" id="accessBtn" aria-pressed="false"><svg class="icon"><use href="#i-wheel"></use></svg><span>Turn On Accessible Route</span></button>
+      <div class="access-compare reveal">
+        <div class="glass"><span class="ps-label">Standard route</span><strong id="accStd">13 min</strong><small>Includes stairs at level change</small></div>
+        <div class="glass acc-good"><span class="ps-label ps-sol">Accessible route</span><strong id="accAcc">14 min</strong><small>Elevator E2 · step-free</small></div>
+      </div>
+      <p class="core-quote small reveal">The passenger should not have to explain the same need repeatedly at every stage.</p>
+    </div>
+
+    <div class="access-side">
+      <div class="timeline glass reveal" id="accTimeline" data-on="false">
+        <p class="kicker">Assistance requested</p>
+        <ol>
+          <li class="done"><span></span>Departure</li>
+          <li class="done"><span></span>Check-in</li>
+          <li class="done"><span></span>Gate</li>
+          <li><span></span>Boarding</li>
+          <li><span></span>Arrival</li>
+        </ol>
+        <p class="tl-off muted">Turn on Accessible Route to share the need with every stage.</p>
+      </div>
+      <div class="map-card glass reveal">
+        <svg class="terminal-map" id="accessMap" viewBox="0 0 1000 560" role="img" aria-label="Demo map comparing standard and accessible routes"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     11. FAMILY GUARDIAN
+     ===================================================== -->
+<section class="section section-alt" id="family" data-title="Family Guardian">
+  <div class="container family-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">Family Guardian · Inspired by a class scenario</p>
+        <h2>Tickets Bought Together. Seats Split Apart.</h2>
+        <p class="lede">An adult is traveling with two young children. The booking is together, but the seat assignments are not. SkyCare catches it before boarding, not at the aircraft door.</p>
+      </header>
+      <div class="fg-alert glass reveal" id="fgAlert" data-state="issue">
+        <div class="fg-issue">
+          <p class="fg-title"><svg class="icon"><use href="#i-alert"></use></svg>FAMILY SEATING ISSUE DETECTED</p>
+          <p>Young travelers on this reservation may not be seated adjacent to their accompanying adult.</p>
+        </div>
+        <div class="fg-ok">
+          <p class="fg-title"><svg class="icon"><use href="#i-check"></use></svg>FAMILY SEATING RESOLVED</p>
+          <p>The airline reassigned the family to 14A, 14B, and 14C. (Demo outcome)</p>
+        </div>
+        <div class="fg-actions">
+          <button class="btn btn-ghost" type="button" id="fgReview">Review Seats</button>
+          <a class="btn btn-ghost" href="#human" data-human="airline">Contact Airline</a>
+          <a class="btn btn-ghost" href="#help">Get Help</a>
+          <button class="btn btn-primary" type="button" id="fgResolve">Demo: Airline Resolves</button>
+        </div>
+      </div>
+      <p class="demo-note reveal"><svg class="icon"><use href="#i-info"></use></svg>SkyCare cannot change airline seat inventory. It identifies the issue early and directs the passenger toward the airline's resolution options. In the U.S., DOT proposed a rule in 2024 that would require fee-free adjacent seating for young children (U.S. Department of Transportation, 2024).</p>
+    </div>
+    <div class="seatmap glass reveal" id="seatmap" aria-label="Demo seat map">
+      <!-- built by script.js -->
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     12. SKYCARE TRAVEL GROUP
+     ===================================================== -->
+<section class="section" id="group" data-title="Travel Group">
+  <div class="container group-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">SkyCare Travel Group · Opt-in</p>
+        <h2>Separated? Find a Safe Place to Meet.</h2>
+        <p class="lede">Families and friends connect before the trip. Each person chooses whether to share location, and sharing ends automatically after the trip.</p>
+      </header>
+      <div class="group-card glass reveal">
+        <div class="group-head"><strong>AL HALABI FAMILY TRIP</strong><span class="tag tag-ok"><svg class="icon"><use href="#i-lock"></use></svg>Temporary · opt-in</span></div>
+        <ul class="members" id="members"><!-- built by script.js --></ul>
+        <div class="group-actions">
+          <button class="btn btn-primary" type="button" id="findGroupBtn"><svg class="icon"><use href="#i-users"></use></svg>Find My Group</button>
+          <button class="btn btn-ghost" type="button" id="endGroupBtn">End Sharing</button>
+        </div>
+        <p class="group-result" id="groupResult" aria-live="polite"></p>
+      </div>
+      <p class="core-quote small reveal">Location sharing is temporary and opt-in.</p>
+    </div>
+    <div class="map-card glass reveal">
+      <svg class="terminal-map" id="groupMap" viewBox="0 0 1000 560" role="img" aria-label="Demo map of travel group members and meeting point"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     13. MEET ME
+     ===================================================== -->
+<section class="section section-alt" id="meet" data-title="Meet Me">
+  <div class="container group-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">Meet Me · Temporary code</p>
+        <h2>Two Travelers. One Airport. A Place You Can Both Reach.</h2>
+        <p class="lede">Jamal arrives from Fort Lauderdale. A friend arrives from London. Both are connecting in Istanbul.</p>
+      </header>
+      <form class="meet-form glass reveal" id="meetForm">
+        <label for="meetCode">Meet code</label>
+        <div class="meet-row">
+          <input type="text" id="meetCode" value="SK-4821" maxlength="7" autocomplete="off">
+          <button class="btn btn-primary" type="submit">Connect</button>
+        </div>
+        <div class="meet-result" id="meetResult" hidden>
+          <p class="kicker">Recommended meeting location</p>
+          <p class="meet-place">International Transfer Area · Meeting Point C</p>
+          <div class="meet-times">
+            <div><span>Jamal · from FLL</span><strong>4 min</strong></div>
+            <div><span>Friend · from LHR</span><strong>7 min</strong></div>
+          </div>
+          <div class="group-actions">
+            <button class="btn btn-primary" type="button" id="meetNav">Navigate to Meeting Point</button>
+            <button class="btn btn-ghost" type="button" id="meetEnd">End Location Sharing</button>
+          </div>
+        </div>
+      </form>
+      <p class="demo-note reveal"><svg class="icon"><use href="#i-info"></use></svg>Why not just walk toward each other? Airports have separate terminals, security zones, and restricted areas. SkyCare only chooses a place both passengers are allowed to reach.</p>
+    </div>
+    <div class="map-card glass reveal">
+      <svg class="terminal-map" id="meetMap" viewBox="0 0 1000 560" role="img" aria-label="Demo map of meeting point"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     14. LANGUAGE ASSISTANCE
+     ===================================================== -->
+<section class="section" id="language" data-title="Language Assistance">
+  <div class="container lang-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">09 · Language assistance</p>
+        <h2>Speak the Airport's Language, Even Offline.</h2>
+        <p class="lede">Essential phrases are pre-downloaded with each airport pack. Show the screen to staff, or let the phone say it.</p>
+      </header>
+      <div class="lang-selects reveal">
+        <label>I speak<select id="langFrom"></select></label>
+        <span class="lang-swap" aria-hidden="true">→</span>
+        <label>Show in<select id="langTo"></select></label>
+      </div>
+      <div class="phrase-list reveal" id="phraseList" role="group" aria-label="Phrases"></div>
+    </div>
+    <div class="phrase-card glass reveal" id="phraseCard" aria-live="polite">
+      <p class="kicker">Show this to airport staff</p>
+      <p class="phrase-src" id="phraseSrc">Where is Gate F7?</p>
+      <p class="phrase-out" id="phraseOut" lang="tr">F7 kapısı nerede?</p>
+      <div class="phrase-actions">
+        <button class="btn btn-primary" type="button" id="speakBtn"><svg class="icon"><use href="#i-speaker"></use></svg>Speak Phrase</button>
+        <span class="muted small" id="speakNote"></span>
+      </div>
+      <p class="demo-note"><svg class="icon"><use href="#i-cloud-off"></use></svg>A pre-downloaded airport language pack keeps essential phrases available even when the traveler has no local SIM or Wi-Fi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     15. OFFLINE MODE (PWA)
+     ===================================================== -->
+<section class="section section-alt" id="offline" data-title="Offline Mode">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Offline airport packs</p>
+      <h2>No SIM. No Wi-Fi. Still Guided.</h2>
+      <p class="lede">International travelers often land without data. SkyCare prepares before departure by downloading an airport pack for every stop.</p>
+    </header>
+    <div class="offline-layout">
+      <div class="packs reveal" id="packs"><!-- built by script.js --></div>
+      <div class="offline-status glass reveal">
+        <div class="os-row">
+          <div class="os-state" id="osState"><span class="net-dot"></span><strong id="osText">ONLINE</strong></div>
+          <label class="switch"><input type="checkbox" id="simOffline"><span></span>Simulate offline</label>
+        </div>
+        <ul class="os-list" id="osList"></ul>
+        <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>When connectivity is unavailable, SkyCare uses the most recently downloaded information. Live updates such as gate changes resume when connectivity returns.</p>
+      </div>
+    </div>
+    <div class="pack-contents reveal" id="packContents"></div>
+  </div>
+</section>
+
+<!-- =====================================================
+     16. CONNECTIVITY HELP
+     ===================================================== -->
+<section class="section" id="connect" data-title="Stay Connected">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Supporting feature · Connectivity</p>
+      <h2>Stay Connected After Landing</h2>
+      <p class="lede">Destination: <strong>Dubai (DXB)</strong>. SkyCare explains the options before the passenger needs them.</p>
+    </header>
+    <div class="conn-buttons reveal">
+      <button class="btn btn-ghost" type="button" data-conn="all">View Connectivity Options</button>
+      <button class="btn btn-ghost" type="button" data-conn="eSIM">eSIM Information</button>
+      <button class="btn btn-ghost" type="button" data-conn="Airport Wi-Fi">Airport Wi-Fi</button>
+    </div>
+    <div class="conn-grid reveal" id="connGrid"></div>
+    <p class="demo-note reveal"><svg class="icon"><use href="#i-info"></use></svg>SkyCare does not sell SIM cards or eSIMs in this prototype. A production product could integrate with authorized telecom and eSIM partners.</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     17. INFLIGHT MEALS
+     ===================================================== -->
+<section class="section section-alt" id="meals" data-title="Meal Preference">
+  <div class="container meals-layout">
+    <div>
+      <header class="section-head reveal">
+        <p class="kicker">Meal preference &amp; preorder</p>
+        <h2>Set the Meal Before the Cutoff, Not After Boarding.</h2>
+        <p class="lede"><span class="mono">DA 762 · IST → DXB</span> · <span id="mealService">Dinner service (demo)</span></p>
+      </header>
+      <label class="switch reveal"><input type="checkbox" id="mealSupported" checked><span></span>Demo: airline supports preorder through SkyCare</label>
+      <p class="muted small reveal" id="mealCutoff"></p>
+    </div>
+    <div class="meal-card glass reveal">
+      <div class="meal-options" id="mealOptions" role="radiogroup" aria-label="Meal options"></div>
+      <div class="meal-actions">
+        <button class="btn btn-primary" type="button" id="mealBtn">Preorder Meal</button>
+        <button class="btn btn-ghost" type="button" id="menuBtn">View Onboard Menu</button>
+      </div>
+      <p class="meal-msg" id="mealMsg" aria-live="polite"></p>
+      <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>A production system would connect to participating airline catering systems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     18. HUMAN ASSISTANCE
+     ===================================================== -->
+<section class="section" id="human" data-title="Human + AI">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">10 · Talk to a person</p>
+      <h2>AI Handles Information. People Handle Judgment, Care, and Emergencies.</h2>
+      <p class="lede">SkyCare's job is to identify the right human service and get the passenger there, already prepared.</p>
+    </header>
+    <div class="human-grid" id="humanGrid"><!-- built by script.js --></div>
+    <div class="human-result glass" id="humanResult" hidden aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- =====================================================
+     MAP SYSTEM
+     ===================================================== -->
+<section class="section section-alt" id="map" data-title="Terminal Map">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Map system</p>
+      <h2>IST Demo Terminal Map</h2>
+      <p class="lede">A fictional but realistic terminal layout used by every feature in this prototype.</p>
+    </header>
+    <div class="map-filters reveal" id="mapFilters" role="group" aria-label="Map filters">
+      <button type="button" data-cat="gate" class="active">Gate</button>
+      <button type="button" data-cat="food">Food</button>
+      <button type="button" data-cat="restroom">Restroom</button>
+      <button type="button" data-cat="medical">Medical</button>
+      <button type="button" data-cat="help">Help</button>
+      <button type="button" data-cat="access">Accessibility</button>
+      <button type="button" data-cat="meet">Meeting Point</button>
+      <button type="button" data-cat="all">All</button>
+    </div>
+    <div class="map-card map-big glass reveal">
+      <svg class="terminal-map" id="mainMap" viewBox="0 0 1000 560" role="img" aria-label="IST demo terminal map"></svg>
+      <p class="map-foot">Fictional layout for demonstration. Not an official Istanbul Airport floor plan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     TECHNOLOGY REALISM: FROM PROTOTYPE TO REAL AIRPORT
+     ===================================================== -->
+<section class="section" id="tech" data-title="How It Could Work">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">11 · Technology realism</p>
+      <h2>From Prototype to Real Airport</h2>
+      <p class="lede">The website is an interactive prototype demonstrating the passenger experience. A production implementation would require airport, airline, mapping, telecom, and emergency-service partnerships.</p>
+    </header>
+
+    <div class="arch reveal" aria-label="Proposed architecture">
+      <div class="arch-col">
+        <span class="arch-title">Data partners</span>
+        <div class="arch-box">Airline data</div><div class="arch-box">Airport data</div><div class="arch-box">Positioning</div><div class="arch-box">Telecom · catering</div>
+      </div>
+      <div class="arch-arrow" aria-hidden="true"></div>
+      <div class="arch-col arch-core">
+        <span class="arch-title">Secure SkyCare backend</span>
+        <div class="arch-box arch-strong">Travel context engine</div><div class="arch-box">AI language model</div><div class="arch-box">Privacy &amp; consent layer</div>
+      </div>
+      <div class="arch-arrow" aria-hidden="true"></div>
+      <div class="arch-col">
+        <span class="arch-title">Passenger</span>
+        <div class="arch-box arch-strong">SkyCare app</div><div class="arch-box">Offline airport packs</div>
+      </div>
+      <div class="arch-arrow" aria-hidden="true"></div>
+      <div class="arch-col">
+        <span class="arch-title">People</span>
+        <div class="arch-box">Airline agents</div><div class="arch-box">Airport services</div><div class="arch-box">Emergency systems</div>
+      </div>
+    </div>
+
+    <div class="req-grid">
+      <article class="glass reveal"><svg class="icon"><use href="#i-plane"></use></svg><h3>Airline data</h3><ul><li>Flight status</li><li>Boarding time and gate</li><li>Baggage tracking</li><li>Reservation integration</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-map"></use></svg><h3>Airport data</h3><ul><li>Indoor maps</li><li>Points of interest</li><li>Accessible routes</li><li>Medical stations, restrooms, service desks</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-beacon"></use></svg><h3>Positioning</h3><ul><li>Bluetooth beacons</li><li>Wi-Fi positioning</li><li>Ultra-wideband where available</li><li>Device sensors + indoor map matching</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-cpu"></use></svg><h3>AI</h3><ul><li>Secure backend (no keys in the app)</li><li>Language model</li><li>Travel context engine</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-heart"></use></svg><h3>Emergency assistance</h3><ul><li>Direct, authorized integration with airport authorities</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-download"></use></svg><h3>Offline</h3><ul><li>Downloaded airport packs</li><li>Last-known trip data</li></ul></article>
+      <article class="glass reveal"><svg class="icon"><use href="#i-shield"></use></svg><h3>Privacy</h3><ul><li>Explicit location consent</li><li>Temporary group sharing</li><li>Encrypted user data</li><li>Location deletion after the trip</li></ul></article>
+    </div>
+
+    <div class="status-table glass reveal">
+      <div class="st-col">
+        <p class="kicker">Working in this prototype</p>
+        <ul class="st-list st-ok">
+          <li>Demo trip loading and itinerary</li><li>Context engine (demo clock, gate, needs)</li><li>AR-style route animation and gate change</li><li>Rush Mode, detours, help routing</li><li>Offline caching of this site (on the live site)</li><li>Phrase book and browser speech</li><li>Optional camera view (no positioning)</li>
+        </ul>
+      </div>
+      <div class="st-col">
+        <p class="kicker">Simulated · needs real integrations</p>
+        <ul class="st-list st-sim">
+          <li>Boarding-pass scanning (OCR) and reservation lookup</li><li>AI language model responses</li><li>Indoor positioning</li><li>Live gate, boarding, and bag data</li><li>Medical and emergency requests</li><li>Group location sharing and meet codes</li><li>Meal preorder and eSIM partners</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     PRIVACY
+     ===================================================== -->
+<section class="section section-alt" id="privacy" data-title="Privacy">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Privacy by design</p>
+      <h2>Your Location Belongs to You.</h2>
+    </header>
+    <ul class="privacy-grid">
+      <li class="glass reveal"><svg class="icon"><use href="#i-lock"></use></svg><strong>Your location belongs to you.</strong><span>Nothing is shared without a clear, specific choice.</span></li>
+      <li class="glass reveal"><svg class="icon"><use href="#i-users"></use></svg><strong>Travel-group tracking is opt-in.</strong><span>Every member decides for themselves.</span></li>
+      <li class="glass reveal"><svg class="icon"><use href="#i-clock"></use></svg><strong>Sharing ends automatically after the trip.</strong><span>Temporary by default, deleted afterward.</span></li>
+      <li class="glass reveal"><svg class="icon"><use href="#i-user"></use></svg><strong>Passengers control who can see them.</strong><span>Stop sharing anytime with one tap.</span></li>
+      <li class="glass reveal"><svg class="icon"><use href="#i-shield"></use></svg><strong>Never public.</strong><span>SkyCare does not expose traveler location publicly.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- =====================================================
+     WHY SKYCARE
      ===================================================== -->
 <section class="section" id="why" data-title="Why SkyCare">
   <div class="container">
     <header class="section-head reveal">
-      <p class="eyebrow">10 &middot; The Competitive Advantage</p>
-      <h2>Why Fly SkyCare?</h2>
+      <p class="kicker">12 · Why passengers would choose SkyCare</p>
+      <h2>Less Confusion. Faster Help. A Better Journey.</h2>
     </header>
-
-    <div class="table-wrap board reveal">
-      <table class="compare" id="compareBoard">
-        <caption class="visually-hidden">Traditional airline experience compared with the SkyCare experience</caption>
-        <thead>
-          <tr>
-            <th scope="col">Moment</th>
-            <th scope="col">Typical Airline</th>
-            <th scope="col" class="col-skycare">SkyCare</th>
-            <th scope="col">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">Flight info</th><td>Search for flight information</td><td class="flap">Information comes to you</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Getting help</th><td>Wait in customer service lines</td><td class="flap">Digital support plus real people</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Baggage</th><td>Wonder where your baggage is</td><td class="flap">Live baggage tracking</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Disruption</th><td>Search for replacement flights</td><td class="flap">Proactive rebooking options</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Agents</th><td>Repeat your story to different agents</td><td class="flap">Shared passenger service record</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Service style</th><td>Reactive customer service</td><td class="flap">Proactive customer service</td><td><span class="status-pill">On time</span></td></tr>
-          <tr><th scope="row">Technology</th><td>Technology replaces employees</td><td class="flap">Technology supports employees</td><td><span class="status-pill">On time</span></td></tr>
-        </tbody>
-      </table>
+    <div class="why-table glass reveal" role="table" aria-label="Typical experience compared with SkyCare">
+      <div class="why-row why-headrow" role="row"><span role="columnheader">Passenger moment</span><span role="columnheader">Typical today</span><span role="columnheader">With SkyCare</span></div>
+      <div class="why-row" role="row"><span role="cell">Finding the gate</span><span role="cell">Read signs and boards</span><span role="cell">Follow one green line</span></div>
+      <div class="why-row" role="row"><span role="cell">Gate change</span><span role="cell">Notice a board or announcement</span><span role="cell">Route redrawn with a time check</span></div>
+      <div class="why-row" role="row"><span role="cell">Tight connection</span><span role="cell">Guess whether to run or stop</span><span role="cell">Rush Mode removes distractions</span></div>
+      <div class="why-row" role="row"><span role="cell">Something goes wrong</span><span role="cell">Figure out which desk handles it</span><span role="cell">Taken to the right desk, prepared</span></div>
+      <div class="why-row" role="row"><span role="cell">Accessibility</span><span role="cell">Explain needs at every stage</span><span role="cell">Shared once, followed through</span></div>
+      <div class="why-row" role="row"><span role="cell">No data abroad</span><span role="cell">Hunt for Wi-Fi</span><span role="cell">Offline airport pack + phrases</span></div>
     </div>
-
-    <div class="advantage reveal">
-      <svg class="icon advantage-icon" aria-hidden="true"><use href="#i-star"></use></svg>
-      <p>Our competitive advantage is not that nothing ever goes wrong. It is that passengers always know <strong>what is happening</strong>, <strong>what their options are</strong>, and that <strong>SkyCare is taking responsibility</strong> for helping.</p>
-    </div>
+    <p class="core-quote reveal">Service quality, perceived value, and satisfaction shape whether passengers return and recommend a service (Chen, 2008; Park et al., 2004). SkyCare competes on the moments passengers remember most.</p>
   </div>
 </section>
 
 <!-- =====================================================
-     SECTION 11: RESEARCH
-     All four sources are real, peer-reviewed journal articles.
+     RESEARCH
      ===================================================== -->
-<section class="section section-light" id="research" data-title="Research">
+<section class="section section-alt" id="research" data-title="Research">
   <div class="container">
     <header class="section-head reveal">
-      <p class="eyebrow">11 &middot; Research Behind the SkyCare Experience</p>
-      <h2>Built on Evidence, Not Guesswork</h2>
-      <p class="lead">Five peer-reviewed studies of air passengers, including a field study conducted during real flight delays.</p>
+      <p class="kicker">Research foundation</p>
+      <h2>Built on Evidence, Not Assumptions.</h2>
+      <p class="lede">Every major feature responds to a finding from peer-reviewed or government sources.</p>
     </header>
-
-    <div class="research-grid">
-      <article class="research-card reveal">
-        <p class="research-tag">Service quality &amp; loyalty</p>
-        <p class="research-find"><strong>Finding:</strong> Service value, passenger satisfaction, and airline image each directly affected whether passengers intended to fly the airline again (Park et al., 2004).</p>
-        <p class="research-apply"><strong>SkyCare applies it:</strong> service is built into every stage of the journey, not one department.</p>
+    <div class="findings">
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>In an analysis of more than 1,000 online airport reviews, confusing signage and poor wayfinding were among the main sources of passenger dissatisfaction, alongside security and dining (Bogicevic et al., 2013).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>Guidance moves from overhead signs to the passenger's screen, one next step at a time.</p>
       </article>
-
-      <article class="research-card reveal">
-        <p class="research-tag">Perceived value</p>
-        <p class="research-find"><strong>Finding:</strong> Perceived value and satisfaction both drove future intentions, and perceived value had the larger effect (Chen, 2008).</p>
-        <p class="research-apply"><strong>SkyCare applies it:</strong> clear pricing and real help when plans change make the trip feel worth the fare.</p>
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>Terminal wayfinding quality can be measured through decision points and level changes, and those measures were validated against passenger surveys (Churchill et al., 2008).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>AR prompts appear before each decision point and level change, where passengers are most likely to get lost.</p>
       </article>
-
-      <article class="research-card reveal">
-        <p class="research-tag">Service recovery</p>
-        <p class="research-find"><strong>Finding:</strong> Fair outcomes, fair procedures, and respectful treatment all shaped satisfaction with airline recovery; the authors concluded compensation beyond expectations is likely the most effective strategy (Migacz et al., 2018).</p>
-        <p class="research-apply"><strong>SkyCare applies it:</strong> a fair fix, a fast process, and respectful communication, then follow-up.</p>
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>In a wheelchair-simulator study of an airport terminal, a mobile wayfinding app did not make trips faster, but it sharply reduced time spent reading signs and lowered users' anxiety (Qing et al., 2021).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>SkyCare's accessible route aims to lower stress and mental effort. We do not claim it makes passengers faster.</p>
       </article>
-
-      <article class="research-card reveal">
-        <p class="research-tag">Flight delays</p>
-        <p class="research-find"><strong>Finding:</strong> Among passengers surveyed during real delays, justice and emotions shaped recovery satisfaction, which led to trust, repurchase, and word of mouth (Wen &amp; Chi, 2013).</p>
-        <p class="research-apply"><strong>SkyCare applies it:</strong> the delay response manages emotions, not just logistics.</p>
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>Older adults with visual or cognitive decline struggle to orient in airports; smartphone tools look promising, but many design guidelines lack scientific testing (Bosch &amp; Gharaveis, 2017).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>Large, simple prompts and human handoff are built in, and SkyCare would need user testing with older travelers before launch.</p>
       </article>
-
-      <article class="research-card reveal">
-        <p class="research-tag">Self-service technology</p>
-        <p class="research-find"><strong>Finding:</strong> Online and kiosk check-in are growing, but frequent flyers preferred self check-in while business passengers preferred the desk (Castillo-Manzano &amp; L&oacute;pez-Valpuesta, 2013).</p>
-        <p class="research-apply"><strong>SkyCare applies it:</strong> passengers choose the channel; no one is forced into an app.</p>
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>Passengers differ in whether they choose self-service technology; not every traveler wants to do it themselves (Castillo-Manzano &amp; López-Valpuesta, 2013).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>"Talk to a person" is always one tap away. Technology is an option, never a wall.</p>
+      </article>
+      <article class="finding glass reveal">
+        <p class="f-label">Research finding</p>
+        <p>After a service failure, fair outcomes, a fair process, and respectful treatment all shape how passengers judge the recovery (Migacz et al., 2018). Among delayed passengers, both thinking and emotions shaped satisfaction with the recovery (Wen &amp; Chi, 2013).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>Rush Mode and help routing cut uncertainty fast and hand passengers to the right person with the right information.</p>
+      </article>
+      <article class="finding glass reveal">
+        <p class="f-label">Government source</p>
+        <p>U.S. DOT states that passengers with disabilities have a right to prompt assistance moving through the airport, including between gates on connections (U.S. Department of Transportation, 2025).</p>
+        <p class="f-label f-apply">How SkyCare applies it</p>
+        <p>The assistance timeline makes sure the request follows the passenger from departure to arrival.</p>
       </article>
     </div>
 
-    <div class="references reveal" id="references">
-      <h3><svg class="icon"><use href="#i-book"></use></svg> References</h3>
-      <ul class="ref-list">
+    <details class="refs glass reveal" open>
+      <summary>References (APA 7)</summary>
+      <ol class="ref-list">
+        <li>Bogicevic, V., Yang, W., Bilgihan, A., &amp; Bujisic, M. (2013). Airport service quality drivers of passenger satisfaction. <em>Tourism Review, 68</em>(4), 3&ndash;18. <a href="https://doi.org/10.1108/TR-09-2013-0047" target="_blank" rel="noopener">https://doi.org/10.1108/TR-09-2013-0047</a></li>
+        <li>Bosch, S. J., &amp; Gharaveis, A. (2017). Flying solo: A review of the literature on wayfinding for older adults experiencing visual or cognitive decline. <em>Applied Ergonomics, 58</em>, 327&ndash;333. <a href="https://doi.org/10.1016/j.apergo.2016.07.010" target="_blank" rel="noopener">https://doi.org/10.1016/j.apergo.2016.07.010</a></li>
         <li>Castillo-Manzano, J. I., &amp; L&oacute;pez-Valpuesta, L. (2013). Check-in services and passenger behaviour: Self service technologies in airport systems. <em>Computers in Human Behavior, 29</em>(6), 2431&ndash;2437. <a href="https://doi.org/10.1016/j.chb.2013.05.030" target="_blank" rel="noopener">https://doi.org/10.1016/j.chb.2013.05.030</a></li>
         <li>Chen, C.-F. (2008). Investigating structural relationships between service quality, perceived value, satisfaction, and behavioral intentions for air passengers: Evidence from Taiwan. <em>Transportation Research Part A: Policy and Practice, 42</em>(4), 709&ndash;717. <a href="https://doi.org/10.1016/j.tra.2008.01.007" target="_blank" rel="noopener">https://doi.org/10.1016/j.tra.2008.01.007</a></li>
+        <li>Churchill, A., Dada, E., de Barros, A. G., &amp; Wirasinghe, S. C. (2008). Quantifying and validating measures of airport terminal wayfinding. <em>Journal of Air Transport Management, 14</em>(3), 151&ndash;158. <a href="https://doi.org/10.1016/j.jairtraman.2008.03.005" target="_blank" rel="noopener">https://doi.org/10.1016/j.jairtraman.2008.03.005</a></li>
         <li>Migacz, S. J., Zou, S., &amp; Petrick, J. F. (2018). The &ldquo;terminal&rdquo; effects of service failure on airlines: Examining service recovery with justice theory. <em>Journal of Travel Research, 57</em>(1), 83&ndash;98. <a href="https://doi.org/10.1177/0047287516684979" target="_blank" rel="noopener">https://doi.org/10.1177/0047287516684979</a></li>
         <li>Park, J.-W., Robertson, R., &amp; Wu, C.-L. (2004). The effect of airline service quality on passengers&rsquo; behavioural intentions: A Korean case study. <em>Journal of Air Transport Management, 10</em>(6), 435&ndash;439. <a href="https://doi.org/10.1016/j.jairtraman.2004.06.001" target="_blank" rel="noopener">https://doi.org/10.1016/j.jairtraman.2004.06.001</a></li>
-        <li>U.S. Department of Transportation. (2024, April 24). <em>Biden-Harris administration announces final rule requiring automatic refunds of airline tickets and ancillary service fees</em> [Press release]. <a href="https://www.transportation.gov/briefing-room/biden-harris-administration-announces-final-rule-requiring-automatic-refunds-airline" target="_blank" rel="noopener">https://www.transportation.gov/briefing-room/biden-harris-administration-announces-final-rule-requiring-automatic-refunds-airline</a></li>
+        <li>Qing, Z., Sun, C., &amp; Reneker, J. (2021). Evaluation of airport wayfinding accessibility with the use of a wheelchair simulator. <em>Transportation Research Record, 2675</em>(4), 52&ndash;60. <a href="https://doi.org/10.1177/0361198120980445" target="_blank" rel="noopener">https://doi.org/10.1177/0361198120980445</a></li>
+        <li>U.S. Department of Transportation. (2024, August 9). <em>Family seating in air transportation</em> [Proposed rule, Docket No. DOT-OST-2024-0091]. Federal Register. <a href="https://www.federalregister.gov/documents/2024/08/09/2024-17323/family-seating-in-air-transportation" target="_blank" rel="noopener">https://www.federalregister.gov/documents/2024/08/09/2024-17323/family-seating-in-air-transportation</a></li>
+        <li>U.S. Department of Transportation. (2025, February 5). <em>Airline passengers with disabilities bill of rights</em>. <a href="https://www.transportation.gov/airconsumer/disabilitybillofrights" target="_blank" rel="noopener">https://www.transportation.gov/airconsumer/disabilitybillofrights</a></li>
         <li>Wen, B., &amp; Chi, C. G.-q. (2013). Examine the cognitive and affective antecedents to service recovery satisfaction: A field study of delayed airline passengers. <em>International Journal of Contemporary Hospitality Management, 25</em>(3), 306&ndash;327. <a href="https://doi.org/10.1108/09596111311310991" target="_blank" rel="noopener">https://doi.org/10.1108/09596111311310991</a></li>
-      </ul>
-    </div>
+      </ol>
+    </details>
   </div>
 </section>
 
 <!-- =====================================================
-     SECTION 12: CONTACT / TRADE SHOW ENDING
+     FINAL PAGE / ABOUT THE CONCEPT
      ===================================================== -->
-<section class="section contact" id="contact" data-title="Thank You">
-  <div class="hero-sky" aria-hidden="true">
-    <div class="cloud c1"></div><div class="cloud c3"></div>
-  </div>
-  <div class="container contact-inner">
-    <header class="section-head reveal">
-      <p class="eyebrow eyebrow-light">Ready When You Are</p>
-      <h2>Ready to Experience a Better Way to Fly?</h2>
-    </header>
-
-    <div class="contact-brand reveal">
-      <p class="contact-name">SKYCARE AIRLINES</p>
-      <p class="contact-tag">Travel Should Feel Better.</p>
+<section class="section closing" id="closing" data-title="SkyCare Navigator">
+  <div class="container closing-inner">
+    <div class="closing-copy reveal">
+      <h2 class="closing-title">SKYCARE <span>NAVIGATOR</span></h2>
+      <p class="closing-tag">Know where to go. Know what to do.</p>
+      <p class="closing-three">One trip.<br>One assistant.<br>Less confusion.</p>
+      <div class="closing-links">
+        <a class="btn btn-primary" href="https://jamalalhalabi.github.io/SkyCare-Airlines/" target="_blank" rel="noopener"><svg class="icon"><use href="#i-globe"></use></svg>Live Prototype</a>
+        <a class="btn btn-ghost" href="https://github.com/jamalalhalabi/SkyCare-Airlines" target="_blank" rel="noopener"><svg class="icon"><use href="#i-github"></use></svg>GitHub Project</a>
+      </div>
+      <p class="closing-note">SkyCare Navigator is an academic aviation customer-experience concept. Not affiliated with any airline or airport. All trip data, the "Demo Air" carrier, and the terminal map are fictional.</p>
     </div>
-
-    <ul class="contact-grid reveal" aria-label="Demo contact information">
-      <li><svg class="icon"><use href="#i-globe"></use></svg><span class="contact-label">Website</span><span>www.flyskycare.com</span></li>
-      <li><svg class="icon"><use href="#i-mail"></use></svg><span class="contact-label">Email</span><span>guestcare@flyskycare.com</span></li>
-      <li><svg class="icon"><use href="#i-call"></use></svg><span class="contact-label">Customer Care</span><span>1-800-SKYCARE</span></li>
-      <li><svg class="icon"><use href="#i-at"></use></svg><span class="contact-label">Social</span><span>@FlySkyCare</span></li>
-    </ul>
-    <p class="demo-label reveal">Demo contact details for a class project. These are not real accounts.</p>
-
-    <div class="thank-you reveal">
-      <p class="thanks">Thank You</p>
-      <p class="questions">Questions? We&rsquo;d love to have you on board.</p>
+    <div class="qr-slot reveal">
+      <p class="kicker">Scan to explore SkyCare</p>
+      <!-- QR CODE PLACEHOLDER
+           Replace the <div class="qr-placeholder"> below with:
+           <img src="images/qr-code.png" alt="QR code linking to the SkyCare Navigator live site" class="qr-img">
+           Generate the QR code for: https://jamalalhalabi.github.io/SkyCare-Airlines/ -->
+      <div class="qr-placeholder">
+        <svg class="icon"><use href="#i-qr"></use></svg>
+        <span>QR code goes here</span>
+        <small>jamalalhalabi.github.io/SkyCare-Airlines</small>
+      </div>
     </div>
-
-    <p class="presenter reveal">Presented by Jamal Al Halabi &middot; Aviation Customer Relations</p>
   </div>
+  <footer class="site-foot container">
+    <span>© 2026 SkyCare Navigator concept · Aviation Customer Relations</span>
+    <a href="#home">Back to top ↑</a>
+  </footer>
 </section>
 
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>&copy; 2026 SkyCare Airlines concept.</p>
-    <p>SkyCare Airlines is a fictional airline concept created for an academic aviation customer-relations presentation.</p>
-  </div>
-</footer>
-
-<!-- Back to top button -->
-<a class="to-top" id="toTop" href="#home" aria-label="Back to top">
-  <svg class="icon"><use href="#i-arrow-up"></use></svg>
-</a>
-
 <!-- =====================================================
-     PRESENTATION MODE CONTROLS (shown only in Presentation Mode)
+     PRESENTATION MODE CONTROLS
      ===================================================== -->
-<div class="present-bar" id="presentBar" aria-label="Presentation controls" role="toolbar">
-  <button class="pbtn" id="prevBtn" type="button" aria-label="Previous section">
-    <svg class="icon"><use href="#i-arrow-left"></use></svg><span>Previous</span>
-  </button>
-  <div class="present-counter" aria-live="polite">
-    <span id="slideCounter">1 / 13</span>
-    <span class="present-title" id="slideTitle">Welcome</span>
+<div class="present-bar" id="presentBar" aria-label="Presentation controls" hidden>
+  <button class="pb-btn" id="pbPrev" type="button" aria-label="Previous"><svg class="icon"><use href="#i-arrow-left"></use></svg></button>
+  <div class="pb-info">
+    <span class="pb-count mono" id="pbCount">1 / 12</span>
+    <span class="pb-title" id="pbTitle">The Problem</span>
+    <span class="pb-subs" id="pbSubs"></span>
   </div>
-  <button class="pbtn" id="nextBtn" type="button" aria-label="Next section">
-    <span>Next</span><svg class="icon"><use href="#i-arrow-right"></use></svg>
-  </button>
-  <button class="pbtn pbtn-icon" id="fullBtn" type="button" aria-label="Toggle full screen" title="Full screen (F)">
-    <svg class="icon"><use href="#i-expand"></use></svg>
-  </button>
-  <button class="pbtn pbtn-icon" id="exitBtn" type="button" aria-label="Exit Presentation Mode" title="Exit (Esc)">
-    <svg class="icon"><use href="#i-x"></use></svg>
-  </button>
+  <button class="pb-btn pb-next" id="pbNext" type="button" aria-label="Next"><svg class="icon"><use href="#i-arrow-right"></use></svg></button>
+  <button class="pb-btn" id="pbFull" type="button" aria-label="Toggle full screen (F)"><svg class="icon"><use href="#i-expand"></use></svg></button>
+  <button class="pb-btn" id="pbExit" type="button" aria-label="Exit presentation (Esc)"><svg class="icon"><use href="#i-x"></use></svg></button>
 </div>
+<div class="present-hint" id="presentHint" aria-hidden="true">← → to move · F full screen · Esc to exit</div>
 
-<div class="present-hint" id="presentHint" role="status">
-  Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> to move between sections &middot; <kbd>F</kbd> full screen &middot; <kbd>Esc</kbd> exit
-</div>
+<!-- Notifications -->
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
+<script src="data/demo-data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
