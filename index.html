@@ -175,7 +175,7 @@
       <p class="hero-tagline">Your AI travel companion inside the airport.</p>
       <p class="hero-sub">Upload your trip. SkyCare learns your journey and stays with you from terminal entrance to final gate.</p>
       <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" type="button" data-action="load-demo">
+        <button class="btn btn-primary btn-lg" type="button" data-action="load-demo" data-trip="ist">
           <svg class="icon"><use href="#i-play"></use></svg>Load Demo Trip
         </button>
         <a class="btn btn-ghost btn-lg" href="#how">How SkyCare Works</a>
@@ -190,11 +190,11 @@
         <span class="hc-status" id="heroStatus">Waiting for trip</span>
       </div>
       <div class="hc-route">
-        <div><strong>FLL</strong><small>Fort Lauderdale</small></div>
+        <div><strong data-t="c0">FLL</strong><small data-t="n0">Fort Lauderdale</small></div>
         <div class="hc-line"><span></span></div>
-        <div><strong>IST</strong><small>Istanbul</small></div>
+        <div><strong data-t="c1">IST</strong><small data-t="n1">Istanbul</small></div>
         <div class="hc-line"><span></span></div>
-        <div><strong>DXB</strong><small>Dubai</small></div>
+        <div><strong data-t="c2">DXB</strong><small data-t="n2">Dubai</small></div>
       </div>
       <ul class="hc-feed" id="heroFeed">
         <li><svg class="icon"><use href="#i-ticket"></use></svg>Import a boarding pass or reservation</li>
@@ -287,9 +287,13 @@
             <svg class="icon"><use href="#i-import"></use></svg>
             <span><strong>Import Reservation</strong><small>Booking code · simulated lookup</small></span>
           </button>
-          <button class="import-btn import-btn-primary" type="button" data-action="load-demo">
+          <button class="import-btn import-btn-primary" type="button" data-action="load-demo" data-trip="ist">
             <svg class="icon"><use href="#i-play"></use></svg>
-            <span><strong>Load Demo Trip</strong><small>FLL → IST → DXB</small></span>
+            <span><strong>Load Demo Trip A</strong><small>FLL → IST → DXB</small></span>
+          </button>
+          <button class="import-btn" type="button" data-action="load-demo" data-trip="lhr">
+            <svg class="icon"><use href="#i-play"></use></svg>
+            <span><strong>Load Demo Trip B</strong><small>MIA → LHR → CDG</small></span>
           </button>
         </div>
 
@@ -297,12 +301,13 @@
           <label>Booking reference<input type="text" id="resCode" value="SKY7Q2" maxlength="8" autocomplete="off"></label>
           <label>Last name<input type="text" id="resName" value="Traveler" autocomplete="off"></label>
           <button class="btn btn-primary" type="submit">Find trip</button>
+          <p class="res-hint">Demo codes: <span class="mono">SKY7Q2</span> (Trip A) · <span class="mono">SKY4L9</span> (Trip B)</p>
         </form>
 
         <div class="scan" id="scanBox" aria-live="polite">
           <div class="scan-visual" aria-hidden="true">
             <div class="scan-pass">
-              <span class="sp-a">FLL</span><span class="sp-plane">✈</span><span class="sp-b">DXB</span>
+              <span class="sp-a" id="scanFrom">FLL</span><span class="sp-plane">✈</span><span class="sp-b" id="scanTo">DXB</span>
               <span class="sp-bar"></span>
             </div>
             <div class="scan-beam"></div>
@@ -316,14 +321,18 @@
           </ol>
         </div>
 
-        <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>Prototype demonstration. Uploaded files are not read or sent anywhere; every import method loads the same demo trip. Production deployment would connect to supported airline and airport systems.</p>
+        <p class="demo-note"><svg class="icon"><use href="#i-info"></use></svg>Prototype demonstration. Uploaded files are not read or sent anywhere; an upload loads demo Trip A. Production deployment would connect to supported airline and airport systems.</p>
+        <p class="clean-note"><svg class="icon"><use href="#i-shield"></use></svg><span><strong>Every new journey starts clean.</strong> Loading a new ticket clears the previous trip, its Sky conversation, and any requests made for it. Downloaded airport packs stay on this device.</span></p>
       </div>
 
       <div class="itinerary glass reveal" id="itinerary" data-loaded="false">
         <div class="itin-empty">
           <svg class="icon"><use href="#i-plane"></use></svg>
           <p>No trip loaded yet.</p>
-          <button class="btn btn-ghost" type="button" data-action="load-demo">Load Demo Trip</button>
+          <div class="itin-empty-actions">
+            <button class="btn btn-ghost" type="button" data-action="load-demo" data-trip="ist">Load Demo Trip A</button>
+            <button class="btn btn-ghost" type="button" data-action="load-demo" data-trip="lhr">Load Demo Trip B</button>
+          </div>
         </div>
         <div class="itin-full">
           <div class="itin-head">
@@ -332,7 +341,10 @@
               <h3 id="itinPassenger">Demo Traveler</h3>
               <p class="muted"><span id="itinCarrier">Demo Air</span> · fictional carrier · Ref <span class="mono" id="itinRef">SKY7Q2</span></p>
             </div>
-            <div class="ready-badge"><svg class="icon"><use href="#i-check"></use></svg>SkyCare is ready.</div>
+            <div class="itin-head-right">
+              <div class="ready-badge"><svg class="icon"><use href="#i-check"></use></svg>SkyCare is ready.</div>
+              <button class="btn btn-ghost btn-sm" type="button" data-action="new-trip"><svg class="icon"><use href="#i-upload"></use></svg>New Trip</button>
+            </div>
           </div>
           <div class="itin-body" id="itinBody"><!-- filled by script.js --></div>
         </div>
@@ -353,13 +365,13 @@
     </header>
 
     <div class="clock-bar reveal" role="group" aria-label="Demo moment in the journey">
-      <span class="clock-label"><svg class="icon"><use href="#i-clock"></use></svg>Demo clock · IST local</span>
+      <span class="clock-label"><svg class="icon"><use href="#i-clock"></use></svg>Demo clock · <span data-t="conn">IST</span> local</span>
       <div class="clock-chips" id="clockChips"><!-- filled by script.js --></div>
     </div>
 
     <div class="dash glass reveal" id="dash">
       <div class="dash-top">
-        <div class="dash-brand"><strong>SKYCARE NAVIGATOR</strong><span class="mono">FLL → IST → DXB</span></div>
+        <div class="dash-brand"><strong>SKYCARE NAVIGATOR</strong><span class="mono" data-t="route">FLL → IST → DXB</span></div>
         <div class="dash-mode" id="dashMode">Relaxed</div>
       </div>
       <div class="dash-main">
@@ -386,6 +398,7 @@
         <a class="btn btn-ghost" href="#trip"><svg class="icon"><use href="#i-ticket"></use></svg>My Trip</a>
         <a class="btn btn-ghost" href="#help"><svg class="icon"><use href="#i-life"></use></svg>Help</a>
         <a class="btn btn-ghost" href="#map"><svg class="icon"><use href="#i-map"></use></svg>Map</a>
+        <button class="btn btn-ghost" type="button" data-action="new-trip"><svg class="icon"><use href="#i-upload"></use></svg>New Trip</button>
       </div>
     </div>
   </div>
@@ -408,7 +421,8 @@
       </div>
       <fieldset class="glass pref">
         <legend>Accessibility</legend>
-        <label class="switch"><input type="checkbox" id="prefAccess"><span></span>Step-free routes + wheelchair assistance</label>
+        <label class="switch"><input type="checkbox" id="prefAccess"><span></span>This trip: step-free route + wheelchair assistance</label>
+        <label class="switch"><input type="checkbox" id="prefStepFree"><span></span>Default: start every trip step-free <small class="saved-tag">Saved on this device</small></label>
       </fieldset>
       <fieldset class="glass pref">
         <legend>Meal preference</legend>
@@ -425,6 +439,45 @@
           <option value="family">Family group</option>
         </select>
       </fieldset>
+    </div>
+    <p class="demo-note reveal"><svg class="icon"><use href="#i-info"></use></svg>Accessibility for this trip, meal, and group settings belong to the current journey and reset when a new trip starts. Settings marked "Saved on this device" carry over. See Privacy &amp; Storage below.</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     PRIVACY & STORAGE (what SkyCare keeps on this device)
+     ===================================================== -->
+<section class="section section-alt" id="storage" data-title="Privacy &amp; Storage">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">Profile · Privacy &amp; storage</p>
+      <h2>Every New Journey Starts Clean.</h2>
+      <p class="lede">Trip information is temporary. Reusable airport maps may remain on your device for future journeys. You control what SkyCare keeps.</p>
+    </header>
+    <div class="storage-grid reveal">
+      <div class="glass storage-card">
+        <p class="kicker">Current journey</p>
+        <p class="storage-line" id="stTrip">No active trip.</p>
+        <p class="muted small">Itinerary, gate and route status, connection state, baggage, detours, assistance and medical requests, family and group state, and meal choice. Kept only in this browser tab so a refresh restores the same trip; never reused for another ticket.</p>
+        <button class="btn btn-ghost" type="button" id="stDeleteTrip"><svg class="icon"><use href="#i-x"></use></svg>Delete Current Trip Data</button>
+      </div>
+      <div class="glass storage-card">
+        <p class="kicker">Sky conversation</p>
+        <p class="storage-line" id="stChat">No messages.</p>
+        <p class="muted small">Belongs to the current trip only. Cleared automatically when a new journey starts.</p>
+        <button class="btn btn-ghost" type="button" id="stClearChat"><svg class="icon"><use href="#i-chat"></use></svg>Clear Conversation</button>
+      </div>
+      <div class="glass storage-card">
+        <p class="kicker">Downloaded airports</p>
+        <ul class="st-packs" id="stPacks"><li class="muted">No airport packs on this device.</li></ul>
+        <p class="muted small">Reusable airport resources, not trip history. They stay until you remove them.</p>
+      </div>
+      <div class="glass storage-card storage-danger">
+        <p class="kicker">Device data</p>
+        <p class="storage-line" id="stPrefs">Preferences: defaults.</p>
+        <p class="muted small">Removes only SkyCare data: the active trip, the Sky conversation, saved preferences, downloaded-airport markers, and SkyCare's offline cache. Other websites' data is not touched.</p>
+        <button class="btn btn-danger" type="button" id="stClearAll"><svg class="icon"><use href="#i-alert"></use></svg>Clear All SkyCare Data</button>
+      </div>
     </div>
   </div>
 </section>
@@ -534,7 +587,7 @@
       <header class="section-head reveal">
         <p class="kicker">05 · Connection Rush Mode</p>
         <h2>Late Landing. Tight Connection. Zero Distractions.</h2>
-        <p class="lede">The passenger lands late in Istanbul. SkyCare notices before they ask and strips the app down to one job: getting them to the gate.</p>
+        <p class="lede">The passenger lands late in <span data-t="connCity">Istanbul</span>. SkyCare notices before they ask and strips the app down to one job: getting them to the gate.</p>
       </header>
       <div class="rush-scenario glass reveal">
         <div><span>Current time</span><strong class="mono" id="rsNow">7:04 PM</strong></div>
@@ -554,11 +607,11 @@
       <div class="phone-frame">
         <div class="phone-notch"></div>
         <div class="rush-screen" id="rushScreen" data-mode="normal">
-          <div class="rs-status"><span class="mono" id="rsClock">5:52 PM</span><span>IST · Transfer</span></div>
+          <div class="rs-status"><span class="mono" id="rsClock">5:52 PM</span><span><span data-t="conn">IST</span> · Transfer</span></div>
 
           <div class="rs-normal">
-            <p class="rs-hello">Welcome to Istanbul</p>
-            <div class="rs-card rs-gatecard"><small>Next flight · DA 762 to DXB</small><strong>Gate <span id="rsNormGate">B18</span></strong><span class="rs-closes">Boarding closes 7:22 PM · 90 min</span></div>
+            <p class="rs-hello">Welcome to <span data-t="connCity">Istanbul</span></p>
+            <div class="rs-card rs-gatecard"><small>Next flight · <span data-t="f2">DA 762</span> to <span data-t="dest">DXB</span></small><strong>Gate <span id="rsNormGate">B18</span></strong><span class="rs-closes">Boarding closes 7:22 PM · 90 min</span></div>
             <p class="rs-sub">You have time for</p>
             <div class="rs-extras">
               <div class="rs-card"><svg class="icon"><use href="#i-food"></use></svg>Restaurants</div>
@@ -605,6 +658,7 @@
           <div class="sky-avatar"><svg class="icon"><use href="#i-sparkle"></use></svg></div>
           <div><strong>Sky</strong><small>SkyCare AI · local demo assistant</small></div>
           <span class="tag tag-demo">Simulated AI</span>
+          <button class="btn btn-ghost btn-sm sky-clear" type="button" id="skyClear" title="Clears the chat only. Your trip stays active."><svg class="icon"><use href="#i-x"></use></svg>Clear Conversation</button>
         </div>
         <div class="sky-log" id="skyLog" aria-live="polite"></div>
         <div class="sky-suggest" id="skySuggest">
@@ -732,7 +786,7 @@
       <div class="med-panel glass reveal" id="medPanel" aria-live="assertive">
         <span class="tag tag-sim">Prototype simulation · no one is contacted</span>
         <div id="medContent">
-          <p class="muted">Select an option. In a real emergency, tell the nearest airport or airline employee immediately and call the local emergency number (112 in Türkiye).</p>
+          <p class="muted">Select an option. In a real emergency, tell the nearest airport or airline employee immediately and call the local emergency number (<span data-t="emergency">112 in Türkiye</span>).</p>
         </div>
       </div>
     </div>
@@ -850,7 +904,7 @@
       <header class="section-head reveal">
         <p class="kicker">Meet Me · Temporary code</p>
         <h2>Two Travelers. One Airport. A Place You Can Both Reach.</h2>
-        <p class="lede">Jamal arrives from Fort Lauderdale. A friend arrives from London. Both are connecting in Istanbul.</p>
+        <p class="lede">Jamal arrives from <span data-t="n0">Fort Lauderdale</span>. A friend arrives from <span data-t="friendCity">London</span>. Both are connecting in <span data-t="connCity">Istanbul</span>.</p>
       </header>
       <form class="meet-form glass reveal" id="meetForm">
         <label for="meetCode">Meet code</label>
@@ -862,8 +916,8 @@
           <p class="kicker">Recommended meeting location</p>
           <p class="meet-place">International Transfer Area · Meeting Point C</p>
           <div class="meet-times">
-            <div><span>Jamal · from FLL</span><strong>4 min</strong></div>
-            <div><span>Friend · from LHR</span><strong>7 min</strong></div>
+            <div><span>Jamal · from <span data-t="c0">FLL</span></span><strong>4 min</strong></div>
+            <div><span>Friend · from <span data-t="friendFrom">LHR</span></span><strong>7 min</strong></div>
           </div>
           <div class="group-actions">
             <button class="btn btn-primary" type="button" id="meetNav">Navigate to Meeting Point</button>
@@ -918,10 +972,15 @@
     <header class="section-head reveal">
       <p class="kicker">Offline airport packs</p>
       <h2>No SIM. No Wi-Fi. Still Guided.</h2>
-      <p class="lede">International travelers often land without data. SkyCare prepares before departure by downloading an airport pack for every stop.</p>
+      <p class="lede">International travelers often land without data. SkyCare prepares before departure by downloading an airport pack for every stop. Packs are reusable airport resources, not trip history, so they stay on this device for future journeys.</p>
     </header>
     <div class="offline-layout">
-      <div class="packs reveal" id="packs"><!-- built by script.js --></div>
+      <div class="packs-wrap reveal">
+        <p class="kicker">Current trip airports</p>
+        <div class="packs" id="packs"><!-- built by script.js --></div>
+        <p class="kicker packs-sub">Downloaded airports · on this device</p>
+        <ul class="device-packs" id="devicePacks"><!-- built by script.js --></ul>
+      </div>
       <div class="offline-status glass reveal">
         <div class="os-row">
           <div class="os-state" id="osState"><span class="net-dot"></span><strong id="osText">ONLINE</strong></div>
@@ -943,7 +1002,7 @@
     <header class="section-head reveal">
       <p class="kicker">Supporting feature · Connectivity</p>
       <h2>Stay Connected After Landing</h2>
-      <p class="lede">Destination: <strong>Dubai (DXB)</strong>. SkyCare explains the options before the passenger needs them.</p>
+      <p class="lede">Destination: <strong data-t="destLabel">Dubai (DXB)</strong>. SkyCare explains the options before the passenger needs them.</p>
     </header>
     <div class="conn-buttons reveal">
       <button class="btn btn-ghost" type="button" data-conn="all">View Connectivity Options</button>
@@ -964,7 +1023,7 @@
       <header class="section-head reveal">
         <p class="kicker">Meal preference &amp; preorder</p>
         <h2>Set the Meal Before the Cutoff, Not After Boarding.</h2>
-        <p class="lede"><span class="mono">DA 762 · IST → DXB</span> · <span id="mealService">Dinner service (demo)</span></p>
+        <p class="lede"><span class="mono" data-t="mealFlight">DA 762 · IST → DXB</span> · <span id="mealService">Dinner service (demo)</span></p>
       </header>
       <label class="switch reveal"><input type="checkbox" id="mealSupported" checked><span></span>Demo: airline supports preorder through SkyCare</label>
       <p class="muted small reveal" id="mealCutoff"></p>
@@ -1003,7 +1062,7 @@
   <div class="container">
     <header class="section-head reveal">
       <p class="kicker">Map system</p>
-      <h2>IST Demo Terminal Map</h2>
+      <h2><span data-t="conn">IST</span> Demo Terminal Map</h2>
       <p class="lede">A fictional but realistic terminal layout used by every feature in this prototype.</p>
     </header>
     <div class="map-filters reveal" id="mapFilters" role="group" aria-label="Map filters">
@@ -1017,8 +1076,8 @@
       <button type="button" data-cat="all">All</button>
     </div>
     <div class="map-card map-big glass reveal">
-      <svg class="terminal-map" id="mainMap" viewBox="0 0 1000 560" role="img" aria-label="IST demo terminal map"></svg>
-      <p class="map-foot">Fictional layout for demonstration. Not an official Istanbul Airport floor plan.</p>
+      <svg class="terminal-map" id="mainMap" viewBox="0 0 1000 560" role="img" aria-label="Demo terminal map (fictional)"></svg>
+      <p class="map-foot" data-t="mapDisclaimer">Fictional layout for demonstration. Not an official Istanbul Airport floor plan.</p>
     </div>
   </div>
 </section>
@@ -1098,6 +1157,7 @@
       <li class="glass reveal"><svg class="icon"><use href="#i-clock"></use></svg><strong>Sharing ends automatically after the trip.</strong><span>Temporary by default, deleted afterward.</span></li>
       <li class="glass reveal"><svg class="icon"><use href="#i-user"></use></svg><strong>Passengers control who can see them.</strong><span>Stop sharing anytime with one tap.</span></li>
       <li class="glass reveal"><svg class="icon"><use href="#i-shield"></use></svg><strong>Never public.</strong><span>SkyCare does not expose traveler location publicly.</span></li>
+      <li class="glass reveal"><svg class="icon"><use href="#i-ticket"></use></svg><strong>Every new journey starts clean.</strong><span>A new ticket never inherits the last trip's conversation, gate, bags, or requests. Only reusable airport maps stay, and travelers can remove them.</span></li>
     </ul>
   </div>
 </section>
@@ -1252,6 +1312,18 @@
 
 <!-- Notifications -->
 <div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- Confirmation dialog (New Trip, Delete Trip, Clear All) -->
+<div class="modal-backdrop" id="confirmModal" hidden>
+  <div class="modal glass" role="dialog" aria-modal="true" aria-labelledby="cmTitle" aria-describedby="cmBody">
+    <h3 id="cmTitle">Start a new journey?</h3>
+    <div class="modal-body" id="cmBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" id="cmCancel">Cancel</button>
+      <button class="btn btn-primary" type="button" id="cmOk">Start New Trip</button>
+    </div>
+  </div>
+</div>
 
 <script src="data/demo-data.js"></script>
 <script src="script.js"></script>
