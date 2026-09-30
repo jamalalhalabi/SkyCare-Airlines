@@ -15,6 +15,7 @@ Times add up to about 14 minutes, leaving a minute for questions.
 - [ ] Backup: the project folder on a USB drive (double-click `index.html`)
 - [ ] Volume up if you want to play **Speak Phrase**
 - [ ] If the room has no Wi-Fi: the live site still opens from the saved offline copy
+- [ ] Optional clean slate: Profile → Privacy & Storage → **Clear All SkyCare Data**, then reload once with Wi-Fi
 
 **Controls:** → next · ← back · F full screen · Esc exit
 Scenes with dots next to the title have more than one part. Keep pressing →.
@@ -53,7 +54,7 @@ Don't open GitHub unless asked. Go straight to scene 1.
 
 ## 3 / 12 · Load the Journey (1:00)
 
-**Click:** **Load Demo Trip**. Let the scan steps play.
+**Click:** **Load Demo Trip A**. Let the scan steps play.
 
 **Say**
 - "Our sample trip for the whole demo: Fort Lauderdale to Istanbul to Dubai."
@@ -151,13 +152,17 @@ Don't open GitHub unless asked. Go straight to scene 1.
 
 ---
 
-## 9 / 12 · Offline + Language (1:00)
+## 9 / 12 · Offline, Storage + Language (1:15)
 
 **Say**
 - "International travelers often land with no SIM and no Wi-Fi."
 
 **Click:** **Download pack** on IST, then flip **Simulate offline**.
 - "Maps, services, and phrases still work. Live gate changes pause, and SkyCare says so."
+- Point at the two lists: "These are the airports on this trip. Below are the packs already on this phone. The Istanbul map stays for my next trip, but it never makes an old trip look active."
+
+**Press →** Privacy & Storage.
+- "Every new journey starts clean. When I load a new ticket, Sky's conversation, my gate, bag, and any help requests from the last trip are wiped. Only reusable airport maps and my preferences stay, and I can remove those too."
 
 **Press →** Language. Choose **Arabic** or **Turkish**, tap **My bag did not arrive**, click **Speak Phrase**.
 - "Show the screen to staff, or let the phone say it."
@@ -220,7 +225,7 @@ That's why Sky is limited to the trip context and hands anything about judgment,
 Options: airport or airline licensing, since they benefit from fewer lost passengers; premium features like lounge or meal integrations. I focused on the experience first; the business model would need testing.
 
 **"What about privacy? This sounds like tracking."**
-Location sharing is opt-in, temporary, ends after the trip, and never public. Each family member chooses. No secret tracking.
+Location sharing is opt-in, temporary, ends after the trip, and never public. Each family member chooses. No secret tracking. Trip data is also temporary: a new ticket starts a clean session, and the Privacy & Storage panel lets the traveler delete the trip, the conversation, any airport pack, or everything.
 
 **"Why not just build this into an airline app?"**
 Airline apps only know their own flights. SkyCare works across airlines and airports, like my FLL to IST to DXB trip, and connects the airport side too.
@@ -236,6 +241,7 @@ Downloaded airport packs keep maps, services, and phrases working. Live gate cha
 ## If something breaks
 
 - **Page won't load:** open `index.html` from the USB backup
-- **A demo gets stuck:** press **Reset** (AR) or **Normal** (Rush), or refresh the page
+- **A demo gets stuck:** press **Reset** (AR) or **Normal** (Rush), or refresh the page (a refresh keeps the same trip)
+- **Need a clean trip mid-talk:** click **New Trip**, confirm, and load the demo again
 - **Voice is silent:** "The phone would read this aloud; this computer doesn't have that voice." Show the text
 - **Lost your place:** press **Home** to go to scene 1, or Esc and use the normal page

@@ -23,6 +23,7 @@
 10. [The Sky assistant (simulated AI)](#10-the-sky-assistant-simulated-ai)
 11. [Future production architecture](#11-future-production-architecture)
 12. [Privacy design](#12-privacy-design)
+    - [Trip sessions, storage, and privacy controls](#trip-sessions-storage-and-privacy-controls)
 13. [Adding the QR code](#13-adding-the-qr-code)
 14. [Troubleshooting](#14-troubleshooting)
 15. [References](#15-references)
@@ -115,9 +116,9 @@ SkyCare-Airlines/
 ├── styles.css              ← Colors, layout, animations, Presentation Mode, responsive rules
 ├── script.js               ← All interactive features (numbered sections 1–23)
 ├── data/
-│   └── demo-data.js        ← Sample trip, map, routes, phrases, meals, services
+│   └── demo-data.js        ← Two sample trips, map, routes, packs, phrases, services
 ├── manifest.webmanifest    ← Makes the site installable as an app
-├── service-worker.js       ← Offline caching (airport packs)
+├── service-worker.js       ← Offline caching (app shell; airport packs kept separately)
 ├── images/
 │   ├── favicon.svg         ← Logo in the browser tab
 │   ├── icon-192.png        ← App icon
@@ -145,7 +146,7 @@ No Node.js, npm, frameworks, database, or build step. Open `index.html` and it w
 | 6 | Ask Sky | Sky chat → Smart detours |
 | 7 | I Have a Problem | Help routing → Medical |
 | 8 | Family + Accessibility | Family Guardian → Accessibility → Travel Group |
-| 9 | Offline + Language | Offline packs → Language |
+| 9 | Offline, Storage + Language | Offline packs → Privacy & Storage → Language |
 | 10 | Human + AI | Talk to a person |
 | 11 | How It Could Work | Technology realism → Privacy |
 | 12 | Why SkyCare | Comparison → Research → Closing |
@@ -166,6 +167,7 @@ Scenes with more than one part show small dots next to the title.
 - Tall scenes scroll inside the slide with the mouse wheel or trackpad.
 - Tip: open `index.html?present` (or the live link with `?present` at the end) to start directly in Presentation Mode.
 - Detailed sections not in the sequence (Profile, Meet Me, Stay Connected, Meals, Map) are still on the normal website.
+- The **Start a new journey?** dialog also works in Presentation Mode. While it is open the arrow keys do nothing; **Esc** closes the dialog without leaving the presentation.
 
 ## 7. Updating GitHub Pages
 
@@ -188,7 +190,7 @@ The repository name stays **SkyCare-Airlines**; the live link does not change.
 
 **Check it:** Settings → Pages should show the site is published from the `main` branch, `/ (root)` folder.
 
-**After future edits:** open `service-worker.js` and change `skycare-navigator-v1` to `v2`, `v3`, and so on. That tells visitors' browsers to download the new version instead of the cached one.
+**After future edits:** open `service-worker.js` and change the cache version (currently `skycare-navigator-v2`) to `v3`, `v4`, and so on. That tells visitors' browsers to download the new version instead of the cached one.
 
 ## 8. Offline mode (PWA)
 
@@ -196,10 +198,14 @@ SkyCare's offline story is part of the product: international travelers often la
 
 **How it works on the live site**
 
-- On the first visit, `service-worker.js` saves the website, the demo itinerary, the terminal map data, and the phrase book on the device.
+- On the first visit, `service-worker.js` saves the app shell (`index.html`, `styles.css`, `script.js`, `data/demo-data.js`, icons, and the manifest) in the cache `skycare-navigator-v2`.
 - After that, the site opens and works with no internet connection.
 - The top bar shows **ONLINE · OFFLINE READY** once the offline copy is saved, and **OFFLINE · PACKS ACTIVE** when the connection drops.
-- The **Download pack** buttons demonstrate preparing FLL, IST, and DXB packs before a trip.
+- The Offline section is split in two:
+  - **Current trip airports:** one card per airport on the loaded ticket. Each shows **Download pack**, or **Already on this device ✓** when that airport was downloaded earlier (on this trip or a previous one).
+  - **Downloaded airports · on this device:** every pack stored on this device, whatever the trip. An airport that is not on the current ticket appears only here, so an old trip never looks active.
+- Each downloaded pack has **Remove download**. Removing one deletes its marker and its own cache (`skycare-pack-IST`, for example) right away. Other packs and the app shell are untouched, and the service worker stays registered.
+- New packs can't download while offline (real or simulated); packs already on the device keep working.
 - The **Simulate offline** switch demonstrates the offline experience during a presentation without disconnecting Wi-Fi.
 
 **What offline does not do:** live gate changes cannot arrive offline. Try **Simulate Gate Change** while offline; SkyCare explains that it is using the last downloaded gate and that live updates resume when connectivity returns.
@@ -214,20 +220,20 @@ All demo data lives in **`data/demo-data.js`**. The sections are labeled:
 
 | Section | What to change |
 |---|---|
-| `trip` | Passenger, carrier, flights, gates, times, seats, baggage, preferences |
-| `scenarios` | The four demo clock moments (time is minutes after midnight, IST local) |
+| `trips` | The two demo tickets (Trip A FLL → IST → DXB, Trip B MIA → LHR → CDG): passenger, flights, gates, times, seats, baggage, booking codes, emergency numbers, destination connectivity, meal service |
+| `scenarios` | The four demo clock moments, as minutes before the connecting flight's boarding closes |
 | `map` | The fictional terminal: zones, gates, restrooms, food, help desks, medical, elevators, meeting points (x, y in a 1000 × 560 drawing) |
 | `routes` | Walking routes and minutes to each gate |
 | `detours` | Extra minutes each stop adds, and time spent there |
-| `packs` | Offline airport packs |
+| `packs` | Every airport pack a traveler can download (FLL, IST, DXB, MIA, LHR, CDG) |
 | `languages`, `phrases` | Phrase book (add a language by adding a key to both) |
-| `connectivity` | Dubai connectivity guidance |
-| `meals` | Meal options and cutoff note |
+| `trips[n].connectivity` | Destination connectivity guidance (Dubai for Trip A, Paris for Trip B) |
+| `trips[n].meals` | Meal options and cutoff note for that trip's flight |
 | `humans` | Human services and where each desk is |
 
 The file is JavaScript (not JSON) on purpose, so the site still works when opened from a folder.
 
-Keep the map labeled as fictional unless you use official, verified airport data.
+Keep the map labeled as fictional unless you use official, verified airport data. Both demo trips reuse the same fictional transfer-terminal layout; its title changes to the connection airport (for example "LHR DEMO TERMINAL MAP") and it stays labeled fictional.
 
 ## 10. The Sky assistant (simulated AI)
 
@@ -271,7 +277,48 @@ A production implementation would require airport, airline, mapping, telecom, an
 - SkyCare never exposes traveler location publicly.
 - Meet Me only picks places both people are allowed to reach.
 
-The prototype stores nothing about the user except which demo packs were downloaded (in the browser only).
+### Trip sessions, storage, and privacy controls
+
+**Every new journey starts clean.** SkyCare keeps three kinds of data apart, all in the traveler's own browser (nothing is sent anywhere):
+
+| Kind | What it holds | Where | Lifetime |
+|---|---|---|---|
+| **1. Trip session** | Itinerary, gate and gate-change state, connection/Rush Mode clock, baggage, route and Smart Detour, accessibility assistance for this trip, medical/help requests, Family Guardian seating, Travel Group and Meet Me sharing, meal choice/preorder, customer-service routing, and the Ask Sky conversation | `sessionStorage`, keys `skycare:active` and `skycare:trip:<sessionId>` | This browser tab only. Discarded on New Trip, on Delete Current Trip Data, or when the tab closes |
+| **2. Preferences** | Phrase-book language and "start every trip step-free" default. No trip details | `localStorage`, key `skycare:prefs` | Until changed or cleared |
+| **3. Device airport packs** | Which airports are downloaded, plus a small per-airport resource | `localStorage` key `skycare:packs` and Cache Storage `skycare-pack-<CODE>` | Until removed; reused by any future trip |
+
+**What persists after a refresh**
+
+- Refreshing during an active trip restores **that same trip** (same session ID): itinerary, gate change, Rush Mode clock, detours, assistance, family/group state, meal choice, and the Ask Sky conversation.
+- The saved session is namespaced by a unique trip session ID, so it can never be mixed with another itinerary. A new tab starts with no trip.
+- Airport packs and preferences always persist.
+
+**What resets when a new ticket or reservation loads**
+
+- Loading a ticket while a trip is active (demo buttons, boarding-pass upload, reservation lookup, or **New Trip** in the itinerary or dashboard) first shows **Start a new journey?**, which lists what will be cleared and confirms that downloaded airport packs stay.
+- **Start New Trip** clears the Sky conversation (all messages, typing indicators, and action buttons), itinerary, route/map session, gate change, Rush Mode, baggage and help state, family/group state, accessibility assistance for that journey, medical requests, meal state, detours, and the stored session, then returns to trip import. The new trip gets a new session ID and a fresh Sky greeting.
+- A reply Sky was still "typing" when the trip was reset is discarded; it can never appear in the next conversation.
+- Nothing is inherited from the previous trip. The only carry-overs are preferences and downloaded airport packs.
+
+**Demo tickets:** Trip A (FLL → IST → DXB, booking `SKY7Q2`) and Trip B (MIA → LHR → CDG, booking `SKY4L9`). Uploading any boarding pass loads Trip A (the file is never read).
+
+**Privacy & Storage (Profile)**
+
+| Control | What it does |
+|---|---|
+| **Delete Current Trip Data** | Confirms, then removes the active trip session and its conversation. Airport packs and preferences stay |
+| **Clear Conversation** | Clears only the Sky chat and starts a fresh greeting. The trip, gate, route, baggage, and itinerary stay. Also available inside Ask Sky |
+| **Downloaded Airports · Remove** | Removes one airport pack (marker + its cache). Other packs stay |
+| **Clear All SkyCare Data** | Confirms, then removes only SkyCare-owned data: the trip session, conversation, preferences, pack markers, and SkyCare Cache Storage entries (`skycare-navigator-*`, `skycare-pack-*`). Other sites' storage is not touched. The page reloads in a first-use state and the service worker rebuilds its offline copy |
+
+On-screen wording: "Trip information is temporary. Reusable airport maps may remain on your device for future journeys. You control what SkyCare keeps."
+
+**Service worker and cache behavior**
+
+- `skycare-navigator-v2` holds the app shell only. A new version removes older `skycare-navigator-*` caches but never removes airport-pack caches.
+- `skycare-pack-<CODE>` caches belong to airport packs and are created/removed by the page.
+- Trip reset never deletes the app shell and never unregisters the service worker.
+- Browsers from v1 that still have the old `skycare-pack-XXX` markers are migrated automatically to the new downloaded-airports list.
 
 ## 13. Adding the QR code
 
@@ -290,6 +337,8 @@ The closing page has a placeholder labeled **SCAN TO EXPLORE SKYCARE**.
 | Problem | Fix |
 |---|---|
 | Old version still showing | Bump the cache version in `service-worker.js`, then hard refresh (Ctrl + Shift + R) |
+| Want a completely fresh start | Profile → Privacy & Storage → **Clear All SkyCare Data** |
+| An old trip keeps coming back after refresh | That is the same-trip restore. Use **New Trip** or **Delete Current Trip Data**, or close the tab |
 | Site looks plain | Keep all files and folders together; check `styles.css` uploaded |
 | Buttons do nothing | Check `script.js` and `data/demo-data.js` both uploaded |
 | "Speak Phrase" silent | The device lacks a voice for that language; the text still works |

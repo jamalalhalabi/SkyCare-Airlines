@@ -1,9 +1,22 @@
 /* =========================================================
-   SKYCARE NAVIGATOR | SERVICE WORKER (offline airport packs)
+   SKYCARE NAVIGATOR | SERVICE WORKER
    ---------------------------------------------------------
-   Caches the site, the demo itinerary, the demo airport map,
-   and the phrase book so the prototype works without a
-   connection after the first visit.
+   Two kinds of cache, kept logically separate:
+
+   1. APP SHELL  "skycare-navigator-vN"
+      index.html, styles.css, script.js, demo data, icons,
+      manifest (plus same-origin files fetched later).
+      Replaced when CACHE_VERSION changes.
+
+   2. AIRPORT PACKS  "skycare-pack-<CODE>"  (e.g. skycare-pack-IST)
+      Written by the page when a traveler downloads a pack and
+      deleted by the page when they remove it. Device-level:
+      they survive new versions of the app and new trips.
+
+   Trip data is NEVER stored here. The active trip lives in
+   the page's sessionStorage and is discarded when a new
+   ticket loads, so resetting a trip never touches either
+   cache and never unregisters this worker.
 
    Works on GitHub Pages (https) and localhost. Browsers do
    not run service workers when index.html is opened from a
@@ -17,7 +30,8 @@
    get the new version.
    ========================================================= */
 
-const CACHE_VERSION = "skycare-navigator-v1";
+const CACHE_VERSION = "skycare-navigator-v2";
+const SHELL_PREFIX = "skycare-navigator-";
 
 const CORE_FILES = [
   "./",
@@ -31,24 +45,31 @@ const CORE_FILES = [
   "./images/icon-512.png"
 ];
 
+function cacheShell() {
+  return caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_FILES));
+}
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_FILES)).then(() => self.skipWaiting())
-  );
+  event.waitUntil(cacheShell().then(() => self.skipWaiting()));
 });
 
+// Remove OLD app-shell versions only. Airport-pack caches are left alone.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys
+        .filter((k) => k.indexOf(SHELL_PREFIX) === 0 && k !== CACHE_VERSION)
+        .map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-// "Download pack" buttons ask the worker to refresh the offline copy.
+// The page asks for the shell to be (re)cached after a pack download
+// or after "Clear All SkyCare Data" removed it.
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "CACHE_PACKS") {
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_FILES)).catch(() => {});
+  const type = event.data && event.data.type;
+  if (type === "CACHE_SHELL" || type === "CACHE_PACKS") {
+    event.waitUntil ? event.waitUntil(cacheShell().catch(() => {})) : cacheShell().catch(() => {});
   }
 });
 
@@ -57,8 +78,13 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Same-origin files: network first (fresh when online), cache when offline.
   if (url.origin === self.location.origin) {
+    // Airport-pack resources exist only in their own pack cache.
+    if (url.pathname.indexOf("/packs/") > -1) {
+      event.respondWith(caches.match(req).then((hit) => hit || new Response("Airport pack not on this device.", { status: 404 })));
+      return;
+    }
+    // App shell: network first (fresh when online), cache when offline.
     event.respondWith(
       fetch(req)
         .then((res) => {

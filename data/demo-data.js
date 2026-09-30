@@ -2,14 +2,15 @@
    SKYCARE NAVIGATOR | DEMO DATA
    ---------------------------------------------------------
    Everything the prototype "knows" lives in this one file:
-     1. DEMO TRIP ........ the sample FLL → IST → DXB journey
+     1. DEMO TRIPS ....... Trip A FLL → IST → DXB,
+                           Trip B MIA → LHR → CDG
      2. SCENARIO CLOCK ... the moments used during the demo
-     3. IST DEMO MAP ..... fictional terminal layout + places
+     3. DEMO MAP ......... fictional terminal layout + places
      4. ROUTES ........... walking routes and times
      5. AIRPORT PACKS .... offline pack contents (demo)
      6. PHRASES .......... language assistance phrase book
-     7. CONNECTIVITY ..... Dubai arrival connectivity guide
-     8. MEALS ............ meal preference options
+     7. CONNECTIVITY ..... (per trip) destination guide
+     8. MEALS ............ (per trip) meal service options
      9. HUMAN SERVICES ... who SkyCare routes you to
 
    All data is fictional demonstration content. The carrier
@@ -27,79 +28,207 @@
 window.SKYCARE_DATA = {
 
   /* -------------------------------------------------------
-     1. DEMO TRIP
+     1. DEMO TRIPS
+     Two sample tickets so the "New Trip" flow can be shown.
+     Both use the same FICTIONAL transfer-terminal layout
+     (section 3) with the connection airport's name on it.
+     Trip-specific text (emergency numbers, destination
+     connectivity, meal service) lives inside each trip.
      ------------------------------------------------------- */
-  trip: {
-    passenger: "Demo Traveler",
-    bookingRef: "SKY7Q2",
-    carrier: "Demo Air",
-    carrierNote: "Fictional carrier used for this prototype",
-    route: ["FLL", "IST", "DXB"],
-    cities: { FLL: "Fort Lauderdale", IST: "Istanbul", DXB: "Dubai" },
-    flights: [
-      {
-        id: "f1",
-        number: "DA 1784",
-        from: "FLL", to: "IST",
-        depart: "11:40 PM", departDate: "Tue, Oct 13",
-        arrive: "5:40 PM", arriveDate: "Wed, Oct 14",
-        departTerminal: "Terminal 4", departGate: "G5",
-        arriveTerminal: "Main Terminal", arriveGate: "A4",
-        seat: "23C", duration: "11h 00m"
+  trips: [
+    {
+      id: "ist",
+      label: "Trip A",
+      passenger: "Demo Traveler",
+      bookingRef: "SKY7Q2",
+      reservationCodes: ["SKY7Q2"],
+      carrier: "Demo Air",
+      carrierNote: "Fictional carrier used for this prototype",
+      route: ["FLL", "IST", "DXB"],
+      cities: { FLL: "Fort Lauderdale", IST: "Istanbul", DXB: "Dubai" },
+      flights: [
+        {
+          id: "f1",
+          number: "DA 1784",
+          from: "FLL", to: "IST",
+          depart: "11:40 PM", departDate: "Tue, Oct 13",
+          arrive: "5:40 PM", arriveDate: "Wed, Oct 14",
+          departTerminal: "Terminal 4", departGate: "G5",
+          arriveTerminal: "Main Terminal", arriveGate: "A4",
+          seat: "23C", duration: "11h 00m"
+        },
+        {
+          id: "f2",
+          number: "DA 762",
+          from: "IST", to: "DXB",
+          depart: "7:40 PM", departDate: "Wed, Oct 14",
+          arrive: "12:55 AM", arriveDate: "Thu, Oct 15",
+          departTerminal: "Main Terminal", departGate: "B18",
+          arriveTerminal: "Terminal 3", arriveGate: "C12",
+          seat: "18A", duration: "4h 15m",
+          boardingStarts: "7:00 PM", boardingCloses: "7:22 PM",
+          boardingStartsMin: 19 * 60,
+          boardingClosesMin: 19 * 60 + 22 /* minutes after midnight, connection-airport local time */
+        }
+      ],
+      connection: { airport: "IST", name: "Istanbul Airport", scheduled: "2h 00m" },
+      baggage: {
+        pieces: 1,
+        tag: "DA 482915",
+        checkedTo: "DXB",
+        status: "Transferred",
+        statusDetail: "Transfer scan recorded at IST (demo)"
       },
-      {
-        id: "f2",
-        number: "DA 762",
-        from: "IST", to: "DXB",
-        depart: "7:40 PM", departDate: "Wed, Oct 14",
-        arrive: "12:55 AM", arriveDate: "Thu, Oct 15",
-        departTerminal: "Main Terminal", departGate: "B18",
-        arriveTerminal: "Terminal 3", arriveGate: "C12",
-        seat: "18A", duration: "4h 15m",
-        boardingStarts: "7:00 PM", boardingCloses: "7:22 PM",
-        boardingClosesMin: 19 * 60 + 22 /* minutes after midnight, IST local */
-      }
-    ],
-    connection: { airport: "IST", name: "Istanbul Airport", scheduled: "2h 00m" },
-    baggage: {
-      pieces: 1,
-      tag: "DA 482915",
-      checkedTo: "DXB",
-      status: "Transferred",
-      statusDetail: "Transfer scan recorded at IST (demo)"
+      needs: "None requested",
+      preferences: {
+        languages: ["English", "Arabic"],
+        meal: "halal",
+        seat: "Window",
+        alerts: "Push + vibration"
+      },
+      localLang: "tr",
+      simHint: "a UAE option",
+      friendFrom: { code: "LHR", city: "London" },
+      emergency: {
+        short: "112 in Türkiye",
+        label: "112 (Türkiye)",
+        list: [["Türkiye · all emergencies", "112"], ["UAE · ambulance", "998"], ["UAE · police", "999"]]
+      },
+      connectivity: {
+        destination: "Dubai (DXB)",
+        options: [
+          { title: "Roaming", body: "Check with your home carrier before departure. Roaming prices vary widely by plan, so SkyCare reminds you to confirm them before you land." },
+          { title: "Local SIM", body: "Airport shops and carrier counters usually sell tourist SIMs. You will typically need your passport, and your phone must be unlocked." },
+          { title: "eSIM", body: "Travel eSIMs can be installed before the trip. Your phone must support eSIM and be unlocked. A production version would list authorized partners only." },
+          { title: "Airport Wi-Fi", body: "Most major airports offer Wi-Fi. The airport pack stores the network name and login steps from the airport's official information, so you can find it without data." },
+          { title: "Emergency calling", body: "Emergency numbers are stored offline in the airport pack. In the UAE: Police 999, Ambulance 998. 112 is also widely supported on mobile phones." }
+        ]
+      },
+      meals: {
+        flight: "DA 762 · IST → DXB",
+        service: "Dinner service (demo)",
+        cutoff: "Preorder closes 24 hours before departure (demo value; each airline sets its own)",
+        options: [
+          { id: "chicken", name: "Chicken", note: "Grilled chicken, rice, seasonal vegetables" },
+          { id: "vegetarian", name: "Vegetarian", note: "Vegetable moussaka, bulgur pilaf" },
+          { id: "halal", name: "Halal", note: "Saved preference · Lamb kofta, rice" },
+          { id: "kosher", name: "Kosher", note: "Sealed certified meal" },
+          { id: "special", name: "Special dietary request", note: "Allergies, gluten-free, diabetic, and more" }
+        ]
+      },
+      placeLabels: {}
     },
-    needs: "None requested",
-    preferences: {
-      languages: ["English", "Arabic"],
-      meal: "Halal",
-      seat: "Window",
-      alerts: "Push + vibration"
+    {
+      id: "lhr",
+      label: "Trip B",
+      passenger: "Demo Traveler",
+      bookingRef: "SKY4L9",
+      reservationCodes: ["SKY4L9"],
+      carrier: "Demo Air",
+      carrierNote: "Fictional carrier used for this prototype",
+      route: ["MIA", "LHR", "CDG"],
+      cities: { MIA: "Miami", LHR: "London", CDG: "Paris" },
+      flights: [
+        {
+          id: "f1",
+          number: "DA 211",
+          from: "MIA", to: "LHR",
+          depart: "6:25 PM", departDate: "Tue, Oct 13",
+          arrive: "8:10 AM", arriveDate: "Wed, Oct 14",
+          departTerminal: "North Terminal", departGate: "D22",
+          arriveTerminal: "Terminal 5", arriveGate: "A4",
+          seat: "31D", duration: "8h 45m"
+        },
+        {
+          id: "f2",
+          number: "DA 318",
+          from: "LHR", to: "CDG",
+          depart: "10:10 AM", departDate: "Wed, Oct 14",
+          arrive: "12:25 PM", arriveDate: "Wed, Oct 14",
+          departTerminal: "Terminal 5", departGate: "B18",
+          arriveTerminal: "Terminal 2E", arriveGate: "K40",
+          seat: "7F", duration: "1h 15m",
+          boardingStarts: "9:30 AM", boardingCloses: "9:52 AM",
+          boardingStartsMin: 9 * 60 + 30,
+          boardingClosesMin: 9 * 60 + 52
+        }
+      ],
+      connection: { airport: "LHR", name: "London Heathrow", scheduled: "2h 00m" },
+      baggage: {
+        pieces: 2,
+        tag: "DA 730461",
+        checkedTo: "CDG",
+        status: "Transferred",
+        statusDetail: "Transfer scan recorded at LHR (demo)"
+      },
+      needs: "None requested",
+      preferences: {
+        languages: ["English", "Arabic"],
+        meal: "halal",
+        seat: "Aisle",
+        alerts: "Push + vibration"
+      },
+      localLang: "fr",
+      simHint: "a French or EU-wide option",
+      friendFrom: { code: "MAD", city: "Madrid" },
+      emergency: {
+        short: "999 or 112 in the UK",
+        label: "999 or 112 (UK)",
+        list: [["UK · all emergencies", "999 / 112"], ["France · all emergencies", "112"], ["France · medical (SAMU)", "15"]]
+      },
+      connectivity: {
+        destination: "Paris (CDG)",
+        options: [
+          { title: "Roaming", body: "Check with your home carrier before departure. Some plans include EU roaming and some charge daily fees, so SkyCare reminds you to confirm before you land." },
+          { title: "Local SIM", body: "Shops and carrier counters usually sell prepaid SIMs. You will typically need your passport, and your phone must be unlocked." },
+          { title: "eSIM", body: "Travel eSIMs covering France or the whole EU can be installed before the trip. Your phone must support eSIM and be unlocked. A production version would list authorized partners only." },
+          { title: "Airport Wi-Fi", body: "Most major airports offer Wi-Fi. The airport pack stores the network name and login steps from the airport's official information, so you can find it without data." },
+          { title: "Emergency calling", body: "Emergency numbers are stored offline in the airport pack. In France: 112 for all emergencies, 15 for medical (SAMU), 17 for police." }
+        ]
+      },
+      meals: {
+        flight: "DA 318 · LHR → CDG",
+        service: "Light snack service (demo)",
+        cutoff: "Preorder closes 24 hours before departure (demo value; each airline sets its own)",
+        options: [
+          { id: "chicken", name: "Chicken", note: "Chicken wrap, fruit" },
+          { id: "vegetarian", name: "Vegetarian", note: "Cheese and tomato sandwich" },
+          { id: "halal", name: "Halal", note: "Saved preference · Halal chicken wrap" },
+          { id: "kosher", name: "Kosher", note: "Sealed certified snack box" },
+          { id: "special", name: "Special dietary request", note: "Allergies, gluten-free, diabetic, and more" }
+        ]
+      },
+      placeLabels: { halal: "Thames Grill (halal)" }
     }
-  },
+  ],
 
   /* -------------------------------------------------------
      2. SCENARIO CLOCK
      The prototype does not use the real time of day. Instead
      the presenter picks a moment in the journey. SkyCare's
      advice changes based on the moment chosen.
-     min = minutes after midnight, IST local time.
+     beforeClose = minutes before the connecting flight's
+     boarding closes (clock times are worked out per trip).
      ------------------------------------------------------- */
   scenarios: [
-    { id: "landed",  min: 17 * 60 + 52, label: "5:52 PM", title: "Landed on time",  note: "90 minutes before boarding closes" },
-    { id: "walking", min: 18 * 60 + 54, label: "6:54 PM", title: "Walking to gate", note: "28 minutes before boarding closes" },
-    { id: "late",    min: 19 * 60 + 4,  label: "7:04 PM", title: "Delayed arrival", note: "18 minutes before boarding closes" },
-    { id: "risk",    min: 19 * 60 + 14, label: "7:14 PM", title: "Very late",       note: "8 minutes before boarding closes" }
+    { id: "landed",  beforeClose: 90, title: "Landed on time",  note: "90 minutes before boarding closes" },
+    { id: "walking", beforeClose: 28, title: "Walking to gate", note: "28 minutes before boarding closes" },
+    { id: "late",    beforeClose: 18, title: "Delayed arrival", note: "18 minutes before boarding closes" },
+    { id: "risk",    beforeClose: 8,  title: "Very late",       note: "8 minutes before boarding closes" }
   ],
 
   /* -------------------------------------------------------
-     3. IST DEMO TERMINAL MAP
+     3. DEMO TRANSFER-TERMINAL MAP
      A FICTIONAL layout used only to demonstrate the concept.
-     It is not a real Istanbul Airport floor plan.
+     It is not a real Istanbul, Heathrow, or any other
+     airport floor plan. Both demo trips reuse it.
      Coordinates are in a 1000 × 560 drawing space.
      ------------------------------------------------------- */
   map: {
-    title: "IST DEMO TERMINAL MAP",
-    disclaimer: "Fictional layout for demonstration. Not an official Istanbul Airport floor plan.",
+    /* title and disclaimer are set per trip by script.js,
+       e.g. "IST DEMO TERMINAL MAP" / "LHR DEMO TERMINAL MAP" */
+    title: "DEMO TERMINAL MAP",
+    disclaimer: "Fictional layout for demonstration. Not an official airport floor plan.",
     you: { x: 120, y: 480, label: "You · Arrival Gate A4" },
     zones: [
       { label: "Arrivals Hall", x: 40,  y: 40,  w: 200, h: 170, kind: "landside" },
@@ -180,12 +309,16 @@ window.SKYCARE_DATA = {
 
   /* -------------------------------------------------------
      5. AIRPORT PACKS (offline)
+     Device-level downloads, reusable across trips.
      Pack sizes are demo values, not measurements.
      ------------------------------------------------------- */
   packs: [
     { code: "FLL", name: "Fort Lauderdale", size: "12 MB", lang: "English, Spanish" },
     { code: "IST", name: "Istanbul",        size: "18 MB", lang: "Turkish, English" },
-    { code: "DXB", name: "Dubai",           size: "16 MB", lang: "Arabic, English" }
+    { code: "DXB", name: "Dubai",           size: "16 MB", lang: "Arabic, English" },
+    { code: "MIA", name: "Miami",           size: "14 MB", lang: "English, Spanish" },
+    { code: "LHR", name: "London Heathrow", size: "19 MB", lang: "English" },
+    { code: "CDG", name: "Paris Charles de Gaulle", size: "17 MB", lang: "French, English" }
   ],
   packContents: [
     "Terminal layout", "Saved gate zones", "Restrooms", "Medical locations",
@@ -215,36 +348,12 @@ window.SKYCARE_DATA = {
     { id: "sim", en: "Where can I buy a SIM card?", ar: "أين يمكنني شراء شريحة اتصال؟", tr: "Nereden SIM kart alabilirim?", es: "¿Dónde puedo comprar una tarjeta SIM?", fr: "Où puis-je acheter une carte SIM ?" }
   ],
 
-  /* -------------------------------------------------------
-     7. CONNECTIVITY (Dubai arrival guide)
-     General guidance only. SkyCare does not sell eSIMs.
-     ------------------------------------------------------- */
-  connectivity: {
-    destination: "Dubai (DXB)",
-    options: [
-      { title: "Roaming", body: "Check with your home carrier before departure. Roaming prices vary widely by plan, so SkyCare reminds you to confirm them before you land." },
-      { title: "Local SIM", body: "Airport shops and carrier counters usually sell tourist SIMs. You will typically need your passport, and your phone must be unlocked." },
-      { title: "eSIM", body: "Travel eSIMs can be installed before the trip. Your phone must support eSIM and be unlocked. A production version would list authorized partners only." },
-      { title: "Airport Wi-Fi", body: "Most major airports offer Wi-Fi. The airport pack stores the network name and login steps from the airport's official information, so you can find it without data." },
-      { title: "Emergency calling", body: "Emergency numbers are stored offline in the airport pack. In the UAE: Police 999, Ambulance 998. 112 is also widely supported on mobile phones." }
-    ]
-  },
-
-  /* -------------------------------------------------------
-     8. MEALS
-     ------------------------------------------------------- */
-  meals: {
-    flight: "DA 762 · IST → DXB",
-    service: "Dinner service (demo)",
-    cutoff: "Preorder closes 24 hours before departure (demo value; each airline sets its own)",
-    options: [
-      { id: "chicken", name: "Chicken", note: "Grilled chicken, rice, seasonal vegetables" },
-      { id: "vegetarian", name: "Vegetarian", note: "Vegetable moussaka, bulgur pilaf" },
-      { id: "halal", name: "Halal", note: "Saved preference · Lamb kofta, rice" },
-      { id: "kosher", name: "Kosher", note: "Sealed certified meal" },
-      { id: "special", name: "Special dietary request", note: "Allergies, gluten-free, diabetic, and more" }
-    ]
-  },
+  /* 7 + 8. CONNECTIVITY and MEALS now live inside each trip
+     (trips[n].connectivity, trips[n].meals). script.js copies
+     the active trip's values to SKYCARE_DATA.connectivity and
+     SKYCARE_DATA.meals when a trip is loaded. */
+  connectivity: null,
+  meals: null,
 
   /* -------------------------------------------------------
      9. HUMAN SERVICES
@@ -258,3 +367,8 @@ window.SKYCARE_DATA = {
     { id: "skycare", name: "SkyCare Support", place: "infoC", helps: "Problems with the SkyCare app itself", ready: "Nothing, we already have your trip" }
   ]
 };
+
+/* The trip shown before any ticket is loaded (preview only). */
+window.SKYCARE_DATA.trip = window.SKYCARE_DATA.trips[0];
+window.SKYCARE_DATA.connectivity = window.SKYCARE_DATA.trip.connectivity;
+window.SKYCARE_DATA.meals = window.SKYCARE_DATA.trip.meals;

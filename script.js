@@ -6,6 +6,7 @@
 
     1. Helpers
     2. Smart Context Engine (shared state)
+    2b. Storage, active trip, trip session, confirm dialog
     3. Navigation, scroll progress, reveal
     4. Problem section (fragmented → connected)
     5. Trip import + itinerary + hero card
@@ -21,10 +22,11 @@
    15. Family Guardian
    16. Travel Group + Meet Me
    17. Language assistance
-   18. Offline packs + service worker
+   18. Offline packs (device-level) + service worker
    19. Connectivity + meals
    20. Human assistance
    21. Main map filters
+   21b. Privacy & Storage controls
    22. Presentation Mode
    23. Start-up
    ========================================================= */
@@ -81,10 +83,15 @@
      needs, and connectivity. Change state with setState().
      ======================================================= */
   var F2 = D.trip.flights[1];
+  // Scenario clock times are relative to the connecting flight's boarding close.
+  function scenarioMin(s) { return F2.boardingClosesMin - s.beforeClose; }
+  function scenarioById(id) { return D.scenarios.filter(function (x) { return x.id === id; })[0]; }
   var state = {
-    tripLoaded: false,
+    tripLoaded: false,      // a ticket/reservation is loaded
+    tripId: null,           // which demo itinerary ("ist" / "lhr")
+    sessionId: null,        // unique per loaded ticket; namespaces the saved session
     scenario: "landed",
-    now: D.scenarios[0].min,
+    now: scenarioMin(D.scenarios[0]),
     gate: "B18",
     gateChanged: false,
     accessible: false,
@@ -135,6 +142,250 @@
   var MODE_LABEL = { relaxed: "Relaxed", focused: "On track", rush: "Connection Rush", risk: "Connection at risk", closed: "Boarding closed" };
 
   /* =======================================================
+     2b. STORAGE, ACTIVE TRIP, TRIP SESSION, CONFIRM DIALOG
+     ---------------------------------------------------------
+     SkyCare keeps three kinds of data apart:
+
+     1. TRIP SESSION (sessionStorage, this tab only)
+        "skycare:active"           → { sessionId, tripId }
+        "skycare:trip:<sessionId>" → state + chat + feature state
+        Restored on a refresh of the SAME trip. Discarded when a
+        new ticket loads, on Delete Current Trip Data, or when
+        the tab closes. Never shared between itineraries.
+     2. PREFERENCES (localStorage "skycare:prefs")
+        Phrase-book language + step-free default. No trip data.
+     3. DEVICE AIRPORT PACKS (localStorage "skycare:packs" +
+        Cache Storage "skycare-pack-<CODE>")
+        Reusable airport resources that outlive any one trip.
+     The app shell cache ("skycare-navigator-vN") is managed by
+     service-worker.js and is never touched by a trip reset.
+     ======================================================= */
+  var KEY = { packs: "skycare:packs", prefs: "skycare:prefs", active: "skycare:active", tripPrefix: "skycare:trip:" };
+  var PACK_CACHE_PREFIX = "skycare-pack-";
+  function noop() {}
+  function storeOf(kind) { try { return window[kind] || null; } catch (e) { return null; } }
+  function sGet(kind, k) { var st = storeOf(kind); if (!st) return null; try { var v = st.getItem(k); return v === null ? null : JSON.parse(v); } catch (e) { return null; } }
+  function sSet(kind, k, v) { var st = storeOf(kind); if (!st) return; try { st.setItem(k, JSON.stringify(v)); } catch (e) { /* storage full or blocked */ } }
+  function sDel(kind, k) { var st = storeOf(kind); if (!st) return; try { st.removeItem(k); } catch (e) { /* ignore */ } }
+  function sKeys(kind) { var st = storeOf(kind), out = []; if (!st) return out; try { for (var i = 0; i < st.length; i++) out.push(st.key(i)); } catch (e) { /* ignore */ } return out; }
+
+  // Small change feed for the Privacy & Storage panel.
+  var storageListeners = [];
+  function storageChanged() { storageListeners.forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } }); }
+
+  /* ---- 2. Preferences (persist between journeys) ---- */
+  var Prefs = {
+    get: function () {
+      var p = sGet("localStorage", KEY.prefs) || {};
+      return { lang: D.languages[p.lang] ? p.lang : "en", stepFree: p.stepFree === true };
+    },
+    set: function (patch) {
+      var p = Prefs.get();
+      Object.keys(patch).forEach(function (k) { p[k] = patch[k]; });
+      sSet("localStorage", KEY.prefs, p);
+      storageChanged();
+    }
+  };
+
+  /* ---- 3. Device-level airport packs (persist across trips) ---- */
+  function packInfo(code) { return D.packs.filter(function (p) { return p.code === code; })[0]; }
+  var DevicePacks = (function () {
+    function list() {
+      var v = sGet("localStorage", KEY.packs);
+      return Array.isArray(v) ? v.filter(function (c) { return !!packInfo(c); }) : [];
+    }
+    function has(code) { return list().indexOf(code) > -1; }
+    function canCache() { return !!window.caches && /^https?:$/.test(location.protocol); }
+    function cachePack(code) {
+      // Stores a small airport-specific resource in its own cache so it can be removed on its own.
+      if (!canCache()) return;
+      var p = packInfo(code);
+      var body = JSON.stringify({ code: code, name: p.name, languages: p.lang, contents: D.packContents, phrases: D.phrases, note: "SkyCare demo airport pack. Fictional data." });
+      caches.open(PACK_CACHE_PREFIX + code).then(function (cache) {
+        return cache.put(new Request("./packs/" + code + ".json"), new Response(body, { headers: { "Content-Type": "application/json" } }));
+      }).catch(noop);
+    }
+    function add(code) {
+      var l = list();
+      if (l.indexOf(code) < 0) { l.push(code); sSet("localStorage", KEY.packs, l); }
+      cachePack(code);
+    }
+    function remove(code) {
+      sSet("localStorage", KEY.packs, list().filter(function (c) { return c !== code; }));
+      if (canCache()) caches.delete(PACK_CACHE_PREFIX + code).catch(noop);
+    }
+    // One-time migration from v1 markers ("skycare-pack-IST" = "1").
+    (function migrate() {
+      var st = storeOf("localStorage"); if (!st) return;
+      var l = list(), changed = false;
+      D.packs.forEach(function (p) {
+        var k = "skycare-pack-" + p.code, v = null;
+        try { v = st.getItem(k); } catch (e) { /* ignore */ }
+        if (v !== null) { if (l.indexOf(p.code) < 0) l.push(p.code); changed = true; sDel("localStorage", k); }
+      });
+      if (changed) sSet("localStorage", KEY.packs, l);
+    })();
+    return { list: list, has: has, add: add, remove: remove };
+  })();
+
+  /* ---- Active trip: which demo itinerary the screens describe ---- */
+  var ORIG_PLACE_LABELS = {}, ORIG_DETOUR_NAMES = {};
+  D.map.places.forEach(function (p) { ORIG_PLACE_LABELS[p.id] = p.label; });
+  Object.keys(D.detours).forEach(function (k) { ORIG_DETOUR_NAMES[k] = D.detours[k].name; });
+  function tripById(id) { return D.trips.filter(function (t) { return t.id === id; })[0] || null; }
+  function tripCity(code) { return D.trip.cities[code] || code; }
+  function destCity() { return tripCity(F2.to); }
+  function connCode() { return D.trip.connection.airport; }
+  function connCity() { return tripCity(connCode()); }
+
+  function activateTrip(id) {
+    var t = tripById(id) || D.trips[0], labels = t.placeLabels || {};
+    D.trip = t;
+    F2 = t.flights[1];
+    D.connectivity = t.connectivity;
+    D.meals = t.meals;
+    D.map.title = t.connection.airport + " DEMO TERMINAL MAP";
+    D.map.disclaimer = "Fictional layout for demonstration. Not an official " + t.connection.name + " floor plan.";
+    D.map.places.forEach(function (p) { p.label = labels[p.id] || ORIG_PLACE_LABELS[p.id]; });
+    Object.keys(D.detours).forEach(function (k) { var d = D.detours[k]; d.name = labels[d.place] || ORIG_DETOUR_NAMES[k]; });
+    applyTripText();
+    return t;
+  }
+  function applyTripText() {
+    var t = D.trip, r = t.route, m = {
+      route: r.join(" → "), c0: r[0], c1: r[1], c2: r[2], n0: tripCity(r[0]), n1: tripCity(r[1]), n2: tripCity(r[2]),
+      conn: connCode(), connCity: connCity(), dest: F2.to, destCity: destCity(), f1: t.flights[0].number, f2: F2.number,
+      destLabel: t.connectivity.destination, mealFlight: t.meals.flight, mapDisclaimer: D.map.disclaimer,
+      emergency: t.emergency.short, friendFrom: t.friendFrom.code, friendCity: t.friendFrom.city
+    };
+    $$("[data-t]").forEach(function (el) { var k = el.getAttribute("data-t"); if (m[k] !== undefined) el.textContent = m[k]; });
+  }
+  // Clean trip-specific state for the active trip (preferences applied, nothing inherited).
+  function tripDefaults() {
+    return {
+      scenario: "landed", now: scenarioMin(D.scenarios[0]), gate: F2.departGate, gateChanged: false,
+      accessible: Prefs.get().stepFree, assistance: false, meal: D.trip.preferences.meal,
+      group: "solo", detour: null, medical: false
+    };
+  }
+
+  /* ---- 1. Trip session ----
+     Every feature with trip-specific state registers a part:
+       reset()      → back to a clean journey
+       save()       → small JSON snapshot for same-trip refresh
+       restore(v)   → rebuild from that snapshot */
+  var TRIP_KEYS = ["scenario", "now", "gate", "gateChanged", "accessible", "assistance", "meal", "group", "detour", "medical"];
+  var Session = (function () {
+    var parts = [], saveTimer = null, quiet = false;
+    function register(name, part) { part.name = name; parts.push(part); }
+    function newId() { return "trip-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8); }
+    function snapshot() {
+      var st = {}, mods = {};
+      TRIP_KEYS.forEach(function (k) { st[k] = state[k]; });
+      parts.forEach(function (p) { if (p.save) { try { mods[p.name] = p.save(); } catch (e) { console.error(e); } } });
+      return { v: 1, sessionId: state.sessionId, tripId: state.tripId, savedAt: Date.now(), state: st, parts: mods };
+    }
+    function persistNow() {
+      clearTimeout(saveTimer); saveTimer = null;
+      if (quiet || !state.tripLoaded || !state.sessionId) return;
+      sSet("sessionStorage", KEY.tripPrefix + state.sessionId, snapshot());
+      sSet("sessionStorage", KEY.active, { sessionId: state.sessionId, tripId: state.tripId });
+    }
+    function persist() { if (quiet) return; clearTimeout(saveTimer); saveTimer = setTimeout(persistNow, 150); }
+    function dropStored() {
+      sKeys("sessionStorage").forEach(function (k) { if (k === KEY.active || k.indexOf(KEY.tripPrefix) === 0) sDel("sessionStorage", k); });
+    }
+    function runParts(fn) { parts.forEach(function (p) { try { fn(p); } catch (e) { console.error("SkyCare reset/restore (" + p.name + "):", e); } }); }
+
+    // Discard ALL trip-specific data. Preferences, airport packs, and the app shell are untouched.
+    function clear(nextTripId) {
+      clearTimeout(saveTimer); saveTimer = null;
+      dropStored();
+      activateTrip(nextTripId || D.trips[0].id);
+      quiet = true;
+      var patch = tripDefaults();
+      patch.tripLoaded = false; patch.tripId = null; patch.sessionId = null;
+      setState(patch);
+      runParts(function (p) { if (p.reset) p.reset(); });
+      quiet = false;
+      setState({});
+      storageChanged();
+    }
+    // A new ticket finished loading: give it a fresh session ID.
+    function begin(tripId) {
+      setState({ tripLoaded: true, tripId: tripId, sessionId: newId() });
+      persistNow();
+      storageChanged();
+    }
+    // Same-trip refresh: restore only the session stored under the active session ID.
+    function restore() {
+      var a = sGet("sessionStorage", KEY.active);
+      if (!a || !a.sessionId) { dropStored(); return false; }
+      var snap = sGet("sessionStorage", KEY.tripPrefix + a.sessionId);
+      if (!snap || snap.sessionId !== a.sessionId || !tripById(snap.tripId)) { dropStored(); return false; }
+      sKeys("sessionStorage").forEach(function (k) { if (k.indexOf(KEY.tripPrefix) === 0 && k !== KEY.tripPrefix + a.sessionId) sDel("sessionStorage", k); });
+      quiet = true;
+      activateTrip(snap.tripId);
+      var patch = tripDefaults();
+      TRIP_KEYS.forEach(function (k) { if (snap.state && snap.state[k] !== undefined) patch[k] = snap.state[k]; });
+      patch.tripLoaded = true; patch.tripId = snap.tripId; patch.sessionId = snap.sessionId;
+      setState(patch);
+      runParts(function (p) { if (p.reset) p.reset(); if (p.restore && snap.parts && snap.parts[p.name] !== undefined) p.restore(snap.parts[p.name]); });
+      quiet = false;
+      setState({});
+      storageChanged();
+      return true;
+    }
+    onState(persist);
+    return { register: register, persist: persist, clear: clear, begin: begin, restore: restore };
+  })();
+  activateTrip(D.trips[0].id); // preview trip until a ticket is loaded
+
+  /* ---- Confirmation dialog ---- */
+  var Confirm = (function () {
+    var bd = $("#confirmModal"), title = $("#cmTitle"), body = $("#cmBody"), ok = $("#cmOk"), cancel = $("#cmCancel"), onOk = null, lastFocus = null;
+    function open(o, cb) {
+      onOk = cb;
+      title.textContent = o.title;
+      body.innerHTML = o.body;
+      ok.textContent = o.ok;
+      ok.className = "btn " + (o.danger ? "btn-danger" : "btn-primary");
+      lastFocus = document.activeElement;
+      bd.hidden = false;
+      document.body.classList.add("modal-open");
+      setTimeout(function () { cancel.focus(); }, 30);
+    }
+    function close() {
+      bd.hidden = true;
+      document.body.classList.remove("modal-open");
+      onOk = null;
+      if (lastFocus && lastFocus.focus && document.contains(lastFocus)) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+    }
+    ok.addEventListener("click", function () { var cb = onOk; close(); if (cb) cb(); });
+    cancel.addEventListener("click", close);
+    bd.addEventListener("click", function (e) { if (e.target === bd) close(); });
+    document.addEventListener("keydown", function (e) {
+      if (bd.hidden) return;
+      if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+      else if (e.key === "Tab") { e.preventDefault(); (document.activeElement === ok ? cancel : ok).focus(); }
+    }, true);
+    return { open: open, close: close, isOpen: function () { return !bd.hidden; } };
+  })();
+
+  var NEW_TRIP_BODY = "<p>Loading a new trip will clear:</p><ul>" +
+    ["current Sky conversation", "current itinerary", "route and gate status", "connection status", "baggage state", "temporary assistance requests", "current detours", "family/group state", "meal state"].map(function (x) { return "<li>" + x + "</li>"; }).join("") +
+    '</ul><p class="keep">Downloaded airport packs will stay on this device.</p>';
+  // Runs `then` right away when no trip is active; otherwise asks first and clears the old trip.
+  function confirmNewTrip(then) {
+    if (!state.tripLoaded) { then(); return; }
+    Confirm.open({ title: "Start a new journey?", body: NEW_TRIP_BODY, ok: "Start New Trip" }, function () {
+      Session.clear();
+      toast("Previous trip cleared. <b>Every new journey starts clean.</b>", "ok");
+      then();
+    });
+  }
+
+  /* =======================================================
      3. NAVIGATION, SCROLL PROGRESS, REVEAL
      ======================================================= */
   var navToggle = $("#navToggle"), navMenu = $("#navMenu"), moreBtn = $("#moreBtn"), moreMenu = $("#moreMenu");
@@ -159,7 +410,7 @@
   }, { passive: true });
 
   var navLinks = $$(".nav-links a[data-nav]");
-  var navGroups = { home: ["home", "problem", "how"], dashboard: ["trip", "dashboard"], navigate: ["navigate", "rush", "detours", "map", "access"], ask: ["ask"], help: ["help", "medical", "human", "family", "group", "meet"], profile: ["profile", "language", "offline", "connect", "meals"] };
+  var navGroups = { home: ["home", "problem", "how"], dashboard: ["trip", "dashboard"], navigate: ["navigate", "rush", "detours", "map", "access"], ask: ["ask"], help: ["help", "medical", "human", "family", "group", "meet"], profile: ["profile", "storage", "language", "offline", "connect", "meals"] };
   function sectionToNav(id) { for (var k in navGroups) if (navGroups[k].indexOf(id) > -1) return k; return null; }
 
   if ("IntersectionObserver" in window) {
@@ -245,7 +496,8 @@
      ======================================================= */
   var Trip = (function () {
     var scanBox = $("#scanBox"), steps = $$("#scanSteps li"), itin = $("#itinerary"), body = $("#itinBody"), resForm = $("#resForm");
-    var busy = false;
+    var busy = false, loadToken = 0;
+    var heroFeedIdle = $("#heroFeed").innerHTML, heroStatusIdle = $("#heroStatus").textContent;
 
     function render() {
       var t = D.trip, f1 = t.flights[0], f2 = t.flights[1];
@@ -265,7 +517,7 @@
         '<div class="conn-strip">' + icon("clock") + 'Connection in ' + t.connection.name + ' · ' + t.connection.scheduled + ' scheduled · arrive Gate ' + f1.arriveGate + '</div>' +
         leg(f2) +
         '<div class="itin-facts">' +
-          '<div><span>Baggage</span><strong>' + t.baggage.pieces + ' bag · ' + t.baggage.tag + '</strong></div>' +
+          '<div><span>Baggage</span><strong>' + plural(t.baggage.pieces, "bag") + ' · ' + t.baggage.tag + '</strong></div>' +
           '<div><span>Checked to</span><strong>' + t.baggage.checkedTo + ' · ' + t.baggage.status + '</strong></div>' +
           '<div><span>Needs</span><strong class="js-needs">' + (state.accessible ? "Wheelchair assistance" : t.needs) + '</strong></div>' +
           '<div><span>Languages</span><strong>' + t.preferences.languages.join(", ") + '</strong></div>' +
@@ -277,20 +529,31 @@
     }
 
     function heroLoaded() {
-      var card = $(".hero-card");
-      card.classList.add("loaded");
+      var t = D.trip, f = t.flights, onDevice = t.route.filter(function (c) { return DevicePacks.has(c); });
+      $(".hero-card").classList.add("loaded");
       $("#heroStatus").textContent = "SkyCare is ready";
       $("#heroFeed").innerHTML =
-        '<li class="ok">' + icon("check") + 'Trip imported · DA 1784 + DA 762</li>' +
-        '<li class="ok">' + icon("check") + 'Airport packs ready · FLL · IST · DXB</li>' +
-        '<li class="ok">' + icon("check") + 'Connection in Istanbul · 2h 00m</li>' +
-        '<li class="ok">' + icon("check") + 'Bag DA 482915 checked through to DXB</li>';
+        '<li class="ok">' + icon("check") + 'Trip imported · ' + f[0].number + ' + ' + f[1].number + '</li>' +
+        '<li class="' + (onDevice.length === t.route.length ? "ok" : "") + '">' + icon(onDevice.length === t.route.length ? "check" : "download") + 'Airport packs on this device · ' + onDevice.length + ' of ' + t.route.length + (onDevice.length ? ' (' + onDevice.join(" · ") + ')' : '') + '</li>' +
+        '<li class="ok">' + icon("check") + 'Connection in ' + connCity() + ' · ' + t.connection.scheduled + '</li>' +
+        '<li class="ok">' + icon("check") + 'Bag ' + t.baggage.tag + ' checked through to ' + t.baggage.checkedTo + '</li>';
+    }
+    function heroIdle() {
+      $(".hero-card").classList.remove("loaded");
+      $("#heroStatus").textContent = heroStatusIdle;
+      $("#heroFeed").innerHTML = heroFeedIdle;
     }
 
-    function load(method) {
+    // Loading a ticket always starts a brand-new trip session.
+    function load(method, tripId) {
       if (busy) return;
+      var t = tripById(tripId) || D.trips[0];
+      Session.clear(t.id);          // discard any previous trip before the new one appears
       busy = true;
+      var token = ++loadToken;
       resForm.hidden = true;
+      $("#scanFrom").textContent = t.route[0];
+      $("#scanTo").textContent = t.route[t.route.length - 1];
       var labels = {
         pass: ["Scanning boarding pass…", "Reading itinerary…", "Finding airport maps…", "Checking connection…", "Loading traveler preferences…"],
         res: ["Looking up booking reference…", "Reading itinerary…", "Finding airport maps…", "Checking connection…", "Loading traveler preferences…"],
@@ -301,41 +564,85 @@
       itin.setAttribute("data-loaded", "false");
       var i = 0, stepMs = reduceMotion ? 60 : 480;
       (function next() {
+        if (token !== loadToken) return;
         if (i > 0) steps[i - 1].className = "done";
         if (i < steps.length) { steps[i].className = "run"; i++; setTimeout(next, stepMs); return; }
         setTimeout(function () {
+          if (token !== loadToken) return;
           scanBox.classList.remove("active");
+          busy = false;
+          Session.begin(t.id);
           render();
           itin.setAttribute("data-loaded", "true");
           heroLoaded();
-          busy = false;
-          setState({ tripLoaded: true });
-          toast("<b>SkyCare is ready.</b> FLL → IST → DXB loaded.", "ok");
+          Sky.resetConversation(true); // fresh greeting for this journey
+          Packs.render();
+          toast("<b>SkyCare is ready.</b> " + t.route.join(" → ") + " loaded. Every new journey starts clean.", "ok");
         }, stepMs);
       })();
     }
 
+    // Any import while a trip is active goes through the "Start a new journey?" dialog.
+    function requestLoad(method, tripId, before) {
+      if (busy) { toast("A trip is loading. One moment…", ""); return; }
+      confirmNewTrip(function () { if (before) before(); load(method, tripId); });
+    }
+    function newTrip() {
+      if (busy) return;
+      if (!state.tripLoaded) { scrollToId("trip"); toast("No trip is active. Upload a boarding pass, import a reservation, or load a demo trip.", ""); return; }
+      confirmNewTrip(function () { scrollToId("trip"); });
+    }
+
     document.addEventListener("click", function (e) {
+      var nt = e.target.closest('[data-action="new-trip"]');
+      if (nt) { newTrip(); return; }
       var b = e.target.closest('[data-action="load-demo"]');
       if (!b) return;
-      if (b.closest("#home") && !document.body.classList.contains("present-mode")) scrollToId("trip");
-      if (b.closest("#home") && document.body.classList.contains("present-mode")) Present.goToSection("trip");
-      setTimeout(function () { load("demo"); }, b.closest("#home") ? 450 : 0);
+      var fromHero = !!b.closest("#home"), tripId = b.getAttribute("data-trip") || D.trips[0].id;
+      requestLoad("demo", tripId, function () {
+        if (fromHero) scrollToId("trip");
+        else if (!b.closest("#trip")) scrollToId("trip");
+      });
     });
     $("#passFile").addEventListener("change", function () {
-      // The file is intentionally never read or uploaded. The demo trip loads instead.
-      if (this.files && this.files.length) load("pass");
+      // The file is intentionally never read or uploaded. Demo Trip A loads instead.
+      var picked = this.files && this.files.length;
       this.value = "";
+      if (picked) requestLoad("pass", D.trips[0].id);
     });
     $("#importResBtn").addEventListener("click", function () { resForm.hidden = !resForm.hidden; if (!resForm.hidden) $("#resCode").focus(); });
-    resForm.addEventListener("submit", function (e) { e.preventDefault(); load("res"); });
+    resForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var code = $("#resCode").value.trim().toUpperCase();
+      var t = D.trips.filter(function (x) { return x.reservationCodes.indexOf(code) > -1; })[0];
+      if (!t) { toast("Demo booking not found. Try <b>SKY7Q2</b> (Trip A) or <b>SKY4L9</b> (Trip B).", "warn"); return; }
+      requestLoad("res", t.id);
+    });
 
     onState(function (ctx) {
       $$(".js-gate-f2").forEach(function (el) { el.textContent = ctx.gate; });
       $$(".js-needs").forEach(function (el) { el.textContent = ctx.accessible ? "Wheelchair assistance" : D.trip.needs; });
       $$(".js-meal").forEach(function (el) { el.textContent = mealName(ctx.meal); });
     });
-    return { load: load };
+
+    Session.register("trip", {
+      reset: function () {
+        loadToken++; busy = false;
+        scanBox.classList.remove("active");
+        steps.forEach(function (li) { li.className = ""; });
+        resForm.hidden = true;
+        itin.setAttribute("data-loaded", "false");
+        body.innerHTML = "";
+        heroIdle();
+      },
+      restore: function () {
+        render();
+        itin.setAttribute("data-loaded", "true");
+        heroLoaded();
+      },
+      save: function () { return true; }
+    });
+    return { load: load, newTrip: newTrip, heroLoaded: heroLoaded };
   })();
 
   function mealName(v) { return v === "halal" ? "Halal" : v === "vegetarian" ? "Vegetarian" : "No preference"; }
@@ -344,15 +651,20 @@
      6. DASHBOARD + DEMO CLOCK + PROFILE
      ======================================================= */
   var Dash = (function () {
-    var chipsEl = $("#clockChips");
-    chipsEl.innerHTML = D.scenarios.map(function (s) {
-      return '<button type="button" class="chip" data-scenario="' + s.id + '"><span class="mono">' + s.label + '</span>' + s.title + '</button>';
-    }).join("");
+    var chipsEl = $("#clockChips"), chipsFor = null;
+    function buildChips() {
+      chipsFor = D.trip.id;
+      chipsEl.innerHTML = D.scenarios.map(function (s) {
+        return '<button type="button" class="chip" data-scenario="' + s.id + '"><span class="mono">' + fmt(scenarioMin(s)) + '</span>' + s.title + '</button>';
+      }).join("");
+    }
+    buildChips();
     chipsEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-scenario]"); if (b) setScenario(b.getAttribute("data-scenario"));
     });
 
     onState(function (ctx) {
+      if (chipsFor !== D.trip.id) buildChips();
       $$(".chip", chipsEl).forEach(function (c) { c.classList.toggle("active", c.getAttribute("data-scenario") === state.scenario); });
       var modeEl = $("#dashMode");
       modeEl.textContent = MODE_LABEL[ctx.mode] + " mode";
@@ -370,7 +682,8 @@
       if (ctx.assistance) assist.push("Wheelchair assistance · shared");
       else if (ctx.accessible) assist.push("Step-free route on");
       $("#dashAssist").textContent = assist.length ? assist.join(" · ") : "None requested";
-      $("#dashConn").textContent = ctx.offline ? "Offline · using downloaded airport pack" : "Online · offline airport pack downloaded";
+      var cc = connCode(), ccOn = DevicePacks.has(cc);
+      $("#dashConn").textContent = ctx.offline ? (ccOn ? "Offline · using the " + cc + " pack on this device" : "Offline · " + cc + " pack not downloaded") : (ccOn ? "Online · " + cc + " pack on this device" : "Online · " + cc + " pack not downloaded yet");
 
       var why;
       if (ctx.mode === "relaxed") why = "<b>Why:</b> " + ctx.closesIn + " min until boarding closes and " + aN(ctx.walk) + ctx.walk + "-minute walk leaves " + ctx.slack + " min to spare, so Sky can suggest restaurants, lounges, and shopping.";
@@ -384,7 +697,13 @@
 
     // Profile controls
     $("#prefAccess").addEventListener("change", function () { setAccessible(this.checked); });
-    $("#prefMeal").addEventListener("change", function () { setState({ meal: this.value }); toast("Meal preference saved: <b>" + mealName(this.value) + "</b>. Sky and the meal section now use it.", "ok"); });
+    $("#prefMeal").addEventListener("change", function () { setState({ meal: this.value }); toast("Meal preference for this trip: <b>" + mealName(this.value) + "</b>. Sky and the meal section now use it.", "ok"); });
+    $("#prefStepFree").checked = Prefs.get().stepFree;
+    $("#prefStepFree").addEventListener("change", function () {
+      Prefs.set({ stepFree: this.checked });
+      toast(this.checked ? "Saved on this device: <b>new trips start with step-free routes.</b> The current trip is unchanged." : "Step-free default off. The current trip is unchanged.", "ok");
+    });
+    storageListeners.push(function () { $("#prefStepFree").checked = Prefs.get().stepFree; });
     $("#prefGroup").addEventListener("change", function () { setState({ group: this.value }); toast(this.value === "family" ? "Family group on. Family Guardian and Travel Group are active." : "Traveling solo.", "ok"); });
     onState(function (ctx) {
       $("#prefAccess").checked = ctx.accessible;
@@ -394,9 +713,9 @@
   })();
 
   function setScenario(id) {
-    var s = D.scenarios.filter(function (x) { return x.id === id; })[0];
+    var s = scenarioById(id);
     if (!s) return;
-    var patch = { scenario: id, now: s.min };
+    var patch = { scenario: id, now: scenarioMin(s) };
     if (id !== "landed") { patch.gate = "F7"; patch.gateChanged = true; }
     if (id === "late" || id === "risk") patch.detour = null;
     setState(patch);
@@ -491,7 +810,8 @@
       F7: [["↑", 0, "CONTINUE STRAIGHT", "moving walkway ahead · 400 ft"], ["↑", 0, "STAY ON THE WALKWAY", "Pier F in about 5 min"], ["↑", 0, "CONTINUE STRAIGHT", "toward Gates F1–F12"]],
       ACC: [["↑", 0, "CONTINUE STRAIGHT", "Elevator E2 in 40 ft, on the left"], ["←", 0, "TURN LEFT", "Elevator E2 · step-free route"], ["↑", 0, "CONTINUE STRAIGHT", "accessible restroom on the right"]]
     };
-    var step = 0, timer = null, busy = false, stream = null, visible = false;
+    var step = 0, timer = null, busy = false, stream = null, visible = false, pending = [];
+    function later(fn, ms) { pending.push(setTimeout(fn, ms)); }
 
     function routeKey(ctx) { return ctx.accessible ? "ACC" : ctx.gate; }
     function addLog(html, cls) {
@@ -539,14 +859,14 @@
       if (state.gate === "F7") { toast("The gate already changed to F7. Press Reset to replay the demo.", "warn"); return; }
       busy = true;
       screen.classList.add("alerting");
-      addLog("WARNING: gate changed <strong>B18 → F7</strong> (demo airline update).", "warn");
-      setTimeout(function () {
+      addLog("WARNING: gate changed <strong>" + state.gate + " → F7</strong> (demo airline update).", "warn");
+      later(function () {
         screen.setAttribute("data-route", "NONE");
         screen.classList.add("erasing");
-        addLog("Removing old route to B18…");
+        addLog("Removing old route to " + F2.departGate + "…");
       }, 1300);
-      setTimeout(function () { screen.classList.add("recalc"); addLog("Recalculating walking time…"); }, 2300);
-      setTimeout(function () {
+      later(function () { screen.classList.add("recalc"); addLog("Recalculating walking time…"); }, 2300);
+      later(function () {
         screen.classList.remove("erasing", "recalc", "alerting");
         busy = false;
         setState({ gate: "F7", gateChanged: true, detour: null });
@@ -558,14 +878,24 @@
       }, 3700);
     }
 
-    function reset() {
+    function clearRun() {
+      pending.forEach(clearTimeout); pending = [];
       stopCamera();
       busy = false;
       screen.classList.remove("erasing", "recalc", "alerting");
       log.innerHTML = "";
-      setState({ gate: "B18", gateChanged: false, scenario: "landed", now: D.scenarios[0].min, detour: null, medical: false });
-      addLog("Route to <strong>Gate B18</strong> loaded. " + context().walk + " min walk.");
+      step = 0;
     }
+    function reset() {
+      clearRun();
+      setState({ gate: F2.departGate, gateChanged: false, scenario: "landed", now: scenarioMin(D.scenarios[0]), detour: null, medical: false });
+      addLog("Route to <strong>Gate " + state.gate + "</strong> loaded. " + context().walk + " min walk.");
+    }
+    Session.register("ar", {
+      reset: function () { clearRun(); hud(context()); },
+      save: function () { return log.innerHTML.length < 6000 ? log.innerHTML : ""; },
+      restore: function (html) { log.innerHTML = html || ""; hud(context()); }
+    });
 
     function startCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -626,8 +956,8 @@
     }
     function showCd() { var m = Math.floor(secs / 60), s = secs % 60; cd.textContent = m + ":" + (s < 10 ? "0" : "") + s; }
     onState(render);
-    $("#rushBtn").addEventListener("click", function () { setScenario("late"); toast("Late arrival: 7:04 PM. SkyCare switched to <b>Connection Rush Mode</b>.", "warn"); });
-    $("#rushRiskBtn").addEventListener("click", function () { setScenario("risk"); toast("7:14 PM: the walk is longer than the time left. SkyCare says so honestly.", "warn"); });
+    $("#rushBtn").addEventListener("click", function () { setScenario("late"); toast("Late arrival: " + fmt(scenarioMin(scenarioById("late"))) + ". SkyCare switched to <b>Connection Rush Mode</b>.", "warn"); });
+    $("#rushRiskBtn").addEventListener("click", function () { setScenario("risk"); toast(fmt(scenarioMin(scenarioById("risk"))) + ": the walk is longer than the time left. SkyCare says so honestly.", "warn"); });
     $("#rushResetBtn").addEventListener("click", function () { setScenario("landed"); });
     $("#rsAltBtn").addEventListener("click", function () { $("#rsAlt").hidden = !$("#rsAlt").hidden; });
   })();
@@ -645,6 +975,9 @@
 
   var Sky = (function () {
     var logEl = $("#skyLog"), form = $("#skyForm"), input = $("#skyText"), greeted = false;
+    // history = this trip's conversation only. epoch changes on every reset so a
+    // reply that was still "typing" can never land in a different conversation.
+    var history = [], epoch = 0, MAX_HISTORY = 60, prev = {}, seq = 0;
 
     function ctxLine(ctx) {
       return "Context used: " + ctx.nowLabel + " · Gate " + ctx.gate + " · " + Math.max(ctx.closesIn, 0) + " min to close · " + MODE_LABEL[ctx.mode] + (ctx.accessible ? " · step-free" : "") + (ctx.offline ? " · offline pack" : "");
@@ -695,7 +1028,7 @@
       { id: "unwell", re: /(don'?t|do not|not) feel (well|good)|feel sick|i'?m sick|dizzy|chest|faint|can'?t breathe|medical|doctor|hurt|injur|emergency|ambulance/i,
         respond: function (ctx) {
           setState({ medical: true });
-          return { tone: "urgent", text: "I'm sorry you're not feeling well. <b>If this is an emergency, tell the nearest airport or airline staff member right now</b> or call 112 (Türkiye). I've set other suggestions aside.<br>Medical Center: 5 min · Nearest AED: 1 min.",
+          return { tone: "urgent", text: "I'm sorry you're not feeling well. <b>If this is an emergency, tell the nearest airport or airline staff member right now</b> or call " + D.trip.emergency.label + ". I've set other suggestions aside.<br>Medical Center: 5 min · Nearest AED: 1 min.",
             actions: [{ label: "Request medical assistance", act: "med:urgent", primary: true }, { label: "Nearest medical location", act: "med:medical" }, { label: "Emergency numbers", act: "med:emergency" }] };
         } },
       { id: "family", re: /(child|kid|son|daughter|family member|mom|dad|mother|father|brother|sister|sibling).*(missing|lost|can'?t find)|(missing|lost).*(child|kid|son|daughter|family)/i,
@@ -706,7 +1039,7 @@
       { id: "bag", re: /bag|luggage|suitcase|baggage/i,
         respond: function () {
           var b = D.trip.baggage;
-          return { text: "Your bag <b>" + b.tag + "</b> is checked through to Dubai, so you won't collect it in Istanbul. Last scan: " + b.statusDetail + ". If it doesn't arrive at DXB, I'll take you to Baggage Services with your tag and boarding pass ready.",
+          return { text: "Your bag <b>" + b.tag + "</b> is checked through to " + destCity() + ", so you won't collect it in " + connCity() + ". Last scan: " + b.statusDetail + ". If it doesn't arrive at " + b.checkedTo + ", I'll take you to Baggage Services with your tag and boarding pass ready.",
             actions: [{ label: "Show missing-bag help", act: "problem:bag", primary: true }] };
         } },
       { id: "missed", re: /miss(ed)? (my )?(connection|flight)|rebook/i,
@@ -727,7 +1060,7 @@
       { id: "coffee", re: /coffee|latte|espresso|tea\b|caf[eé]/i, respond: function (ctx) { return detourReply("coffee", ctx); } },
       { id: "flightfood", re: /(food|meal|eat|menu|dinner).*(flight|plane|board|onboard)|(flight|plane|onboard).*(food|meal|menu)/i,
         respond: function (ctx) {
-          return { text: "DA 762 to Dubai has a dinner service (demo). Your saved preference is <b>" + mealName(ctx.meal) + "</b>. Preorders close before departure; each airline sets its own cutoff, and some don't support preorder through SkyCare.",
+          return { text: F2.number + " to " + destCity() + " has a " + D.meals.service.replace(/^./, function (c) { return c.toLowerCase(); }) + ". Your saved preference is <b>" + mealName(ctx.meal) + "</b>. Preorders close before departure; each airline sets its own cutoff, and some don't support preorder through SkyCare.",
             actions: [{ label: "Meal options", act: "goto:meals", primary: true }] };
         } },
       { id: "hungry", re: /hungry|food|eat|restaurant|lunch|dinner|snack|starving/i,
@@ -750,19 +1083,20 @@
         } },
       { id: "gate", re: /gate|where.*(go|flight)|which way|directions/i,
         respond: function (ctx) {
-          return { text: "Your flight <b>DA 762 to Dubai</b> leaves from <b>Gate " + ctx.gate + "</b>, " + ctx.pier + (ctx.gateChanged ? " (changed from B18)" : "") + ". It's " + aN(ctx.walk) + ctx.walk + "-minute walk" + (ctx.accessible ? " on a step-free route" : "") + ". Boarding closes at " + F2.boardingCloses + ".",
+          return { text: "Your flight <b>" + F2.number + " to " + destCity() + "</b> leaves from <b>Gate " + ctx.gate + "</b>, " + ctx.pier + (ctx.gateChanged ? " (changed from " + F2.departGate + ")" : "") + ". It's " + aN(ctx.walk) + ctx.walk + "-minute walk" + (ctx.accessible ? " on a step-free route" : "") + ". Boarding closes at " + F2.boardingCloses + ".",
             actions: [{ label: "Navigate", act: "navigate", primary: true }, { label: "Show map", act: "goto:map" }] };
         } },
       { id: "boarding", re: /boarding|how long|what time|when.*(board|leave|depart)|departure/i,
         respond: function (ctx) {
-          var started = ctx.now >= 19 * 60;
-          return { text: "Boarding for DA 762 " + (started ? "started" : "starts") + " at " + F2.boardingStarts + " and closes at " + F2.boardingCloses + ". It's " + ctx.nowLabel + ", so you have <b>" + dur(Math.max(ctx.closesIn, 0)) + "</b> until the doors close, and your walk is " + ctx.walk + " min.",
+          var started = ctx.now >= F2.boardingStartsMin;
+          return { text: "Boarding for " + F2.number + " " + (started ? "started" : "starts") + " at " + F2.boardingStarts + " and closes at " + F2.boardingCloses + ". It's " + ctx.nowLabel + ", so you have <b>" + dur(Math.max(ctx.closesIn, 0)) + "</b> until the doors close, and your walk is " + ctx.walk + " min.",
             actions: [{ label: "Navigate", act: "navigate", primary: true }] };
         } },
       { id: "sim", re: /\bsim\b|esim|data|wi-?fi|internet|roaming|phone plan/i,
         respond: function (ctx) {
-          if (ctx.mode === "rush" || ctx.mode === "risk") return { tone: "caution", text: "Not now; your connection is tight. Your offline DXB pack will work when you land, and I'll show connectivity options in Dubai.", actions: [{ label: "Dubai connectivity", act: "goto:connect" }] };
-          return { text: "The SIM & eSIM Desk is on the main concourse, about 3 min away. Since you're continuing to Dubai, a UAE option may make more sense; check that your phone is unlocked first.", actions: [{ label: "Dubai connectivity options", act: "goto:connect", primary: true }] };
+          var packLine = DevicePacks.has(F2.to) ? "Your offline " + F2.to + " pack will work when you land" : "Download the " + F2.to + " airport pack while you're online so it works when you land";
+          if (ctx.mode === "rush" || ctx.mode === "risk") return { tone: "caution", text: "Not now; your connection is tight. " + packLine + ", and I'll show connectivity options in " + destCity() + ".", actions: [{ label: destCity() + " connectivity", act: "goto:connect" }] };
+          return { text: "The SIM & eSIM Desk is on the main concourse, about 3 min away. Since you're continuing to " + destCity() + ", " + D.trip.simHint + " may make more sense; check that your phone is unlocked first.", actions: [{ label: destCity() + " connectivity options", act: "goto:connect", primary: true }] };
         } },
       { id: "meet", re: /meet|friend|pick (me|up)|find (him|her|them)/i,
         respond: function () {
@@ -778,8 +1112,8 @@
       { id: "human", re: /human|person|agent|someone|staff|representative|talk to/i,
         respond: function () { return { text: "Of course. Tell me what it's about and I'll send you to the right desk, already prepared. AI handles information; people handle judgment and care.", actions: [{ label: "Talk to a person", act: "goto:human", primary: true }] }; } },
       { id: "hello", re: /^(hi|hello|hey|salam|merhaba|good (morning|evening|afternoon))\b/i,
-        respond: function (ctx) { return { text: "Hi! I'm following DA 762 to Dubai from Gate " + ctx.gate + ". Ask me about your gate, food, time, or anything that goes wrong." }; } },
-      { id: "thanks", re: /thank|thanks|shukran|teşekkür/i, respond: function () { return { text: "You're welcome. I'm here the whole way to Dubai." }; } }
+        respond: function (ctx) { return { text: "Hi! I'm following " + F2.number + " to " + destCity() + " from Gate " + ctx.gate + ". Ask me about your gate, food, time, or anything that goes wrong." }; } },
+      { id: "thanks", re: /thank|thanks|shukran|teşekkür/i, respond: function () { return { text: "You're welcome. I'm here the whole way to " + destCity() + "." }; } }
     ];
 
     function detourReply(kind, ctx) {
@@ -806,10 +1140,12 @@
       return new Promise(function (res) { setTimeout(function () { res(localReply(text)); }, reduceMotion ? 50 : 550 + Math.random() * 350); });
     }
 
-    function addMsg(who, html, extra) {
+    function addMsg(who, html, extra, used) {
       var m = document.createElement("div");
       m.className = "msg msg-" + who + (extra && extra.tone ? " " + extra.tone : "");
       m.innerHTML = html;
+      var id = ++seq;
+      m.setAttribute("data-i", String(id));
       if (extra && extra.ctx) m.innerHTML += '<span class="msg-ctx">' + esc(extra.ctx) + "</span>";
       if (extra && extra.actions && extra.actions.length) {
         var row = document.createElement("div");
@@ -818,12 +1154,17 @@
           var b = document.createElement("button");
           b.type = "button"; b.textContent = a.label; b.setAttribute("data-act", a.act);
           if (a.primary) b.className = "primary";
+          if (used) b.disabled = true;
           row.appendChild(b);
         });
         m.appendChild(row);
       }
       logEl.appendChild(m);
       logEl.scrollTop = logEl.scrollHeight;
+      history.push({ id: id, who: who, html: html, extra: extra ? { tone: extra.tone || "", ctx: extra.ctx || "", actions: extra.actions || [] } : null, used: !!used });
+      if (history.length > MAX_HISTORY) history.shift();
+      Session.persist();
+      storageChanged();
       return m;
     }
 
@@ -836,8 +1177,10 @@
       typing.innerHTML = "<i></i><i></i><i></i>";
       logEl.appendChild(typing);
       logEl.scrollTop = logEl.scrollHeight;
+      var mine = epoch;
       ask(text).then(function (r) {
         typing.remove();
+        if (mine !== epoch) return; // conversation was cleared or a new trip started
         addMsg("sky", r.text, r);
       });
     }
@@ -846,21 +1189,56 @@
       if (greeted) return;
       greeted = true;
       var ctx = context();
-      addMsg("sky", "Hi, I'm <b>Sky</b>. I'm following your trip: <b>DA 762 to Dubai</b>, Gate " + ctx.gate + ", boarding closes " + F2.boardingCloses + ". What do you need?", { ctx: ctxLine(ctx) });
+      if (state.tripLoaded) {
+        addMsg("sky", "Hi, I'm <b>Sky</b>. I'm following your trip: <b>" + F2.number + " to " + destCity() + "</b>, Gate " + ctx.gate + ", boarding closes " + F2.boardingCloses + ". What do you need?", { ctx: ctxLine(ctx) });
+      } else {
+        addMsg("sky", "Hi, I'm <b>Sky</b>. No ticket is loaded yet, so I'm previewing the sample journey (<b>" + F2.number + " to " + destCity() + "</b>). Load a trip and I'll start a fresh conversation for it.", { ctx: ctxLine(ctx) });
+      }
+    }
+
+    // Removes every user message, Sky message, typing indicator, and action button.
+    function resetConversation(greetNow) {
+      epoch++;
+      logEl.innerHTML = "";
+      history = [];
+      greeted = false;
+      input.value = "";
+      prev = {};
+      if (greetNow) greet();
+      Session.persist();
+      storageChanged();
     }
 
     form.addEventListener("submit", function (e) { e.preventDefault(); send(input.value); input.value = ""; });
     $("#skySuggest").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) send(b.textContent); });
     logEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-act]");
-      if (b) { runAction(b.getAttribute("data-act")); b.parentNode.querySelectorAll("button").forEach(function (x) { x.disabled = true; }); }
+      if (!b) return;
+      var msg = b.closest(".msg"), id = msg ? Number(msg.getAttribute("data-i")) : -1;
+      b.parentNode.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+      history.forEach(function (h) { if (h.id === id) h.used = true; });
+      Session.persist();
+      runAction(b.getAttribute("data-act"));
+    });
+    $("#skyClear").addEventListener("click", function () {
+      resetConversation(true);
+      toast(state.tripLoaded ? "Conversation cleared. Your trip, gate, route, and baggage details are unchanged." : "Conversation cleared.", "ok");
+    });
+
+    Session.register("sky", {
+      reset: function () { resetConversation(false); },
+      save: function () { return history.slice(-MAX_HISTORY); },
+      restore: function (list) {
+        if (!Array.isArray(list)) return;
+        list.forEach(function (h) { addMsg(h.who === "user" ? "user" : "sky", h.html, h.extra, h.used); });
+        greeted = history.length > 0;
+      }
     });
 
     // Context panel ("What Sky knows right now")
-    var prev = {};
     onState(function (ctx) {
       var rows = [
-        ["Time (IST)", ctx.nowLabel], ["Next flight", "DA 762 → DXB"], ["Gate", ctx.gate + (ctx.gateChanged ? " (changed)" : "")],
+        ["Time (" + connCode() + ")", ctx.nowLabel], ["Next flight", F2.number + " → " + F2.to], ["Gate", ctx.gate + (ctx.gateChanged ? " (changed)" : "")],
         ["Walk", ctx.walk + " min"], ["Boarding closes", F2.boardingCloses + " (" + Math.max(ctx.closesIn, 0) + " min)"],
         ["Mode", MODE_LABEL[ctx.mode]], ["Accessibility", ctx.accessible ? "Step-free route" : "None"],
         ["Meal preference", mealName(ctx.meal)], ["Traveling", ctx.group === "family" ? "Family group" : "Solo"],
@@ -873,7 +1251,7 @@
       rows.forEach(function (r) { prev[r[0]] = r[1]; });
     });
 
-    return { greet: greet, send: send, evalDetour: evalDetour };
+    return { greet: greet, send: send, evalDetour: evalDetour, resetConversation: resetConversation, count: function () { return history.length; } };
   })();
 
   /* Shared action dispatcher (used by Sky and other buttons) */
@@ -893,7 +1271,7 @@
      11. SMART DETOURS
      ======================================================= */
   var Detours = (function () {
-    var ans = $("#detourAnswer"), svg = $("#detourMap"), current = null;
+    var ans = $("#detourAnswer"), svg = $("#detourMap"), current = null, ansIdle = ans.innerHTML, ansIdleClass = ans.className;
     var labels = { seafood: "I'm hungry. I want seafood.", restroom: "I need a restroom.", coffee: "Find coffee.", pharmacy: "I need a pharmacy.", charge: "Where can I charge my phone?", halal: "Find halal food.", vegetarian: "Find vegetarian food.", quiet: "Find a quiet area." };
 
     function ask(kind) {
@@ -935,6 +1313,16 @@
       if (e.target.closest("[data-keep]")) { if (state.detour) setState({ detour: null }); toast("Keeping the direct route to Gate " + state.gate + ".", "ok"); draw(null, false); }
     });
     onState(function () { current ? ask(current) : draw(null, false); });
+    Session.register("detours", {
+      reset: function () {
+        current = null;
+        $$("#detourChips button").forEach(function (b) { b.classList.remove("active"); });
+        ans.className = ansIdleClass; ans.innerHTML = ansIdle;
+        draw(null, false);
+      },
+      save: function () { return current; },
+      restore: function (v) { if (v && D.detours[v]) ask(v); }
+    });
     return { apply: apply };
   })();
 
@@ -943,32 +1331,33 @@
      ======================================================= */
   var Help = (function () {
     var detail = $("#helpDetail"), svg = $("#helpMap"), currentId = null;
-    var T = D.trip;
-    var problems = {
+    function build() {
+    var T = D.trip, F1 = T.flights[0], f2r = F2.number + " → " + F2.to, dc = destCity(), localName = D.languages[T.localLang] ? D.languages[T.localLang].name.split(" ")[0] : "the local language";
+    return {
       bag: { title: "My bag is missing", place: "baggage", min: 4,
-        knows: [["Bag tag", T.baggage.tag], ["Flight", "DA 762 → DXB"], ["Status", "No arrival scan detected (demo)"]],
-        steps: ["<b>Understood:</b> your checked bag didn't arrive on DA 762.", "<b>Where to go:</b> Baggage Services, Arrivals Hall. <b>4 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> tap Navigate There for a step-by-step route.", "<b>Have ready:</b> boarding pass, baggage tag, and identification.", "<b>Ask for:</b> a delayed baggage report and a file reference number."],
+        knows: [["Bag tag", T.baggage.tag], ["Flight", f2r], ["Status", "No arrival scan detected (demo)"]],
+        steps: ["<b>Understood:</b> your checked bag didn't arrive on " + F2.number + ".", "<b>Where to go:</b> Baggage Services, Arrivals Hall. <b>4 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> tap Navigate There for a step-by-step route.", "<b>Have ready:</b> boarding pass, baggage tag, and identification.", "<b>Ask for:</b> a delayed baggage report and a file reference number."],
         say: "My checked bag did not arrive. Could you help me file a delayed baggage report?", phrase: "bag",
-        note: "Demo scenario after landing at DXB; the map preview uses the IST demo layout." },
+        note: "Demo scenario after landing at " + F2.to + "; the map preview uses the " + connCode() + " demo layout." },
       missed: { title: "I missed my connection", place: "transfer", min: 2,
-        knows: [["Missed flight", "DA 762 → DXB"], ["Booking", T.bookingRef], ["Bag", "Checked to DXB"]],
-        steps: ["<b>Understood:</b> you can't board DA 762.", "<b>Where to go:</b> Demo Air Transfer Desk. <b>2 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> follow the route.", "<b>Have ready:</b> booking reference " + T.bookingRef + " and passport.", "<b>Ask for:</b> the next available flight, confirmation your bag follows you, and meal or hotel help if the wait is long."],
-        say: "I missed my connecting flight to Dubai. Can you rebook me on the next available flight?", phrase: "missed" },
+        knows: [["Missed flight", f2r], ["Booking", T.bookingRef], ["Bag", "Checked to " + T.baggage.checkedTo]],
+        steps: ["<b>Understood:</b> you can't board " + F2.number + ".", "<b>Where to go:</b> Demo Air Transfer Desk. <b>2 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> follow the route.", "<b>Have ready:</b> booking reference " + T.bookingRef + " and passport.", "<b>Ask for:</b> the next available flight, confirmation your bag follows you, and meal or hotel help if the wait is long."],
+        say: "I missed my connecting flight to " + dc + ". Can you rebook me on the next available flight?", phrase: "missed" },
       airline: { title: "I need airline help", place: "transfer", min: 2,
-        knows: [["Airline", "Demo Air"], ["Booking", T.bookingRef], ["Next flight", "DA 762 · Gate " + state.gate]],
+        knows: [["Airline", T.carrier], ["Booking", T.bookingRef], ["Next flight", F2.number + " · Gate " + state.gate]],
         steps: ["<b>Understood:</b> you need the airline, not the airport.", "<b>Where to go:</b> Demo Air Transfer Desk. <b>2 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> follow the route.", "<b>Have ready:</b> booking reference and boarding pass.", "<b>Ask for:</b> what you need in one sentence; SkyCare can show your trip on screen."],
-        say: "Hello, I'm connecting to Dubai on DA 762. Could you help me with my booking?", phrase: null },
+        say: "Hello, I'm connecting to " + dc + " on " + F2.number + ". Could you help me with my booking?", phrase: null },
       access: { title: "I need accessibility help", place: "assist", min: 1,
-        knows: [["Need", "Wheelchair assistance"], ["Flight", "DA 762"], ["Route", "Step-free via Elevator E2"]],
+        knows: [["Need", "Wheelchair assistance"], ["Flight", F2.number], ["Route", "Step-free via Elevator E2"]],
         steps: ["<b>Understood:</b> you need mobility help.", "<b>Where to go:</b> Accessibility Assistance point. <b>1 minute away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Navigate:</b> the step-free route turns on automatically.", "<b>Have ready:</b> flight number and the type of help you need.", "<b>Ask for:</b> an escort to Gate " + state.gate + ". Your request is already shared with each stage."],
         say: "I need wheelchair assistance to my connecting gate.", phrase: "wheelchair", onOpen: function () { setAccessible(true, true); } },
       unwell: { title: "I don't feel well", place: "medical", min: 5, urgent: true,
-        knows: [["Nearest medical", "Medical Center · 5 min"], ["Nearest AED", "1 min"], ["Emergency number", "112 (Türkiye)"]],
-        steps: ["<b>If this is an emergency, tell the nearest airport or airline staff member now</b> or call 112.", "<b>Where to go:</b> Medical Center. <b>5 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Request help:</b> use Medical Assistance to ask staff to come to you (simulated here).", "<b>Have ready:</b> symptoms, medications, allergies.", "<b>Say:</b> the phrase below; SkyCare can show it in Turkish."],
+        knows: [["Nearest medical", "Medical Center · 5 min"], ["Nearest AED", "1 min"], ["Emergency number", T.emergency.label]],
+        steps: ["<b>If this is an emergency, tell the nearest airport or airline staff member now</b> or call " + T.emergency.label + ".", "<b>Where to go:</b> Medical Center. <b>5 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>Request help:</b> use Medical Assistance to ask staff to come to you (simulated here).", "<b>Have ready:</b> symptoms, medications, allergies.", "<b>Say:</b> the phrase below; SkyCare can show it in " + localName + "."],
         say: "I need medical assistance.", phrase: "medical", navLabel: "Open Medical Assistance" },
       lostitem: { title: "I lost something", place: "lostfound", min: 6,
-        knows: [["Last flight", "DA 1784 · Seat 23C"], ["Lost & Found", "Arrivals Hall"], ["Airline", "Demo Air"]],
-        steps: ["<b>Understood:</b> you lost an item.", "<b>If left on the aircraft:</b> tell Demo Air first; the crew may still be on board.", "<b>Otherwise:</b> Lost & Found, Arrivals Hall. <b>6 minutes away.</b>", "<b>Navigate:</b> follow the route.", "<b>Have ready:</b> a description, where you last had it, and your seat number (23C).", "<b>Ask for:</b> a report number so you can follow up from Dubai."],
+        knows: [["Last flight", F1.number + " · Seat " + F1.seat], ["Lost & Found", "Arrivals Hall"], ["Airline", T.carrier]],
+        steps: ["<b>Understood:</b> you lost an item.", "<b>If left on the aircraft:</b> tell Demo Air first; the crew may still be on board.", "<b>Otherwise:</b> Lost & Found, Arrivals Hall. <b>6 minutes away.</b>", "<b>Navigate:</b> follow the route.", "<b>Have ready:</b> a description, where you last had it, and your seat number (" + F1.seat + ").", "<b>Ask for:</b> a report number so you can follow up from " + dc + "."],
         say: "I lost an item. Can I file a lost property report?", phrase: null },
       lost: { title: "I'm lost", place: "infoC", min: 5,
         knows: [["You are here", "Arrival Gate A4, Pier A"], ["Your gate", state.gate], ["Nearest help", "Information Desk C"]],
@@ -979,14 +1368,17 @@
         steps: ["<b>Tell the nearest airport staff member or security officer immediately.</b> They can act faster than any app.", "<b>Where to go:</b> Airport Security Office. <b>2 minutes away.</b>", "<b>Location:</b> highlighted on the map.", "<b>If your Travel Group was sharing:</b> SkyCare shows where each member last chose to share from.", "<b>Have ready:</b> name, age, clothing, a recent photo, and where you last saw them.", "<b>Ask for:</b> an airport-wide alert and a meeting point."],
         say: "My family member is missing. Please help me find them.", phrase: null, navLabel: "Navigate There" }
     };
+    }
+    var problems = build();
 
-    function sayLang() { var s = $("#langTo"); return s && s.value !== "en" ? s.value : "tr"; }
+    function sayLang() { var s = $("#langTo"); return s && s.value !== "en" ? s.value : (D.trip.localLang || "tr"); }
 
-    function open(id) {
+    function open(id, restoring) {
+      problems = build(); // always describes the active trip
       var p = problems[id];
       if (!p) return;
       currentId = id;
-      if (id === "airline") p.knows[2][1] = "DA 762 · Gate " + state.gate;
+      if (id === "airline") p.knows[2][1] = F2.number + " · Gate " + state.gate;
       if (id === "lost") p.knows[1][1] = state.gate;
       $$("#helpGrid button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-problem") === id); });
       detail.hidden = false;
@@ -998,7 +1390,7 @@
       var pl = place(p.place);
       $("#hdWhere").textContent = pl.label + " · " + p.min + " min away" + (p.note ? " · " + p.note : "");
       renderMap(svg, { highlightIds: [p.place], title: false });
-      if (p.onOpen) p.onOpen();
+      if (p.onOpen && !restoring) p.onOpen();
     }
 
     $("#helpGrid").addEventListener("click", function (e) { var b = e.target.closest("[data-problem]"); if (b) open(b.getAttribute("data-problem")); });
@@ -1016,6 +1408,18 @@
         (ph ? '<p class="say-tr" dir="' + L.dir + '" lang="' + lang + '">' + L.name + ": " + esc(ph[lang]) + "</p>" : '<p class="say-tr">Tip: open Language Assistance to show a phrase in another language.</p>');
       box.hidden = false;
     });
+    Session.register("help", {
+      reset: function () {
+        currentId = null;
+        problems = build();
+        detail.hidden = true;
+        $("#hdSayBox").hidden = true;
+        $$("#helpGrid button").forEach(function (b) { b.classList.remove("active"); });
+        svg.innerHTML = "";
+      },
+      save: function () { return currentId; },
+      restore: function (id) { if (id) open(id, true); }
+    });
     return { open: open };
   })();
 
@@ -1023,15 +1427,20 @@
      13. MEDICAL ASSISTANCE (SIMULATION ONLY)
      ======================================================= */
   var Medical = (function () {
-    var content = $("#medContent"), running = false;
+    var content = $("#medContent"), running = false, view = null, epoch = 0;
+    function idle() {
+      content.innerHTML = '<p class="muted">Select an option. In a real emergency, tell the nearest airport or airline employee immediately and call the local emergency number (' + esc(D.trip.emergency.short) + ').</p>';
+    }
     function mark(which) { $$(".med-btn").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-med") === which || (which === "urgent" && b.id === "medUrgentBtn")); }); }
 
     function show(which) {
       if (which === "urgent-offer") which = "urgent";
       mark(which);
+      view = which;
+      Session.persist();
       if (which === "urgent") return urgent();
       if (which === "emergency") {
-        content.innerHTML = '<div class="med-info"><h4>Emergency numbers (stored offline)</h4><div class="med-numbers"><div><span>Türkiye · all emergencies</span><strong>112</strong></div><div><span>UAE · ambulance</span><strong>998</strong></div><div><span>UAE · police</span><strong>999</strong></div></div><ul><li>Fastest help inside an airport: any airport or airline employee.</li><li>SkyCare shows these numbers; it does not place calls in this prototype.</li></ul></div>';
+        content.innerHTML = '<div class="med-info"><h4>Emergency numbers (stored offline)</h4><div class="med-numbers">' + D.trip.emergency.list.map(function (n) { return "<div><span>" + esc(n[0]) + "</span><strong>" + esc(n[1]) + "</strong></div>"; }).join("") + '</div><ul><li>Fastest help inside an airport: any airport or airline employee.</li><li>SkyCare shows these numbers; it does not place calls in this prototype.</li></ul></div>';
         return;
       }
       var id = which === "aed" ? "aed1" : "medical";
@@ -1039,26 +1448,41 @@
       renderMap($("#medMap"), { highlightIds: [id], route: pathTo(D.map.you, place(id)), draw: true, title: false });
     }
 
+    function received() {
+      var box = document.createElement("div");
+      box.className = "med-received";
+      box.innerHTML = "<strong>Assistance request received.</strong><p class=\"muted\">Prototype simulation: no one was contacted. Stay where you are and tell any airport employee you need medical help. In production, the airport's medical team would confirm here.</p>";
+      content.appendChild(box);
+    }
     function urgent() {
       if (running) return;
       running = true;
+      var mine = epoch;
       setState({ medical: true });
       var steps = ["Sharing your current airport location with authorized airport assistance…", "Sending flight details and the notes you chose to share…", "Waiting for confirmation…"];
       content.innerHTML = '<ul class="med-progress">' + steps.map(function (s) { return '<li><span class="mark"></span>' + s + "</li>"; }).join("") + "</ul>";
       var lis = $$(".med-progress li", content), i = 0;
       (function next() {
+        if (mine !== epoch) return; // trip was reset mid-request
         if (i > 0) { lis[i - 1].className = "done"; lis[i - 1].querySelector(".mark").textContent = "✓"; }
         if (i < lis.length) { lis[i].className = "run"; i++; setTimeout(next, reduceMotion ? 50 : 1100); return; }
-        var box = document.createElement("div");
-        box.className = "med-received";
-        box.innerHTML = "<strong>Assistance request received.</strong><p class=\"muted\">Prototype simulation: no one was contacted. Stay where you are and tell any airport employee you need medical help. In production, the airport's medical team would confirm here.</p>";
-        content.appendChild(box);
+        received();
         running = false;
       })();
     }
 
     $("#medUrgentBtn").addEventListener("click", function () { show("urgent"); });
     $$(".med-btn[data-med]").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-med")); }); });
+    Session.register("medical", {
+      reset: function () { epoch++; running = false; view = null; mark(null); idle(); },
+      save: function () { return view; },
+      restore: function (v) {
+        if (!v) return;
+        if (v === "urgent") { view = v; mark("urgent"); content.innerHTML = ""; received(); return; }
+        show(v);
+      }
+    });
+    idle();
     return { show: show };
   })();
 
@@ -1096,7 +1520,7 @@
     var fam = { adult: "14A", kids: ["22F", "31B"] }, fixed = ["14B", "14C"];
     var taken = ["13C", "14D", "15A", "16E", "18B", "19F", "20A", "21D", "22C", "23A", "24E", "25B", "26F", "27C", "28A", "29D", "30E", "31A", "31C", "32F", "17C", "15F"];
     function build(resolved) {
-      var html = '<div class="sm-head"><strong>DA 762 · Demo seat map</strong><span>Rows 13–32</span></div><div class="sm-grid">';
+      var html = '<div class="sm-head"><strong>' + F2.number + ' · Demo seat map</strong><span>Rows 13–32</span></div><div class="sm-grid">';
       for (var r = 13; r <= 32; r++) {
         html += '<div class="sm-row"><span class="rn">' + r + "</span>";
         "ABC_DEF".split("").forEach(function (c) {
@@ -1124,6 +1548,18 @@
       build(ok);
       this.textContent = ok ? "Reset Demo" : "Demo: Airline Resolves";
       if (ok) toast("<b>Family seating resolved.</b> 14A · 14B · 14C (airline action, demo).", "ok");
+      Session.persist();
+    });
+    var resolveLabel = $("#fgResolve").textContent;
+    function setResolved(ok) {
+      alertBox.setAttribute("data-state", ok ? "ok" : "issue");
+      build(ok);
+      $("#fgResolve").textContent = ok ? "Reset Demo" : resolveLabel;
+    }
+    Session.register("family", {
+      reset: function () { setResolved(false); },
+      save: function () { return alertBox.getAttribute("data-state") === "ok"; },
+      restore: function (v) { setResolved(!!v); }
     });
   })();
 
@@ -1138,6 +1574,7 @@
       { name: "Sibling", init: "S", at: "Food Court", place: "halal", share: true }
     ];
     var list = $("#members"), svg = $("#groupMap"), result = $("#groupResult"), found = false;
+    var defaultShares = members.map(function (m) { return m.share; });
     function renderList() {
       list.innerHTML = members.map(function (m, i) {
         return '<li><span class="m-av">' + m.init + '</span><div><strong>' + m.name + '</strong><span class="m-loc' + (m.share ? " on" : "") + '">' + (m.share ? "Sharing · " + (m.place ? m.at : "location") : "Not sharing location") + '</span></div>' +
@@ -1157,28 +1594,34 @@
       if (i === null) return;
       members[i].share = e.target.checked;
       renderList(); renderGroupMap();
+      Session.persist();
     });
-    $("#findGroupBtn").addEventListener("click", function () {
+    function showFound() {
       var sharing = members.filter(function (m) { return m.share && m.place; });
-      if (!sharing.length) { result.innerHTML = "No one is sharing location right now. Ask your group to opt in, or meet at a desk you agree on."; found = false; renderGroupMap(); return; }
+      if (!sharing.length) { result.innerHTML = "No one is sharing location right now. Ask your group to opt in, or meet at a desk you agree on."; found = false; renderGroupMap(); return false; }
       found = true;
       result.innerHTML = sharing.map(function (m) { return m.name + " → " + m.at; }).join(" · ") + '<br>Recommended meeting point: <b>INFORMATION DESK C</b> · reachable by everyone in the airside transfer area.';
       renderGroupMap();
-      toast("Meeting point: <b>Information Desk C</b>. Each member gets their own route.", "ok");
+      return true;
+    }
+    $("#findGroupBtn").addEventListener("click", function () {
+      if (showFound()) toast("Meeting point: <b>Information Desk C</b>. Each member gets their own route.", "ok");
+      Session.persist();
     });
     $("#endGroupBtn").addEventListener("click", function () {
       members.forEach(function (m) { m.share = false; });
       found = false; renderList(); renderGroupMap();
       result.innerHTML = "Location sharing ended for everyone. Shared locations for this trip are deleted (demo).";
+      Session.persist();
     });
     renderList(); renderGroupMap();
 
     // Meet Me
     var meetSvg = $("#meetMap"), meetRes = $("#meetResult");
-    var friend = { x: 300, y: 150 }, meetPt = place("meetC");
+    var friend = { x: 300, y: 150 }, meetPt = place("meetC"), meetActive = false, meetCodeDefault = $("#meetCode").value;
     function renderMeet(active) {
       renderMap(meetSvg, {
-        people: active ? [{ x: friend.x, y: friend.y, label: "Friend (from LHR)", path: pathTo(friend, meetPt) }] : [],
+        people: active ? [{ x: friend.x, y: friend.y, label: "Friend (from " + D.trip.friendFrom.code + ")", path: pathTo(friend, meetPt) }] : [],
         route: active ? pathTo(D.map.you, meetPt) : null,
         target: active ? { x: meetPt.x, y: meetPt.y, label: "Meeting Point C" } : null, title: false
       });
@@ -1188,12 +1631,33 @@
       var code = $("#meetCode").value.trim().toUpperCase();
       if (!/^SK-\d{4}$/.test(code)) { toast("Meet codes look like <b>SK-4821</b>.", "warn"); return; }
       meetRes.hidden = false;
+      meetActive = true;
       renderMeet(true);
+      Session.persist();
       toast("Connected with code <b>" + code + "</b>. Both travelers opted in; sharing is temporary.", "ok");
     });
     $("#meetNav").addEventListener("click", function () { toast("Route to <b>Meeting Point C</b> started · 4 min. (Simulated)", "ok"); });
-    $("#meetEnd").addEventListener("click", function () { meetRes.hidden = true; renderMeet(false); toast("Location sharing ended. The meet code is no longer valid.", "ok"); });
+    $("#meetEnd").addEventListener("click", function () { meetRes.hidden = true; meetActive = false; renderMeet(false); Session.persist(); toast("Location sharing ended. The meet code is no longer valid.", "ok"); });
     renderMeet(false);
+
+    // Travel Group + Meet Me are temporary, trip-only state.
+    Session.register("group", {
+      reset: function () {
+        members.forEach(function (m, i) { m.share = defaultShares[i]; });
+        found = false; result.innerHTML = "";
+        renderList(); renderGroupMap();
+        meetActive = false; meetRes.hidden = true; $("#meetCode").value = meetCodeDefault;
+        renderMeet(false);
+      },
+      save: function () { return { shares: members.map(function (m) { return m.share; }), found: found, meet: meetActive }; },
+      restore: function (v) {
+        if (!v) return;
+        if (Array.isArray(v.shares)) members.forEach(function (m, i) { if (m.place) m.share = !!v.shares[i]; });
+        renderList(); renderGroupMap();
+        if (v.found) showFound();
+        if (v.meet) { meetActive = true; meetRes.hidden = false; renderMeet(true); }
+      }
+    });
   })();
 
   /* =======================================================
@@ -1203,7 +1667,8 @@
     var from = $("#langFrom"), to = $("#langTo"), list = $("#phraseList"), current = D.phrases[0].id;
     var opts = Object.keys(D.languages).map(function (k) { return '<option value="' + k + '">' + D.languages[k].name + "</option>"; }).join("");
     from.innerHTML = opts; to.innerHTML = opts;
-    from.value = "en"; to.value = "tr";
+    from.value = Prefs.get().lang;                       // saved preference
+    to.value = D.trip.localLang !== from.value ? D.trip.localLang : "en"; // follows the trip
     function renderList() {
       var L = D.languages[from.value];
       list.innerHTML = D.phrases.map(function (p) { return '<button type="button" data-phrase="' + p.id + '" dir="' + L.dir + '" class="' + (p.id === current ? "active" : "") + '">' + esc(p[from.value]) + "</button>"; }).join("");
@@ -1215,7 +1680,7 @@
       out.textContent = p[to.value]; out.setAttribute("dir", L.dir); out.setAttribute("lang", to.value);
       $("#speakNote").textContent = "";
     }
-    from.addEventListener("change", function () { renderList(); renderCard(); });
+    from.addEventListener("change", function () { Prefs.set({ lang: from.value }); renderList(); renderCard(); });
     to.addEventListener("change", renderCard);
     list.addEventListener("click", function (e) { var b = e.target.closest("[data-phrase]"); if (!b) return; current = b.getAttribute("data-phrase"); renderList(); renderCard(); });
     $("#speakBtn").addEventListener("click", function () {
@@ -1231,53 +1696,106 @@
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
     });
+    Session.register("language", {
+      reset: function () {
+        from.value = Prefs.get().lang;
+        to.value = D.trip.localLang !== from.value ? D.trip.localLang : "en";
+        current = D.phrases[0].id;
+        renderList(); renderCard();
+      }
+    });
     renderList(); renderCard();
   })();
 
   /* =======================================================
      18. OFFLINE PACKS + SERVICE WORKER
+     Airport packs are DEVICE-level: they stay after a refresh
+     and across trips until removed. The page lists the current
+     trip's airports separately from everything on this device.
      ======================================================= */
-  (function () {
-    var packsEl = $("#packs"), ready = {};
-    packsEl.innerHTML = D.packs.map(function (p) {
-      return '<div class="pack glass" data-pack="' + p.code + '"><div class="pack-code">' + p.code + '</div><small>' + p.name + ' · ' + p.size + ' (demo)</small><small>Phrases: ' + p.lang + '</small>' +
-        '<div class="pack-bar"><span></span></div><span class="pack-state">Not downloaded</span><button class="btn btn-ghost" type="button">' + icon("download") + 'Download pack</button></div>';
-    }).join("");
+  var Packs = (function () {
+    var packsEl = $("#packs"), devEl = $("#devicePacks"), downloading = {}, renderedFor = null;
     $("#packContents").innerHTML = D.packContents.map(function (c) { return "<span>" + c + "</span>"; }).join("");
 
-    function download(card, instant) {
-      var code = card.getAttribute("data-pack"), bar = $(".pack-bar span", card), st = $(".pack-state", card), btn = $("button", card);
-      if (ready[code]) return;
-      btn.disabled = true;
-      var pct = instant ? 100 : 0;
+    function card(code) {
+      var p = packInfo(code), on = DevicePacks.has(code), dl = downloading[code];
+      var stateTxt = on ? 'Already on this device <span class="ok-mark">✓</span>' : (dl !== undefined ? "Downloading… " + Math.round(dl) + "%" : "Not downloaded");
+      return '<div class="pack glass' + (on ? " ready" : "") + '" data-pack="' + code + '"><div class="pack-code">' + code + '</div><small>' + p.name + ' · ' + p.size + ' (demo)</small><small>Phrases: ' + p.lang + '</small>' +
+        '<div class="pack-bar"><span style="width:' + (on ? 100 : (dl || 0)) + '%"></span></div><span class="pack-state">' + stateTxt + '</span>' +
+        (on ? '<button class="btn btn-ghost pack-remove" type="button" data-pack-remove="' + code + '">' + icon("x") + 'Remove download</button>'
+            : '<button class="btn btn-ghost" type="button" data-pack-download="' + code + '"' + (dl !== undefined ? " disabled" : "") + '>' + icon("download") + 'Download pack</button>') + '</div>';
+    }
+    function deviceList(inTripTag) {
+      var codes = DevicePacks.list(), route = state.tripLoaded ? D.trip.route : [];
+      if (!codes.length) return '<li class="muted">No airport packs on this device yet.</li>';
+      return codes.map(function (c) {
+        return '<li><span class="dp-code">' + c + '<span class="ok-mark">✓</span></span><span class="dp-name">' + packInfo(c).name + ' · ' + packInfo(c).size + '</span>' +
+          (inTripTag && route.indexOf(c) > -1 ? '<span class="dp-tag">Also in current trip</span>' : '') +
+          '<button class="btn btn-ghost dp-remove" type="button" data-pack-remove="' + c + '">Remove</button></li>';
+      }).join("");
+    }
+    function render() {
+      renderedFor = (state.tripLoaded ? D.trip.id : "none");
+      if (!state.tripLoaded) {
+        packsEl.innerHTML = '<div class="packs-empty"><span>No trip loaded. Load a ticket to see which airport packs it needs. Packs already on this device are listed below and are ready for any future trip.</span><button class="btn btn-ghost" type="button" data-action="load-demo" data-trip="' + D.trips[0].id + '">' + icon("play") + 'Load Demo Trip A</button></div>';
+      } else {
+        packsEl.innerHTML = D.trip.route.map(card).join("");
+      }
+      devEl.innerHTML = deviceList(true);
+      var st = $("#stPacks");
+      if (st) st.innerHTML = deviceList(false);
+    }
+    function download(code) {
+      if (DevicePacks.has(code) || downloading[code] !== undefined) return;
+      if (context().offline) { toast("You're offline, so new airport packs can't download. Packs already on this device keep working.", "warn"); return; }
+      downloading[code] = 0;
+      render();
       (function step() {
-        pct = Math.min(100, pct + 9 + Math.random() * 14);
-        bar.style.width = pct + "%";
-        st.textContent = pct < 100 ? "Downloading… " + Math.round(pct) + "%" : "Ready offline";
-        if (pct < 100) { setTimeout(step, 120); return; }
-        ready[code] = true;
-        card.classList.add("ready");
-        btn.innerHTML = icon("check") + "Downloaded";
-        cacheSite();
+        downloading[code] = Math.min(100, downloading[code] + 9 + Math.random() * 14);
+        var c = $('#packs [data-pack="' + code + '"]');
+        if (c) { $(".pack-bar span", c).style.width = downloading[code] + "%"; $(".pack-state", c).textContent = "Downloading… " + Math.round(downloading[code]) + "%"; }
+        if (downloading[code] < 100) { setTimeout(step, reduceMotion ? 20 : 120); return; }
+        delete downloading[code];
+        DevicePacks.add(code);
+        cacheShell();
+        changed();
+        toast("<b>" + code + "</b> airport pack saved on this device. It stays for future trips until you remove it.", "ok");
       })();
     }
-    packsEl.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) download(b.closest(".pack")); });
+    function remove(code) {
+      DevicePacks.remove(code);
+      changed();
+      toast("<b>" + code + "</b> airport pack removed from this device. Other packs are unchanged.", "ok");
+    }
+    function changed() {
+      render();
+      if (state.tripLoaded && $(".hero-card").classList.contains("loaded")) Trip.heroLoaded();
+      setState({});      // dashboard + offline status reflect the change
+      storageChanged();
+    }
+    document.addEventListener("click", function (e) {
+      var d = e.target.closest("[data-pack-download]");
+      if (d) { download(d.getAttribute("data-pack-download")); return; }
+      var r = e.target.closest("[data-pack-remove]");
+      if (r) remove(r.getAttribute("data-pack-remove"));
+    });
+    onState(function () { if (renderedFor !== (state.tripLoaded ? D.trip.id : "none")) render(); });
 
-    function cacheSite() {
-      // Ask the service worker (live site only) to refresh its offline copy.
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: "CACHE_PACKS" });
+    function cacheShell() {
+      // Ask the service worker (live site only) to refresh the app-shell copy.
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: "CACHE_SHELL" });
     }
 
     function renderStatus(ctx) {
-      var offline = ctx.offline;
+      var offline = ctx.offline, cc = connCode(), ccOn = DevicePacks.has(cc);
       document.documentElement.classList.toggle("is-offline", offline);
       $("#netText").innerHTML = offline ? "OFFLINE<span class=\"net-sub\"> · PACKS ACTIVE</span>" : (state.swReady ? "ONLINE<span class=\"net-sub\"> · OFFLINE READY</span>" : "ONLINE");
       $("#osText").textContent = offline ? (state.simOffline && state.realOnline ? "OFFLINE (SIMULATED)" : "OFFLINE") : (state.swReady ? "ONLINE · OFFLINE READY" : "ONLINE");
       var swLine = state.swReady ? "Website saved on this device for offline use" : (location.protocol === "file:" ? "Offline caching turns on at the live GitHub Pages site (not from a folder)" : "Preparing offline copy of this website…");
       var items = [
         [!offline, offline ? "Live gate and boarding updates paused · resume when connected" : "Live gate and boarding updates on"],
-        [true, "Demo itinerary saved (FLL → IST → DXB)"],
-        [true, "IST terminal map, services, and routes saved"],
+        [state.tripLoaded, state.tripLoaded ? "Current trip kept for this session (" + D.trip.route.join(" → ") + ")" : "No trip loaded"],
+        [ccOn, ccOn ? cc + " terminal map, services, and routes on this device" : cc + " airport pack not downloaded yet"],
         [true, "Essential phrases in 5 languages saved"],
         [state.swReady, swLine]
       ];
@@ -1287,7 +1805,7 @@
     onState(renderStatus);
     $("#simOffline").addEventListener("change", function () {
       setState({ simOffline: this.checked });
-      toast(this.checked ? "Offline (simulated). SkyCare now uses the downloaded airport packs. Live gate changes are paused." : "Back online. Live updates resumed.", this.checked ? "warn" : "ok");
+      toast(this.checked ? "Offline (simulated). SkyCare now uses the airport packs on this device. Live gate changes are paused." : "Back online. Live updates resumed.", this.checked ? "warn" : "ok");
     });
     window.addEventListener("online", function () { setState({ realOnline: true }); });
     window.addEventListener("offline", function () { setState({ realOnline: false }); });
@@ -1295,16 +1813,17 @@
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
       navigator.serviceWorker.register("./service-worker.js").then(function () {
         return navigator.serviceWorker.ready;
-      }).then(function () {
+      }).then(function (reg) {
         setState({ swReady: true });
-        D.packs.forEach(function (p) { if (localStorageGet("skycare-pack-" + p.code)) download($('[data-pack="' + p.code + '"]'), true); });
+        // After "Clear All SkyCare Data" the app-shell cache is gone: ask the worker to rebuild it.
+        if (window.caches && caches.keys) caches.keys().then(function (keys) {
+          if (!keys.some(function (k) { return k.indexOf("skycare-navigator-") === 0; }) && reg.active) reg.active.postMessage({ type: "CACHE_SHELL" });
+        }).catch(noop);
       }).catch(function (err) { console.warn("SkyCare: service worker not registered.", err); });
     }
-    // Remember downloaded packs for this visitor (optional convenience)
-    packsEl.addEventListener("click", function (e) { var c = e.target.closest(".pack"); if (c) localStorageSet("skycare-pack-" + c.getAttribute("data-pack"), "1"); });
+    render();
+    return { render: render };
   })();
-  function localStorageGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
-  function localStorageSet(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } }
 
   /* =======================================================
      19. CONNECTIVITY + MEALS
@@ -1318,26 +1837,50 @@
     }
     $$(".conn-buttons [data-conn]").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-conn")); }); });
     show("all");
+    Session.register("connect", { reset: function () { show("all"); } });
 
-    var M = D.meals, optsEl = $("#mealOptions"), chosen = "halal";
-    $("#mealCutoff").textContent = M.cutoff;
+    var optsEl = $("#mealOptions"), chosen = "halal", btnLabel = $("#mealBtn").textContent;
+    function mealHead() { $("#mealCutoff").textContent = D.meals.cutoff; $("#mealService").textContent = D.meals.service; }
+    mealHead();
     function renderMeals() {
-      optsEl.innerHTML = M.options.map(function (o) { return '<button type="button" class="meal-opt" role="radio" aria-checked="' + (o.id === chosen) + '" data-meal="' + o.id + '"><strong>' + o.name + '</strong><small>' + o.note + "</small></button>"; }).join("");
+      optsEl.innerHTML = D.meals.options.map(function (o) { return '<button type="button" class="meal-opt" role="radio" aria-checked="' + (o.id === chosen) + '" data-meal="' + o.id + '"><strong>' + o.name + '</strong><small>' + o.note + "</small></button>"; }).join("");
     }
-    optsEl.addEventListener("click", function (e) { var b = e.target.closest("[data-meal]"); if (b) { chosen = b.getAttribute("data-meal"); renderMeals(); $("#mealMsg").textContent = ""; } });
+    optsEl.addEventListener("click", function (e) { var b = e.target.closest("[data-meal]"); if (b) { chosen = b.getAttribute("data-meal"); renderMeals(); $("#mealMsg").textContent = ""; Session.persist(); } });
     $("#mealSupported").addEventListener("change", function () {
       $("#mealBtn").textContent = this.checked ? "Preorder Meal" : "Save Preference";
       $("#mealMsg").textContent = this.checked ? "" : "This airline does not currently support meal preorder through SkyCare. You can still see the expected meal service and dietary options.";
       $("#mealMsg").className = "meal-msg" + (this.checked ? "" : " warn");
+      Session.persist();
     });
     $("#mealBtn").addEventListener("click", function () {
-      var o = M.options.filter(function (x) { return x.id === chosen; })[0], msg = $("#mealMsg");
-      if ($("#mealSupported").checked) { msg.textContent = "✓ " + o.name + " meal preorder sent to Demo Air (simulated). The airline confirms availability."; msg.className = "meal-msg ok"; }
-      else { msg.textContent = "Preference saved in SkyCare. This airline does not currently support meal preorder through SkyCare, so request it with the airline directly."; msg.className = "meal-msg warn"; }
+      var o = D.meals.options.filter(function (x) { return x.id === chosen; })[0], msg = $("#mealMsg");
+      if ($("#mealSupported").checked) { msg.textContent = "✓ " + o.name + " meal preorder for " + F2.number + " sent to " + D.trip.carrier + " (simulated). The airline confirms availability."; msg.className = "meal-msg ok"; }
+      else { msg.textContent = "Preference saved in SkyCare for this trip. This airline does not currently support meal preorder through SkyCare, so request it with the airline directly."; msg.className = "meal-msg warn"; }
+      Session.persist();
     });
-    $("#menuBtn").addEventListener("click", function () { toast("Onboard menu (demo): " + M.options.slice(0, 4).map(function (o) { return o.name; }).join(" · ") + ". Special requests by arrangement.", ""); });
+    $("#menuBtn").addEventListener("click", function () { toast("Onboard menu (demo): " + D.meals.options.slice(0, 4).map(function (o) { return o.name; }).join(" · ") + ". Special requests by arrangement.", ""); });
     onState(function (ctx) { if (ctx.meal !== "none" && chosen !== ctx.meal && (ctx.meal === "halal" || ctx.meal === "vegetarian")) { chosen = ctx.meal; renderMeals(); } });
     renderMeals();
+    // Meal choice and preorder belong to this flight only.
+    Session.register("meals", {
+      reset: function () {
+        mealHead();
+        chosen = state.meal === "vegetarian" ? "vegetarian" : "halal";
+        $("#mealSupported").checked = true;
+        $("#mealBtn").textContent = btnLabel;
+        $("#mealMsg").textContent = ""; $("#mealMsg").className = "meal-msg";
+        renderMeals();
+      },
+      save: function () { return { chosen: chosen, supported: $("#mealSupported").checked, msg: $("#mealMsg").textContent, cls: $("#mealMsg").className }; },
+      restore: function (v) {
+        if (!v) return;
+        if (D.meals.options.some(function (o) { return o.id === v.chosen; })) chosen = v.chosen;
+        $("#mealSupported").checked = v.supported !== false;
+        $("#mealBtn").textContent = v.supported === false ? "Save Preference" : btnLabel;
+        $("#mealMsg").textContent = v.msg || ""; $("#mealMsg").className = v.cls || "meal-msg";
+        renderMeals();
+      }
+    });
   })();
 
   /* =======================================================
@@ -1358,7 +1901,15 @@
         '<button class="btn btn-primary" type="button" id="humanNav">' + icon("nav") + 'Navigate There</button></div><svg class="terminal-map" id="humanMap" viewBox="0 0 1000 560" role="img" aria-label="Route to ' + esc(h.name) + '"></svg>';
       renderMap($("#humanMap"), { highlightIds: [h.place], route: pathTo(D.map.you, p), draw: true, title: false });
       $("#humanNav").addEventListener("click", function () { toast("Route started: <b>" + p.label + "</b>. (Simulated navigation)", "ok"); });
+      current = id;
+      Session.persist();
     }
+    var current = null;
+    Session.register("human", {
+      reset: function () { current = null; res.hidden = true; res.innerHTML = ""; $$(".human-card", grid).forEach(function (c) { c.classList.remove("active"); }); },
+      save: function () { return current; },
+      restore: function (id) { if (id) select(id); }
+    });
     grid.addEventListener("click", function (e) { var b = e.target.closest("[data-human-card]"); if (b) select(b.getAttribute("data-human-card")); });
     document.addEventListener("click", function (e) {
       var a = e.target.closest("[data-human]");
@@ -1390,6 +1941,65 @@
       draw();
     });
     onState(draw);
+    Session.register("map", {
+      reset: function () {
+        cat = "gate";
+        $$("#mapFilters button").forEach(function (x) { x.classList.toggle("active", x.getAttribute("data-cat") === "gate"); });
+        draw();
+      }
+    });
+  })();
+
+  /* =======================================================
+     21b. PRIVACY & STORAGE CONTROLS
+     ======================================================= */
+  (function () {
+    function render() {
+      var t = D.trip, n = Sky.count(), p = Prefs.get();
+      $("#stTrip").textContent = state.tripLoaded ? "Active: " + t.label + " · " + t.route.join(" → ") + " · Ref " + t.bookingRef : "No active trip.";
+      $("#stDeleteTrip").disabled = !state.tripLoaded;
+      $("#stChat").textContent = n ? plural(n, "message") + " in this trip's conversation" : "No messages.";
+      $("#stPrefs").textContent = "Saved preferences: phrase book in " + D.languages[p.lang].name.split(" ")[0] + " · step-free default " + (p.stepFree ? "on" : "off") + ".";
+      Packs.render();
+    }
+    storageListeners.push(render);
+    var lastKey = null;
+    onState(function () { var k = state.sessionId + "|" + state.tripLoaded; if (k !== lastKey) { lastKey = k; render(); } });
+
+    $("#stDeleteTrip").addEventListener("click", function () {
+      if (!state.tripLoaded) { toast("There is no active trip to delete.", ""); return; }
+      Confirm.open({
+        title: "Delete current trip data?",
+        body: "<p>This removes the active trip from this browser: itinerary, gate and route status, connection state, baggage details, detours, assistance and medical requests, family and group state, meal choice, and the Sky conversation.</p><p class=\"keep\">Downloaded airport packs and saved preferences stay on this device.</p>",
+        ok: "Delete Trip Data", danger: true
+      }, function () {
+        Session.clear();
+        toast("Current trip data deleted. Airport packs and preferences were kept.", "ok");
+      });
+    });
+    $("#stClearChat").addEventListener("click", function () {
+      Sky.resetConversation(true);
+      toast(state.tripLoaded ? "Conversation cleared. Your trip is still active." : "Conversation cleared.", "ok");
+    });
+    $("#stClearAll").addEventListener("click", function () {
+      Confirm.open({
+        title: "Clear all SkyCare data?",
+        body: "<p>This removes everything SkyCare stored in this browser:</p><ul><li>the active trip and its session</li><li>the Sky conversation</li><li>saved preferences</li><li>downloaded airport packs</li><li>SkyCare's offline copy of this website</li></ul><p>Data from other websites is not touched. The page reloads in a first-use state and rebuilds its offline copy.</p>",
+        ok: "Clear All Data", danger: true
+      }, clearAllData);
+    });
+
+    function clearAllData() {
+      ["localStorage", "sessionStorage"].forEach(function (kind) {
+        sKeys(kind).forEach(function (k) { if (/^skycare[:\-]/i.test(k)) sDel(kind, k); });
+      });
+      function reload() { location.reload(); }
+      if (window.caches && caches.keys) {
+        caches.keys().then(function (keys) {
+          return Promise.all(keys.filter(function (k) { return k.indexOf("skycare-") === 0; }).map(function (k) { return caches.delete(k); }));
+        }).then(reload, reload);
+      } else reload();
+    }
   })();
 
   /* =======================================================
@@ -1409,7 +2019,7 @@
       { title: "Ask Sky", ids: ["ask", "detours"] },
       { title: "I Have a Problem", ids: ["help", "medical"] },
       { title: "Family + Accessibility", ids: ["family", "access", "group"] },
-      { title: "Offline + Language", ids: ["offline", "language"] },
+      { title: "Offline, Storage + Language", ids: ["offline", "storage", "language"] },
       { title: "Human + AI", ids: ["human"] },
       { title: "How It Could Work", ids: ["tech", "privacy"] },
       { title: "Why SkyCare", ids: ["why", "research", "closing"] }
@@ -1481,6 +2091,7 @@
     $("#pbExit").addEventListener("click", exit);
 
     document.addEventListener("keydown", function (e) {
+      if (Confirm.isOpen()) return; // the dialog owns the keyboard while open
       var tag = (e.target.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
@@ -1503,6 +2114,7 @@
   /* =======================================================
      23. START-UP
      ======================================================= */
-  setState({});
+  // Same-trip refresh restores that trip's session; otherwise start clean.
+  if (!Session.restore()) setState(tripDefaults());
   if (location.hash === "#ask") Sky.greet();
 })();
