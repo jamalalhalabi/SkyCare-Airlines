@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SkyCare Airlines | Travel Should Feel Better</title>
+  <meta name="description" content="SkyCare Airlines is a fictional airline concept that shows what a perfect airline customer service experience could look like.">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <!-- Fonts: Barlow (airport-signage style). If you are offline, the site falls back to system fonts automatically. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Tells the stylesheet that JavaScript is running (used for animations). -->
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- =====================================================
+     ICON LIBRARY
+     Each icon is drawn once here, then reused anywhere with:
+     <svg class="icon"><use href="#i-bell"></use></svg>
+     ===================================================== -->
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.4.6 4 2.4 4 5.2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M12 19.5v.5"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M4 12h16M9 20v1.5M15 20v1.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+  <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.2 7-1.2M12 9.7v4.8l-3.2 6.5M12 14.5l3.2 6.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 17v-5a8 8 0 0 1 16 0v5"/><rect x="3" y="13" width="4" height="7" rx="1.5"/><rect x="17" y="13" width="4" height="7" rx="1.5"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7h18v3.5a1.5 1.5 0 0 0 0 3V17H3v-3.5a1.5 1.5 0 0 0 0-3z"/><path d="M14 7v10" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17v.5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-call" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-at" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.9 7.9"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-door" viewBox="0 0 24 24"><path d="M5 21V4a1 1 0 0 1 1-1h9l3 2v16"/><path d="M2 21h20M14 12v.5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></symbol>
+  <symbol id="i-cabin" viewBox="0 0 24 24"><path d="M6 20V9a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3v6h5a2 2 0 0 1 2 2v3"/><path d="M4 20h18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- Thin bar at the very top that fills as you scroll -->
+<div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+<!-- =====================================================
+     NAVIGATION BAR
+     ===================================================== -->
+<header class="site-header" id="siteHeader">
+  <nav class="nav container" aria-label="Main navigation">
+    <a class="brand" href="#home" aria-label="SkyCare Airlines home">
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect width="48" height="48" rx="12" fill="#0B1F3A"/>
+        <path d="M9 30c8-1 15-5 21-12l6-6c1.5-1.5 3.6.2 2.5 2L33 21c-3 5-3 10 0 14" fill="none" stroke="#19C3C0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13 36c5 0 10-1.2 14-3.5" fill="none" stroke="#E8B04B" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-text">SkyCare<span> Airlines</span></span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+      <svg class="icon"><use href="#i-menu"></use></svg>
+      <span class="visually-hidden">Open menu</span>
+    </button>
+
+    <ul class="nav-links" id="navMenu">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#promise">Our Promise</a></li>
+      <li><a href="#journey">Journey</a></li>
+      <li><a href="#recovery">Recovery</a></li>
+      <li><a href="#technology">Tech + People</a></li>
+      <li><a href="#why">Why SkyCare</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li class="nav-cta-item">
+        <button class="btn btn-primary btn-small" id="presentBtn" type="button">
+          <svg class="icon"><use href="#i-play"></use></svg> Presentation Mode
+        </button>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Section dots on the right side (progress indicator) -->
+<nav class="dot-nav" id="dotNav" aria-label="Section progress"></nav>
+
+<main id="main">
+
+<!-- =====================================================
+     SECTION 1: HOME / HERO
+     ===================================================== -->
+<section class="section hero" id="home" data-title="Welcome">
+  <!-- Decorative sky background. To use your own photo, see README "Replacing images". -->
+  <div class="hero-sky" aria-hidden="true">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+    <svg class="flight-path" viewBox="0 0 1200 500" preserveAspectRatio="none">
+      <path id="heroPath" d="M-50 440 C 300 420, 520 120, 1250 60" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="6 10"/>
+    </svg>
+  </div>
+
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow-light">Aviation Customer Relations Trade Show</p>
+      <h1 class="hero-title">SkyCare Airlines</h1>
+      <p class="hero-slogan">Travel Should Feel Better.</p>
+      <p class="hero-sub">Book smarter. Travel easier. Arrive cared for.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-large" href="#problem">Explore SkyCare <svg class="icon"><use href="#i-arrow-right"></use></svg></a>
+        <a class="btn btn-ghost btn-large" href="#promise">Our Promise</a>
+      </div>
+      <p class="hero-note"><svg class="icon"><use href="#i-heart"></use></svg> Designed around the passenger, not just the flight.</p>
+    </div>
+
+    <!-- Boarding pass style card (decorative, built with HTML and CSS) -->
+    <div class="hero-card" aria-label="Sample SkyCare boarding pass">
+      <div class="pass-top">
+        <span class="pass-brand">SKYCARE</span>
+        <span class="pass-status"><span class="live-dot"></span> Proactive Care On</span>
+      </div>
+      <div class="pass-route">
+        <div><span class="pass-code">FLL</span><span class="pass-city">Fort Lauderdale</span></div>
+        <svg class="icon pass-plane" aria-hidden="true"><use href="#i-plane"></use></svg>
+        <div class="text-right"><span class="pass-code">JFK</span><span class="pass-city">New York</span></div>
+      </div>
+      <dl class="pass-details">
+        <div><dt>Flight</dt><dd>SC218</dd></div>
+        <div><dt>Gate</dt><dd>C7</dd></div>
+        <div><dt>Boarding</dt><dd>10:35 AM</dd></div>
+        <div><dt>Seat</dt><dd>14A</dd></div>
+      </dl>
+      <ul class="pass-alerts">
+        <li><svg class="icon"><use href="#i-check"></use></svg> Bag tracked and loaded</li>
+        <li><svg class="icon"><use href="#i-check"></use></svg> Gate updates turned on</li>
+        <li><svg class="icon"><use href="#i-check"></use></svg> A real person is one tap away</li>
+      </ul>
+    </div>
+  </div>
+
+  <a class="scroll-cue" href="#problem" aria-label="Scroll to the next section"><span></span></a>
+</section>
+
+<!-- =====================================================
+     SECTION 2: THE PROBLEM
+     ===================================================== -->
+<section class="section section-light" id="problem" data-title="The Problem">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">01 &middot; The Problem</p>
+      <h2>Flying Shouldn&rsquo;t Be the Most Stressful Part of Traveling.</h2>
+      <p class="lead">Most airline frustration is not caused by the flight itself. It comes from how passengers are treated when something changes.</p>
+      <p class="ask"><svg class="icon"><use href="#i-users"></use></svg><span><strong>Ask the room:</strong> Raise your hand if you have ever stood in a rebooking line after a delay or cancellation.</span></p>
+    </header>
+
+    <ul class="chip-grid reveal" aria-label="Common causes of dissatisfaction">
+      <li class="chip chip-warn">Poor communication</li>
+      <li class="chip chip-warn">Long customer service lines</li>
+      <li class="chip chip-warn">Confusing disruption procedures</li>
+      <li class="chip chip-warn">Lack of transparency</li>
+      <li class="chip chip-warn">Hard to reach a real person</li>
+      <li class="chip chip-warn">Baggage uncertainty</li>
+      <li class="chip chip-warn">Repeating the story to every agent</li>
+      <li class="chip chip-warn">Inconsistent service recovery</li>
+    </ul>
+
+    <div class="flow-compare">
+      <div class="flow-card flow-bad reveal">
+        <h3><svg class="icon"><use href="#i-x"></use></svg> The Typical Travel Experience</h3>
+        <ol class="flow">
+          <li>Delay</li>
+          <li>Little information</li>
+          <li>Passenger confusion</li>
+          <li>Long line</li>
+          <li>Repeated explanations</li>
+          <li class="flow-end">Frustration</li>
+        </ol>
+      </div>
+      <div class="flow-card flow-good reveal">
+        <h3><svg class="icon"><use href="#i-check"></use></svg> The SkyCare Model</h3>
+        <ol class="flow">
+          <li>Issue detected</li>
+          <li>Passenger notified</li>
+          <li>Cause explained</li>
+          <li>Options provided</li>
+          <li>Rebooking assisted</li>
+          <li class="flow-end">Follow-up completed</li>
+        </ol>
+      </div>
+    </div>
+
+    <blockquote class="callout reveal">
+      <p>Customers do not expect airlines to control everything. They expect airlines to communicate clearly, respect their time, and take responsibility when problems occur.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 3: PHILOSOPHY / THE SKYCARE PROMISE
+     ===================================================== -->
+<section class="section" id="promise" data-title="Our Promise">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">02 &middot; Our Customer Service Philosophy</p>
+      <h2>The SkyCare Promise</h2>
+      <p class="lead">Four commitments guide every decision, from the booking page to the baggage claim.</p>
+    </header>
+
+    <div class="pillar-grid">
+      <article class="pillar reveal">
+        <span class="pillar-num">1</span>
+        <div class="icon-badge"><svg class="icon"><use href="#i-bell"></use></svg></div>
+        <h3>Communicate</h3>
+        <p>Tell passengers what is happening before they have to ask.</p>
+      </article>
+      <article class="pillar reveal">
+        <span class="pillar-num">2</span>
+        <div class="icon-badge"><svg class="icon"><use href="#i-sliders"></use></svg></div>
+        <h3>Empower</h3>
+        <p>Give customers control over simple travel decisions.</p>
+      </article>
+      <article class="pillar reveal">
+        <span class="pillar-num">3</span>
+        <div class="icon-badge"><svg class="icon"><use href="#i-heart"></use></svg></div>
+        <h3>Care</h3>
+        <p>Treat passengers like people, not reservation numbers.</p>
+      </article>
+      <article class="pillar reveal">
+        <span class="pillar-num">4</span>
+        <div class="icon-badge"><svg class="icon"><use href="#i-refresh"></use></svg></div>
+        <h3>Recover</h3>
+        <p>When something goes wrong, respond quickly and responsibly.</p>
+      </article>
+    </div>
+
+    <p class="statement reveal">At SkyCare, customer service is not a department. <strong>It is part of the operating model.</strong></p>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 4: PASSENGER JOURNEY (interactive tabs)
+     ===================================================== -->
+<section class="section section-navy" id="journey" data-title="Passenger Journey">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow eyebrow-light">03 &middot; The SkyCare Passenger Journey</p>
+      <h2>Care at Every Stage of the Trip</h2>
+      <p class="lead">Select a stage to see what SkyCare does for the passenger at that moment.</p>
+    </header>
+
+    <div class="journey reveal">
+      <div class="journey-track" role="tablist" aria-label="Passenger journey stages" data-tabs="journey">
+        <div class="journey-line" aria-hidden="true"><span id="journeyFill"></span></div>
+        <button class="journey-stop" role="tab" id="tab-book" aria-controls="journeyPanel" aria-selected="true" data-stage="0">
+          <span class="stop-dot"><svg class="icon"><use href="#i-ticket"></use></svg></span><span class="stop-label">Book</span>
+        </button>
+        <button class="journey-stop" role="tab" id="tab-checkin" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="1">
+          <span class="stop-dot"><svg class="icon"><use href="#i-phone"></use></svg></span><span class="stop-label">Check-In</span>
+        </button>
+        <button class="journey-stop" role="tab" id="tab-airport" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="2">
+          <span class="stop-dot"><svg class="icon"><use href="#i-door"></use></svg></span><span class="stop-label">Airport</span>
+        </button>
+        <button class="journey-stop" role="tab" id="tab-board" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="3">
+          <span class="stop-dot"><svg class="icon"><use href="#i-users"></use></svg></span><span class="stop-label">Board</span>
+        </button>
+        <button class="journey-stop" role="tab" id="tab-fly" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="4">
+          <span class="stop-dot"><svg class="icon"><use href="#i-plane"></use></svg></span><span class="stop-label">Fly</span>
+        </button>
+        <button class="journey-stop" role="tab" id="tab-arrive" aria-controls="journeyPanel" aria-selected="false" tabindex="-1" data-stage="5">
+          <span class="stop-dot"><svg class="icon"><use href="#i-pin"></use></svg></span><span class="stop-label">Arrive</span>
+        </button>
+      </div>
+
+      <!-- The text in this panel is filled in by script.js (see "journeyStages"). -->
+      <div class="journey-panel" id="journeyPanel" role="tabpanel" aria-labelledby="tab-book" tabindex="0">
+        <div class="journey-panel-head">
+          <span class="journey-step" id="journeyStep">Stage 1 of 6</span>
+          <h3 id="journeyTitle">Book</h3>
+          <p id="journeyIntro">Clear choices from the very first click.</p>
+        </div>
+        <ul class="check-list check-list-light" id="journeyList">
+          <li>Clear pricing</li>
+          <li>No confusing charges</li>
+          <li>Saved passenger preferences</li>
+          <li>Accessibility requests</li>
+          <li>Multilingual assistance</li>
+          <li>Simple itinerary management</li>
+        </ul>
+      </div>
+      <p class="hint">Tip: click a stage, or use the left and right arrow keys once a stage is selected.</p>
+      <p class="evidence evidence-light"><svg class="icon"><use href="#i-book"></use></svg>Why every stage matters: satisfaction, value, and airline image each shape whether passengers fly again (Park et al., 2004).</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 5: AIRPORT EXPERIENCE
+     ===================================================== -->
+<section class="section section-light" id="airport" data-title="Airport Experience">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">04 &middot; The SkyCare Airport Experience</p>
+      <h2>Your Airport Experience Should Start With Confidence.</h2>
+    </header>
+
+    <div class="feature-grid wayfinding">
+      <article class="feature-card reveal">
+        <div class="sign"><svg class="icon"><use href="#i-phone"></use></svg><h3>Smart Check-In</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
+        <ul class="check-list">
+          <li>Digital check-in</li>
+          <li>Mobile boarding pass</li>
+          <li>Saved preferences</li>
+          <li>Baggage tracking</li>
+        </ul>
+      </article>
+      <article class="feature-card reveal">
+        <div class="sign"><svg class="icon"><use href="#i-headset"></use></svg><h3>Real Human Help</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
+        <ul class="check-list">
+          <li>Trained customer service employees</li>
+          <li>Quick assistance</li>
+          <li>Multilingual support</li>
+          <li>Accessibility support</li>
+        </ul>
+      </article>
+      <article class="feature-card reveal">
+        <div class="sign"><svg class="icon"><use href="#i-bell"></use></svg><h3>Real-Time Info</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
+        <ul class="check-list">
+          <li>Gate updates</li>
+          <li>Boarding alerts</li>
+          <li>Delay notifications</li>
+          <li>Connection monitoring</li>
+        </ul>
+      </article>
+      <article class="feature-card reveal">
+        <div class="sign"><svg class="icon"><use href="#i-sliders"></use></svg><h3>Customer Control</h3><svg class="icon sign-arrow" aria-hidden="true"><use href="#i-arrow-right"></use></svg></div>
+        <ul class="check-list">
+          <li>Change seats</li>
+          <li>Modify your trip</li>
+          <li>Rebook when possible</li>
+          <li>Request support</li>
+        </ul>
+      </article>
+    </div>
+
+    <blockquote class="callout reveal">
+      <p>Technology should reduce stress, not create another obstacle.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 6: CABIN EXPERIENCE
+     ===================================================== -->
+<section class="section" id="cabin" data-title="Cabin Experience">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">05 &middot; The SkyCare Cabin Experience</p>
+      <h2>Comfort Isn&rsquo;t Only About the Seat.</h2>
+    </header>
+
+    <div class="cabin-grid">
+      <article class="cabin-card reveal">
+        <div class="cabin-top cabin-comfort">
+          <svg class="icon"><use href="#i-cabin"></use></svg>
+          <h3>Comfort</h3>
+        </div>
+        <ul class="check-list">
+          <li>Clean aircraft</li>
+          <li>Organized boarding</li>
+          <li>Personal space awareness</li>
+          <li>Calm cabin environment</li>
+        </ul>
+      </article>
+      <article class="cabin-card reveal">
+        <div class="cabin-top cabin-connect">
+          <svg class="icon"><use href="#i-wifi"></use></svg>
+          <h3>Connectivity</h3>
+        </div>
+        <ul class="check-list">
+          <li>Live flight information</li>
+          <li>Entertainment</li>
+          <li>Messaging where available</li>
+          <li>Connection updates before landing</li>
+        </ul>
+      </article>
+      <article class="cabin-card reveal">
+        <div class="cabin-top cabin-hosp">
+          <svg class="icon"><use href="#i-heart"></use></svg>
+          <h3>Hospitality</h3>
+        </div>
+        <ul class="check-list">
+          <li>Professional cabin crew</li>
+          <li>Respectful service</li>
+          <li>Proactive assistance</li>
+          <li>Cultural awareness</li>
+          <li>Special-needs support</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="statement reveal">Great inflight service combines <strong>efficiency</strong> with <strong>human attention</strong>.</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 7: SERVICE RECOVERY (interactive scenarios)
+     ===================================================== -->
+<section class="section section-navy" id="recovery" data-title="Service Recovery">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow eyebrow-light">06 &middot; Service Recovery</p>
+      <h2>When Travel Doesn&rsquo;t Go as Planned</h2>
+      <p class="lead">Choose a situation, then watch how SkyCare responds.</p>
+    </header>
+
+    <div class="recovery reveal">
+      <div class="scenario-tabs" role="tablist" aria-label="Disruption scenarios" data-tabs="scenario">
+        <button class="scenario-tab" role="tab" aria-selected="true" aria-controls="scenarioPanel" data-scenario="delay">3-Hour Delay</button>
+        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="cancel">Cancellation</button>
+        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="missed">Missed Connection</button>
+        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="delayedBag">Delayed Baggage</button>
+        <button class="scenario-tab" role="tab" aria-selected="false" aria-controls="scenarioPanel" tabindex="-1" data-scenario="damagedBag">Damaged Baggage</button>
+      </div>
+
+      <div class="scenario-panel" id="scenarioPanel" role="tabpanel">
+        <div class="alert-card">
+          <div class="alert-icon"><svg class="icon"><use href="#i-alert"></use></svg></div>
+          <div>
+            <p class="alert-label">SkyCare Alert &middot; Flight SC218</p>
+            <p class="alert-text" id="scenarioText">Your flight has been delayed by 3 hours.</p>
+          </div>
+        </div>
+
+        <button class="btn btn-gold btn-large" id="respondBtn" type="button">
+          <svg class="icon"><use href="#i-play"></use></svg> <span id="respondLabel">See How SkyCare Responds</span>
+        </button>
+
+        <!-- Steps are added here by script.js (see "scenarios"). -->
+        <ol class="response-steps" id="responseSteps" aria-live="polite"></ol>
+      </div>
+    </div>
+
+    <blockquote class="callout callout-dark reveal">
+      <p>The passenger should not have to discover the solution. <strong>SkyCare brings the solution to the passenger.</strong></p>
+    </blockquote>
+    <p class="evidence evidence-light reveal"><svg class="icon"><use href="#i-book"></use></svg>A field study of passengers during real flight delays found that fair treatment and passengers&rsquo; emotions shaped recovery satisfaction, trust, and repurchase intentions (Wen &amp; Chi, 2013).</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 8: TECHNOLOGY + PEOPLE
+     ===================================================== -->
+<section class="section section-light" id="technology" data-title="Technology + People">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">07 &middot; Technology + People</p>
+      <h2>Technology When It&rsquo;s Convenient. People When It Matters.</h2>
+    </header>
+
+    <div class="tech-layout">
+      <article class="split-card split-digital reveal">
+        <h3><svg class="icon"><use href="#i-sparkle"></use></svg> SkyCare Digital</h3>
+        <ul class="check-list">
+          <li>Automated rebooking</li>
+          <li>Mobile boarding</li>
+          <li>Baggage tracking</li>
+          <li>Flight notifications</li>
+          <li>Self-service changes</li>
+          <li>AI-powered FAQ support</li>
+        </ul>
+      </article>
+
+      <!-- Phone mockup of the SkyCare app (built with HTML and CSS, no image needed) -->
+      <div class="phone-wrap reveal">
+        <div class="phone" aria-label="SkyCare mobile app demo">
+          <div class="phone-notch" aria-hidden="true"></div>
+          <div class="phone-screen">
+            <div class="app-bar">
+              <span class="app-logo">SKYCARE</span>
+              <span class="app-time" aria-hidden="true">9:41</span>
+            </div>
+            <div class="app-route">
+              <span>FLL</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-plane"></use></svg>
+              <span>JFK</span>
+            </div>
+            <p class="app-flight">Flight SC218</p>
+            <div class="app-status"><span class="live-dot"></span> ON TIME</div>
+            <dl class="app-grid">
+              <div><dt>Gate</dt><dd>C7</dd></div>
+              <div><dt>Boarding</dt><dd>10:35 AM</dd></div>
+              <div class="app-bag"><dt>Bag</dt><dd>TRACKED <span aria-hidden="true">&#10003;</span></dd></div>
+            </dl>
+            <div class="app-buttons">
+              <button type="button" data-toast="Boarding pass ready. Show this at Gate C7."><svg class="icon"><use href="#i-ticket"></use></svg>Boarding Pass</button>
+              <button type="button" data-toast="Your bag was scanned onto SC218 at 9:12 AM."><svg class="icon"><use href="#i-bag"></use></svg>Track Bag</button>
+              <button type="button" data-toast="3 other flights today. Tap one to switch."><svg class="icon"><use href="#i-refresh"></use></svg>Change Flight</button>
+              <button type="button" data-toast="Hi, this is Maya from SkyCare. How can I help?"><svg class="icon"><use href="#i-chat"></use></svg>Chat With SkyCare</button>
+            </div>
+            <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+        <p class="hint hint-dark">Try the app buttons.</p>
+      </div>
+
+      <article class="split-card split-people reveal">
+        <h3><svg class="icon"><use href="#i-users"></use></svg> SkyCare People</h3>
+        <ul class="check-list">
+          <li>Complex travel disruptions</li>
+          <li>Accessibility assistance</li>
+          <li>Family travel</li>
+          <li>Customer complaints</li>
+          <li>International travel questions</li>
+          <li>Emotional or difficult situations</li>
+        </ul>
+      </article>
+    </div>
+
+    <blockquote class="callout reveal">
+      <p>Technology should handle routine tasks so employees have more time for situations that require judgment, empathy, and problem-solving.</p>
+    </blockquote>
+    <p class="evidence reveal"><svg class="icon"><use href="#i-book"></use></svg>Passengers do not all want the same channel: frequent flyers tended to choose self check-in, while business passengers tended to choose the desk (Castillo-Manzano &amp; L&oacute;pez-Valpuesta, 2013).</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 9: OUR PEOPLE / SERVICE STANDARD
+     ===================================================== -->
+<section class="section" id="people" data-title="Our People">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">08 &middot; Our People</p>
+      <h2>Great Customer Service Starts Before the Passenger Arrives.</h2>
+      <p class="lead">Every SkyCare employee follows one simple model: <strong>The SkyCare Service Standard.</strong></p>
+    </header>
+
+    <ol class="standard">
+      <li class="standard-step reveal">
+        <div class="standard-icon"><svg class="icon"><use href="#i-headset"></use></svg></div>
+        <h3>Listen</h3>
+        <p>Understand the passenger.</p>
+      </li>
+      <li class="standard-step reveal">
+        <div class="standard-icon"><svg class="icon"><use href="#i-shield"></use></svg></div>
+        <h3>Own</h3>
+        <p>Take responsibility for helping solve the problem.</p>
+      </li>
+      <li class="standard-step reveal">
+        <div class="standard-icon"><svg class="icon"><use href="#i-wrench"></use></svg></div>
+        <h3>Solve</h3>
+        <p>Provide the best available solution.</p>
+      </li>
+      <li class="standard-step reveal">
+        <div class="standard-icon"><svg class="icon"><use href="#i-send"></use></svg></div>
+        <h3>Follow Up</h3>
+        <p>Make sure the passenger understands what happens next.</p>
+      </li>
+    </ol>
+
+    <div class="training reveal">
+      <h3>Every employee is trained in:</h3>
+      <ul class="chip-grid chip-grid-tight">
+        <li class="chip">Communication</li>
+        <li class="chip">Conflict resolution</li>
+        <li class="chip">Cultural awareness</li>
+        <li class="chip">Accessibility</li>
+        <li class="chip">Service recovery</li>
+        <li class="chip">Professionalism</li>
+        <li class="chip">Passenger empathy</li>
+        <li class="chip">Airport operations awareness</li>
+      </ul>
+    </div>
+
+    <blockquote class="callout reveal">
+      <p>Employees should not simply redirect the passenger. <strong>The first employee contacted should help move the problem toward a solution.</strong></p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 10: ACCOUNTABILITY (critical thinking: limits, commitments, measures)
+     ===================================================== -->
+<section class="section section-light" id="accountability" data-title="Accountability">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">09 &middot; Accountability</p>
+      <h2>We Can&rsquo;t Control the Weather. We Can Control How We Respond.</h2>
+    </header>
+
+    <div class="control-split reveal">
+      <div class="control-col control-out">
+        <h3>Outside any airline&rsquo;s control</h3>
+        <ul>
+          <li>Severe weather</li>
+          <li>Air traffic control restrictions</li>
+          <li>Security screening wait times</li>
+          <li>Airport construction and gate limits</li>
+        </ul>
+      </div>
+      <div class="control-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow-right"></use></svg></div>
+      <div class="control-col control-in">
+        <h3>Always in SkyCare&rsquo;s control</h3>
+        <ul>
+          <li>How fast we tell you</li>
+          <li>How clearly we explain why</li>
+          <li>Which options we offer</li>
+          <li>How we treat you</li>
+          <li>Whether we follow up</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="commit-block reveal">
+      <p class="commit-label">SkyCare Service Commitments <span>(concept targets for this proposal)</span></p>
+      <ul class="commit-grid">
+        <li><span class="commit-num">15<small>min</small></span><span>Disruption alert after a schedule change is confirmed</span></li>
+        <li><span class="commit-num">1<small>agent</small></span><span>One person owns your case until it is solved</span></li>
+        <li><span class="commit-num">0<small>lines</small></span><span>Rebooking options reach your phone before you reach a counter</span></li>
+        <li><span class="commit-num">24<small>hrs</small></span><span>Personal follow-up after every disruption</span></li>
+      </ul>
+    </div>
+
+    <div class="accountability-foot reveal">
+      <div class="floor">
+        <h3><svg class="icon"><use href="#i-shield"></use></svg> Regulations are the floor, not the goal</h3>
+        <p>U.S. DOT rules require refunds when a flight is canceled or significantly changed (for example, a domestic schedule change of more than 3 hours) and a refund of bag fees when checked bags are significantly delayed (U.S. Department of Transportation, 2024). SkyCare treats these as the minimum and acts before the passenger has to ask.</p>
+      </div>
+      <div class="measures">
+        <h3><svg class="icon"><use href="#i-clock"></use></svg> How we measure success</h3>
+        <ul class="chip-grid chip-grid-tight">
+          <li class="chip">Time to first alert</li>
+          <li class="chip">First-contact resolution</li>
+          <li class="chip">Rebooking acceptance</li>
+          <li class="chip">Recovery satisfaction</li>
+          <li class="chip">Repeat bookings</li>
+        </ul>
+        <p class="measures-note">Service pays for itself: satisfaction and perceived value drive repeat travel (Chen, 2008; Park et al., 2004).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 11: WHY CHOOSE SKYCARE (departure board)
+     ===================================================== -->
+<section class="section" id="why" data-title="Why SkyCare">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">10 &middot; The Competitive Advantage</p>
+      <h2>Why Fly SkyCare?</h2>
+    </header>
+
+    <div class="table-wrap board reveal">
+      <table class="compare" id="compareBoard">
+        <caption class="visually-hidden">Traditional airline experience compared with the SkyCare experience</caption>
+        <thead>
+          <tr>
+            <th scope="col">Moment</th>
+            <th scope="col">Typical Airline</th>
+            <th scope="col" class="col-skycare">SkyCare</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Flight info</th><td>Search for flight information</td><td class="flap">Information comes to you</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Getting help</th><td>Wait in customer service lines</td><td class="flap">Digital support plus real people</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Baggage</th><td>Wonder where your baggage is</td><td class="flap">Live baggage tracking</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Disruption</th><td>Search for replacement flights</td><td class="flap">Proactive rebooking options</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Agents</th><td>Repeat your story to different agents</td><td class="flap">Shared passenger service record</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Service style</th><td>Reactive customer service</td><td class="flap">Proactive customer service</td><td><span class="status-pill">On time</span></td></tr>
+          <tr><th scope="row">Technology</th><td>Technology replaces employees</td><td class="flap">Technology supports employees</td><td><span class="status-pill">On time</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="advantage reveal">
+      <svg class="icon advantage-icon" aria-hidden="true"><use href="#i-star"></use></svg>
+      <p>Our competitive advantage is not that nothing ever goes wrong. It is that passengers always know <strong>what is happening</strong>, <strong>what their options are</strong>, and that <strong>SkyCare is taking responsibility</strong> for helping.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 11: RESEARCH
+     All four sources are real, peer-reviewed journal articles.
+     ===================================================== -->
+<section class="section section-light" id="research" data-title="Research">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">11 &middot; Research Behind the SkyCare Experience</p>
+      <h2>Built on Evidence, Not Guesswork</h2>
+      <p class="lead">Five peer-reviewed studies of air passengers, including a field study conducted during real flight delays.</p>
+    </header>
+
+    <div class="research-grid">
+      <article class="research-card reveal">
+        <p class="research-tag">Service quality &amp; loyalty</p>
+        <p class="research-find"><strong>Finding:</strong> Service value, passenger satisfaction, and airline image each directly affected whether passengers intended to fly the airline again (Park et al., 2004).</p>
+        <p class="research-apply"><strong>SkyCare applies it:</strong> service is built into every stage of the journey, not one department.</p>
+      </article>
+
+      <article class="research-card reveal">
+        <p class="research-tag">Perceived value</p>
+        <p class="research-find"><strong>Finding:</strong> Perceived value and satisfaction both drove future intentions, and perceived value had the larger effect (Chen, 2008).</p>
+        <p class="research-apply"><strong>SkyCare applies it:</strong> clear pricing and real help when plans change make the trip feel worth the fare.</p>
+      </article>
+
+      <article class="research-card reveal">
+        <p class="research-tag">Service recovery</p>
+        <p class="research-find"><strong>Finding:</strong> Fair outcomes, fair procedures, and respectful treatment all shaped satisfaction with airline recovery; the authors concluded compensation beyond expectations is likely the most effective strategy (Migacz et al., 2018).</p>
+        <p class="research-apply"><strong>SkyCare applies it:</strong> a fair fix, a fast process, and respectful communication, then follow-up.</p>
+      </article>
+
+      <article class="research-card reveal">
+        <p class="research-tag">Flight delays</p>
+        <p class="research-find"><strong>Finding:</strong> Among passengers surveyed during real delays, justice and emotions shaped recovery satisfaction, which led to trust, repurchase, and word of mouth (Wen &amp; Chi, 2013).</p>
+        <p class="research-apply"><strong>SkyCare applies it:</strong> the delay response manages emotions, not just logistics.</p>
+      </article>
+
+      <article class="research-card reveal">
+        <p class="research-tag">Self-service technology</p>
+        <p class="research-find"><strong>Finding:</strong> Online and kiosk check-in are growing, but frequent flyers preferred self check-in while business passengers preferred the desk (Castillo-Manzano &amp; L&oacute;pez-Valpuesta, 2013).</p>
+        <p class="research-apply"><strong>SkyCare applies it:</strong> passengers choose the channel; no one is forced into an app.</p>
+      </article>
+    </div>
+
+    <div class="references reveal" id="references">
+      <h3><svg class="icon"><use href="#i-book"></use></svg> References</h3>
+      <ul class="ref-list">
+        <li>Castillo-Manzano, J. I., &amp; L&oacute;pez-Valpuesta, L. (2013). Check-in services and passenger behaviour: Self service technologies in airport systems. <em>Computers in Human Behavior, 29</em>(6), 2431&ndash;2437. <a href="https://doi.org/10.1016/j.chb.2013.05.030" target="_blank" rel="noopener">https://doi.org/10.1016/j.chb.2013.05.030</a></li>
+        <li>Chen, C.-F. (2008). Investigating structural relationships between service quality, perceived value, satisfaction, and behavioral intentions for air passengers: Evidence from Taiwan. <em>Transportation Research Part A: Policy and Practice, 42</em>(4), 709&ndash;717. <a href="https://doi.org/10.1016/j.tra.2008.01.007" target="_blank" rel="noopener">https://doi.org/10.1016/j.tra.2008.01.007</a></li>
+        <li>Migacz, S. J., Zou, S., &amp; Petrick, J. F. (2018). The &ldquo;terminal&rdquo; effects of service failure on airlines: Examining service recovery with justice theory. <em>Journal of Travel Research, 57</em>(1), 83&ndash;98. <a href="https://doi.org/10.1177/0047287516684979" target="_blank" rel="noopener">https://doi.org/10.1177/0047287516684979</a></li>
+        <li>Park, J.-W., Robertson, R., &amp; Wu, C.-L. (2004). The effect of airline service quality on passengers&rsquo; behavioural intentions: A Korean case study. <em>Journal of Air Transport Management, 10</em>(6), 435&ndash;439. <a href="https://doi.org/10.1016/j.jairtraman.2004.06.001" target="_blank" rel="noopener">https://doi.org/10.1016/j.jairtraman.2004.06.001</a></li>
+        <li>U.S. Department of Transportation. (2024, April 24). <em>Biden-Harris administration announces final rule requiring automatic refunds of airline tickets and ancillary service fees</em> [Press release]. <a href="https://www.transportation.gov/briefing-room/biden-harris-administration-announces-final-rule-requiring-automatic-refunds-airline" target="_blank" rel="noopener">https://www.transportation.gov/briefing-room/biden-harris-administration-announces-final-rule-requiring-automatic-refunds-airline</a></li>
+        <li>Wen, B., &amp; Chi, C. G.-q. (2013). Examine the cognitive and affective antecedents to service recovery satisfaction: A field study of delayed airline passengers. <em>International Journal of Contemporary Hospitality Management, 25</em>(3), 306&ndash;327. <a href="https://doi.org/10.1108/09596111311310991" target="_blank" rel="noopener">https://doi.org/10.1108/09596111311310991</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SECTION 12: CONTACT / TRADE SHOW ENDING
+     ===================================================== -->
+<section class="section contact" id="contact" data-title="Thank You">
+  <div class="hero-sky" aria-hidden="true">
+    <div class="cloud c1"></div><div class="cloud c3"></div>
+  </div>
+  <div class="container contact-inner">
+    <header class="section-head reveal">
+      <p class="eyebrow eyebrow-light">Ready When You Are</p>
+      <h2>Ready to Experience a Better Way to Fly?</h2>
+    </header>
+
+    <div class="contact-brand reveal">
+      <p class="contact-name">SKYCARE AIRLINES</p>
+      <p class="contact-tag">Travel Should Feel Better.</p>
+    </div>
+
+    <ul class="contact-grid reveal" aria-label="Demo contact information">
+      <li><svg class="icon"><use href="#i-globe"></use></svg><span class="contact-label">Website</span><span>www.flyskycare.com</span></li>
+      <li><svg class="icon"><use href="#i-mail"></use></svg><span class="contact-label">Email</span><span>guestcare@flyskycare.com</span></li>
+      <li><svg class="icon"><use href="#i-call"></use></svg><span class="contact-label">Customer Care</span><span>1-800-SKYCARE</span></li>
+      <li><svg class="icon"><use href="#i-at"></use></svg><span class="contact-label">Social</span><span>@FlySkyCare</span></li>
+    </ul>
+    <p class="demo-label reveal">Demo contact details for a class project. These are not real accounts.</p>
+
+    <div class="thank-you reveal">
+      <p class="thanks">Thank You</p>
+      <p class="questions">Questions? We&rsquo;d love to have you on board.</p>
+    </div>
+
+    <p class="presenter reveal">Presented by Jamal Al Halabi &middot; Aviation Customer Relations</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; 2026 SkyCare Airlines concept.</p>
+    <p>SkyCare Airlines is a fictional airline concept created for an academic aviation customer-relations presentation.</p>
+  </div>
+</footer>
+
+<!-- Back to top button -->
+<a class="to-top" id="toTop" href="#home" aria-label="Back to top">
+  <svg class="icon"><use href="#i-arrow-up"></use></svg>
+</a>
+
+<!-- =====================================================
+     PRESENTATION MODE CONTROLS (shown only in Presentation Mode)
+     ===================================================== -->
+<div class="present-bar" id="presentBar" aria-label="Presentation controls" role="toolbar">
+  <button class="pbtn" id="prevBtn" type="button" aria-label="Previous section">
+    <svg class="icon"><use href="#i-arrow-left"></use></svg><span>Previous</span>
+  </button>
+  <div class="present-counter" aria-live="polite">
+    <span id="slideCounter">1 / 13</span>
+    <span class="present-title" id="slideTitle">Welcome</span>
+  </div>
+  <button class="pbtn" id="nextBtn" type="button" aria-label="Next section">
+    <span>Next</span><svg class="icon"><use href="#i-arrow-right"></use></svg>
+  </button>
+  <button class="pbtn pbtn-icon" id="fullBtn" type="button" aria-label="Toggle full screen" title="Full screen (F)">
+    <svg class="icon"><use href="#i-expand"></use></svg>
+  </button>
+  <button class="pbtn pbtn-icon" id="exitBtn" type="button" aria-label="Exit Presentation Mode" title="Exit (Esc)">
+    <svg class="icon"><use href="#i-x"></use></svg>
+  </button>
+</div>
+
+<div class="present-hint" id="presentHint" role="status">
+  Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> to move between sections &middot; <kbd>F</kbd> full screen &middot; <kbd>Esc</kbd> exit
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
