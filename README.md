@@ -3,7 +3,7 @@
 **Your AI travel companion inside the airport.**
 *Know where to go. Know what to do.*
 
-**Live prototype:** https://jamalalhalabi.github.io/SkyCare-Airlines/
+**Live prototype:** https://jamalalhalabi.github.io/SkyCare-Navigate/
 
 > SkyCare Navigator is an academic aviation customer-experience concept created for an Aviation Customer Relations course. It is not affiliated with any airline or airport. The "Demo Air" carrier, the sample trip, and the terminal map are fictional.
 
